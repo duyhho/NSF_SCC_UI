@@ -188,7 +188,7 @@ export class MapContainer extends Component {
     formData.append('end_coord', end_coord);
     console.log(formData.get('start_coord'))
     axios
-      .post("http://00d4424561d5.ngrok.io/api/GSV/predict/" + category, formData)
+      .post("https://00d4424561d5.ngrok.io/api/GSV/predict/" + category, formData)
       .then(function (response) {
         self.setState({
           imageListRaw: response.data,
@@ -252,7 +252,7 @@ export class MapContainer extends Component {
     return (
       <div>
         <div style={{position: "absolute", zIndex: 1, marginLeft: "30.5vw", marginTop: "10px"}}>
-          <button onClick={this.sendLocation} disable={dataLoading} className="btn btn-primary">{predictButtonText}</button>
+          <button onClick={this.sendLocation} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
         </div>
         <div style={{position: "absolute", zIndex: 1, marginLeft: "30vw", marginTop: "60px"}}>
           <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)}>
