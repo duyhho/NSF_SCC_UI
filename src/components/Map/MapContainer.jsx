@@ -188,7 +188,7 @@ export class MapContainer extends Component {
     formData.append('end_coord', end_coord);
     console.log(formData.get('start_coord'))
     axios
-      .post("https://00d4424561d5.ngrok.io/api/GSV/predict/" + category, formData)
+      .post("https://320ec70103b8.ngrok.io/api/GSV/predict/" + category, formData)
       .then(function (response) {
         self.setState({
           imageListRaw: response.data,
