@@ -1,5 +1,5 @@
-import { Sidebar } from "semantic-ui-react";
-import MapContainer from "./components/Map/MapContainer";
+// import { Sidebar } from "semantic-ui-react";
+// import MapContainer from "./components/Map/MapContainer";
 // import { Router, browserHistory, Link } from 'react-router';
 import Example from "./components/SideBar";
 
