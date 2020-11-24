@@ -2,9 +2,7 @@ import React from 'react'
 import {
   Checkbox,
   Grid,
-  Header,
   Icon,
-  Image,
   Menu,
   Segment,
   Sidebar,
@@ -26,9 +24,8 @@ const SidebarExampleSidebar = () => {
 
       <Grid.Column>
         <Sidebar.Pushable as={Segment}>
-          <Sidebar animation={'scale down'}
+          <Sidebar animation='scale down'
             as={Menu}
-            animation='overlay'
             icon='labeled'
             inverted
             onHide={() => setVisible(false)}
