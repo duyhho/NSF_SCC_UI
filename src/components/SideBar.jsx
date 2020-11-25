@@ -14,23 +14,23 @@ const SidebarExampleSidebar = () => {
 
   return (
     <Grid columns={1}>
-      <Grid.Column>
+      {/* <Grid.Column>
         <Checkbox
           checked={visible}
           label={{ children: <code>visible</code> }}
           onChange={(e, data) => setVisible(data.checked)}
         />
-      </Grid.Column>
+      </Grid.Column> */}
 
       <Grid.Column>
         <Sidebar.Pushable as={Segment}>
-          <Sidebar animation='scale down'
+          <Sidebar animation='push'
             as={Menu}
             icon='labeled'
             inverted
             onHide={() => setVisible(false)}
             vertical
-            visible={visible}
+            visible={true}
             width='thin'
           >
             <Menu.Item as='a'>

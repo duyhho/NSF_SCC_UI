@@ -225,6 +225,7 @@ export class MapContainer extends Component {
   }
   
   render() {
+    const google = window.google;
     const start_location = this.state.fields.start_location;
     const location = this.state.fields.location;
     const rectangle = this.state.rectangle_coords;
@@ -275,19 +276,23 @@ export class MapContainer extends Component {
               onClick={this.onMapClicked}
             >
               <Marker
-                label = {'1'}
+                label = {{text: 'start', 
+                          fontFamily: "Arial",
+                          fontSize: "12px",}}
                 onClick={this.onMarkerClick}
                 // icon={{
-                //   url: "http://127.0.0.1:8887/logo192.png",
-                //   anchor: new google.maps.Point(32, 32),
-                //   scaledSize: new google.maps.Size(64, 64)
+                //   // url: "http://127.0.0.1:8887/logo192.png",
+                //   anchor: new google.maps.Point(64, 64),
+                //   scaledSize: new google.maps.Size(128, 128)
                 // }}
                 // draggable={true}
                 position={this.state.fields.start_location}
                 name={"Start Location"}
               />
               <Marker
-                label = {'2'}
+                label = {{text: 'end', 
+                fontFamily: "Arial",
+                fontSize: "12px",}}
                 onClick={this.onMarkerClick}
                 position={this.state.fields.location}
                 name={"Stop Location"}
