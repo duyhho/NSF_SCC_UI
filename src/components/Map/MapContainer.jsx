@@ -12,7 +12,7 @@ export class MapContainer extends Component {
   constructor(props) {
     super(props);
     this.polygonRef = React.createRef();
-    this.eventSource = new EventSource("http://71792cdaa20c.ngrok.io/time");
+    this.eventSource = new EventSource("http://7ccc29610c7f.ngrok.io/time");
     
     // Purpose of ".bind(this)" is to be able to use 'this' within the function
     this.onMarkerClick = this.onMarkerClick.bind(this);
@@ -36,7 +36,7 @@ export class MapContainer extends Component {
       // },
       fields: {
         start_location: {lat: 39.0410436302915,lng: -94.5876739197085},
-        location: {lat: 39.0383456697085, lng: -94.5903718802915}
+        end_location: {lat: 39.0383456697085, lng: -94.5903718802915}
       },
       // fields: {
       //   start_location: {lat: 39.0398658,lng: -94.5888883},
@@ -51,7 +51,10 @@ export class MapContainer extends Component {
       dataLoading: false,
       serverError: false,
       category: "utility",
-      randomText: ''
+      randomText: '',
+      editStart: false,
+      editEnd: false,
+      firstLoad: true,
     };
   }
 
@@ -60,22 +63,24 @@ export class MapContainer extends Component {
     var self = this;
     var curLocation = this.getcurrentLocation();
 
-    curLocation.then(function(result){
-      if (result.lat != null && result.lng != null) {
-        self.setState({
-          fields: update(self.state.fields, {
-            start_location: {$set: {
-              lat: result.lat,
-              lng: result.lng
-            }},
-            location: {$set: {
-              lat: result.lat,
-              lng: result.lng
-            }}
+    if (this.state.firstLoad == true) {
+      curLocation.then(function(result){
+        if (result.lat != null && result.lng != null) {
+          self.setState({
+            fields: update(self.state.fields, {
+              start_location: {$set: {
+                lat: result.lat,
+                lng: result.lng
+              }},
+              end_location: {$set: {
+                lat: result.lat,
+                lng: result.lng
+              }}
+            })
           })
-        })
-      }
-    })
+        }
+      })
+    }
     this.eventSource.onopen = e => {
       console.log(e);
     }
@@ -158,21 +163,39 @@ export class MapContainer extends Component {
   }
 
   addMarker(location, map){
-    const start_location = this.state.fields.start_location
+    const startLocation = this.state.fields.start_location;
+    const endLocation = this.state.fields.end_location;
+    const editStart = this.state.editStart;
+    const editEnd = this.state.editEnd;
 
-    this.setState(prev => ({
-      fields: {
-        start_location: start_location,
-        location:{lat: location.lat(), lng: location.lng()}
-      },
-      rectangle_coords: [
-        start_location,
-        {lat: start_location.lat, lng: location.lng()},
-        {lat: location.lat(), lng: location.lng()},
-
-        {lat: location.lat(), lng: start_location.lng}
-      ]
-    }));
+    if (editStart == true && editEnd == false) {
+      this.setState(prev => ({
+        fields: {
+          start_location: {lat: location.lat(), lng: location.lng()},
+          end_location: endLocation
+        },
+        rectangle_coords: [
+          endLocation,
+          {lat: endLocation.lat, lng: location.lng()},
+          {lat: location.lat(), lng: location.lng()},
+          {lat: location.lat(), lng: endLocation.lng}
+        ]
+      }));
+    } else {
+      this.setState(prev => ({
+        fields: {
+          start_location: startLocation,
+          end_location:{lat: location.lat(), lng: location.lng()}
+        },
+        rectangle_coords: [
+          startLocation,
+          {lat: startLocation.lat, lng: location.lng()},
+          {lat: location.lat(), lng: location.lng()},
+          {lat: location.lat(), lng: startLocation.lng}
+        ]
+      }));
+    }
+    
     map.panTo(location);
 
     this.setPolygonOptions({
@@ -208,7 +231,7 @@ export class MapContainer extends Component {
     })
 
     const start_coord = JSON.stringify(this.state.fields.start_location)
-    const end_coord = JSON.stringify(this.state.fields.location)
+    const end_coord = JSON.stringify(this.state.fields.end_location)
     const formData = new FormData();
     const category = this.state.category
     var self = this
@@ -252,15 +275,45 @@ export class MapContainer extends Component {
       category: cat
     })
   }
+
+  handleEditStart() {
+    const editStart = this.state.editStart;
+
+    if (editStart == false) {
+      this.setState({
+        editStart: true
+      })
+    } else {
+      this.setState({
+        editStart: false
+      })
+    }
+  }
+
+  handleEditEnd() {
+    const editEnd = this.state.editEnd;
+
+    if (editEnd == false) {
+      this.setState({
+        editEnd: true
+      })
+    } else {
+      this.setState({
+        editEnd: false
+      })
+    }
+  }
   
   render() {
     const google = window.google;
     const start_location = this.state.fields.start_location;
-    const location = this.state.fields.location;
+    const end_location = this.state.fields.end_location;
     const rectangle = this.state.rectangle_coords;
     const imageList = this.state.imageList;
     const dataLoading = this.state.dataLoading;
     const serverError = this.state.serverError;
+    const editStart = this.state.editStart;
+    const editEnd = this.state.editEnd;
 
     var predictButtonText = ""
     if (dataLoading === false) {
@@ -276,6 +329,21 @@ export class MapContainer extends Component {
       helpText = 'No predictions. Click "Predict" button on the map to start.'
     }
 
+    var startButtonText = ""
+    if (editStart == true) {
+      startButtonText = "Cancel Edit..."
+    } else {
+      startButtonText = "Edit Start Pointer"
+    }
+
+    var endButtonText = ""
+    if (editEnd == true) {
+      endButtonText = "Cancel Edit..."
+    } else {
+      endButtonText = "Edit End Pointer"
+    }
+
+    //Start
     if (!this.props.google) {
       return <div>Loading...</div>;
     }
@@ -294,16 +362,22 @@ export class MapContainer extends Component {
             <option value="Vehicle">Vehicle</option>
             <option value="Road">Road</option>
             <option value="All Categories">All Categories</option>
-
           </select>
         </div>
+        <div style={{position: "absolute", zIndex: 1, marginLeft: "10px", marginTop: "60px"}}>
+          <button className="btn btn-primary" onClick={this.handleEditStart.bind(this)} disabled={editEnd}>{startButtonText}</button>
+        </div>
+        <div style={{position: "absolute", zIndex: 1, marginLeft: "10px", marginTop: "100px"}}>
+          <button className="btn btn-primary" onClick={this.handleEditEnd.bind(this)} disabled={editStart}>{endButtonText}</button>
+        </div>
+      
         <div className="row">
           <div className="col-md-8" style={{position: "relative", height: "calc(100vh - 50px)"}}>
             <Map
               style={{}}
               google={this.props.google} 
               initialCenter={start_location}
-              center={location}
+              center={end_location}
               zoom={14}
               onClick={this.onMapClicked}
             >
@@ -326,7 +400,7 @@ export class MapContainer extends Component {
                 fontFamily: "Arial",
                 fontSize: "12px",}}
                 onClick={this.onMarkerClick}
-                position={this.state.fields.location}
+                position={this.state.fields.end_location}
                 name={"Stop Location"}
               />
               <InfoWindow
