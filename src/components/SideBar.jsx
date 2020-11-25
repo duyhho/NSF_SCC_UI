@@ -39,11 +39,11 @@ const SidebarExampleSidebar = () => {
             </Menu.Item>
             <Menu.Item as='a'>
               <Icon name='gamepad' />
-              Games
+              Street View Detection
             </Menu.Item>
             <Menu.Item as='a'>
               <Icon name='camera' />
-              Channels
+              Real Image Detection
             </Menu.Item>
           </Sidebar>
 

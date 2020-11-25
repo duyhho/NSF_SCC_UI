@@ -2,15 +2,17 @@ import React, { Component } from "react";
 import ImageGallery from 'react-image-gallery';
 import { Map, InfoWindow, Marker, GoogleApiWrapper, Polygon } from "google-maps-react";
 import axios from "axios";
+
 import update from 'immutability-helper';
 
 import "../../css/App.css"
 
 export class MapContainer extends Component {
+
   constructor(props) {
     super(props);
     this.polygonRef = React.createRef();
-
+    this.eventSource = new EventSource("http://41476e58bcec.ngrok.io/time");
     // Purpose of ".bind(this)" is to be able to use 'this' within the function
     this.onMarkerClick = this.onMarkerClick.bind(this);
     this.onMapClicked = this.onMapClicked.bind(this);
@@ -21,16 +23,24 @@ export class MapContainer extends Component {
       showingInfoWindow: false,
       activeMarker: {},
       selectedPlace: {},
+      // fields: {
+      //   start_location: {
+      //     lat: 39.0347,
+      //     lng: -94.5785
+      //   },
+      //   location: {
+      //     lat: 39.0347,
+      //     lng: -94.5785
+      //   }
+      // },
       fields: {
-        start_location: {
-          lat: 39.0347,
-          lng: -94.5785
-        },
-        location: {
-          lat: 39.0347,
-          lng: -94.5785
-        }
+        start_location: {lat: 39.0410436302915,lng: -94.5876739197085},
+        location: {lat: 39.0383456697085, lng: -94.5903718802915}
       },
+      // fields: {
+      //   start_location: {lat: 39.0398658,lng: -94.5888883},
+      //   location: {lat:  39.0395235, lng: -94.5891575}
+      // },
       rectangle_coords: [],
       infoWindowContent: (
         <div></div>
@@ -46,24 +56,27 @@ export class MapContainer extends Component {
   //Always have this function on any .jsx file, even though it's empty
   componentDidMount() {
     var self = this;
-    var curLocation = this.getcurrentLocation();
+    // var curLocation = this.getcurrentLocation();
 
-    curLocation.then(function(result){
-      if (result.lat != null && result.lng != null) {
-        self.setState({
-          fields: update(self.state.fields, {
-            start_location: {$set: {
-              lat: result.lat,
-              lng: result.lng
-            }},
-            location: {$set: {
-              lat: result.lat,
-              lng: result.lng
-            }}
-          })
-        })
-      }
-    })
+    // curLocation.then(function(result){
+    //   if (result.lat != null && result.lng != null) {
+    //     self.setState({
+    //       fields: update(self.state.fields, {
+    //         start_location: {$set: {
+    //           lat: result.lat,
+    //           lng: result.lng
+    //         }},
+    //         location: {$set: {
+    //           lat: result.lat,
+    //           lng: result.lng
+    //         }}
+    //       })
+    //     })
+    //   }
+    // })
+    // console.log('hello')
+    // this.eventSource.onmessage = e =>
+    //   console.log(e.data);
   }
 
   processImageList() {
@@ -250,6 +263,8 @@ export class MapContainer extends Component {
     if (!this.props.google) {
       return <div>Loading...</div>;
     }
+
+    
     return (
       <div>
         <div style={{position: "absolute", zIndex: 1, marginLeft: "30.5vw", marginTop: "10px"}}>
@@ -266,7 +281,7 @@ export class MapContainer extends Component {
         </div>
       
         <div className="row">
-          <div className="col-md-8" style={{position: "relative", height: "calc(100vh - 20px)"}}>
+          <div className="col-md-8" style={{position: "relative", height: "calc(100vh - 50px)"}}>
             <Map
               style={{}}
               google={this.props.google} 
@@ -320,14 +335,14 @@ export class MapContainer extends Component {
             </Map>
           </div>
           {imageList.length > 0 ? (
-          <div className="col-md-4">
+          <div className="col-md-3">
             <ImageGallery
               items={imageList}
               showPlayButton={false}
             />
           </div>
           ) : (
-          <div className="col-md-4" align="center">
+          <div className="col-md-3" align="center">
             {helpText}
           </div>
           )}
