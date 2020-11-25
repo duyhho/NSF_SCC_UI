@@ -12,7 +12,7 @@ export class MapContainer extends Component {
   constructor(props) {
     super(props);
     this.polygonRef = React.createRef();
-    this.eventSource = new EventSource("http://41476e58bcec.ngrok.io/time");
+    // this.eventSource = new EventSource("http://41476e58bcec.ngrok.io/time");
     // Purpose of ".bind(this)" is to be able to use 'this' within the function
     this.onMarkerClick = this.onMarkerClick.bind(this);
     this.onMapClicked = this.onMapClicked.bind(this);
@@ -56,24 +56,24 @@ export class MapContainer extends Component {
   //Always have this function on any .jsx file, even though it's empty
   componentDidMount() {
     var self = this;
-    // var curLocation = this.getcurrentLocation();
+    var curLocation = this.getcurrentLocation();
 
-    // curLocation.then(function(result){
-    //   if (result.lat != null && result.lng != null) {
-    //     self.setState({
-    //       fields: update(self.state.fields, {
-    //         start_location: {$set: {
-    //           lat: result.lat,
-    //           lng: result.lng
-    //         }},
-    //         location: {$set: {
-    //           lat: result.lat,
-    //           lng: result.lng
-    //         }}
-    //       })
-    //     })
-    //   }
-    // })
+    curLocation.then(function(result){
+      if (result.lat != null && result.lng != null) {
+        self.setState({
+          fields: update(self.state.fields, {
+            start_location: {$set: {
+              lat: result.lat,
+              lng: result.lng
+            }},
+            location: {$set: {
+              lat: result.lat,
+              lng: result.lng
+            }}
+          })
+        })
+      }
+    })
     // console.log('hello')
     // this.eventSource.onmessage = e =>
     //   console.log(e.data);
