@@ -12,7 +12,8 @@ export class MapContainer extends Component {
   constructor(props) {
     super(props);
     this.polygonRef = React.createRef();
-    // this.eventSource = new EventSource("http://41476e58bcec.ngrok.io/time");
+    this.eventSource = new EventSource("http://71792cdaa20c.ngrok.io/time");
+    
     // Purpose of ".bind(this)" is to be able to use 'this' within the function
     this.onMarkerClick = this.onMarkerClick.bind(this);
     this.onMapClicked = this.onMapClicked.bind(this);
@@ -49,7 +50,8 @@ export class MapContainer extends Component {
       imageListRaw: [],
       dataLoading: false,
       serverError: false,
-      category: "utility"
+      category: "utility",
+      randomText: ''
     };
   }
 
@@ -74,9 +76,23 @@ export class MapContainer extends Component {
         })
       }
     })
-    // console.log('hello')
-    // this.eventSource.onmessage = e =>
-    //   console.log(e.data);
+    this.eventSource.onopen = e => {
+      console.log(e);
+    }
+    this.eventSource.onmessage = e => {
+      console.log('onmessage');
+      console.log(e.data)
+      if (e.data == 'END-OF-STREAM') {
+          this.eventSource.close()
+      }
+      this.setState({
+        randomText: e.data
+      })
+    }
+    this.eventSource.addEventListener('ping', e => {
+      console.log(e);
+    });
+      
   }
 
   processImageList() {
@@ -263,10 +279,12 @@ export class MapContainer extends Component {
     if (!this.props.google) {
       return <div>Loading...</div>;
     }
-
+    console.log(this.state.randomText)
     
     return (
       <div>
+        <p>{this.state.randomText}</p>
+
         <div style={{position: "absolute", zIndex: 1, marginLeft: "30.5vw", marginTop: "10px"}}>
           <button onClick={this.sendLocation} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
         </div>
@@ -279,7 +297,6 @@ export class MapContainer extends Component {
 
           </select>
         </div>
-      
         <div className="row">
           <div className="col-md-8" style={{position: "relative", height: "calc(100vh - 50px)"}}>
             <Map
