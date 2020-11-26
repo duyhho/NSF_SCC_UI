@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import ImageGallery from 'react-image-gallery';
 import { Map, InfoWindow, Marker, GoogleApiWrapper, Polygon } from "google-maps-react";
+import axios from 'axios';
 
 import update from 'immutability-helper';
 
@@ -37,6 +38,7 @@ export class MapContainer extends Component {
       editStart: false,
       editEnd: false,
       firstLoad: true,
+      serverDomain: "",
     };
   }
 
@@ -182,41 +184,49 @@ export class MapContainer extends Component {
     const end_coord = JSON.stringify(this.state.fields.end_location)
     const formData = new FormData();
     const category = this.state.category;
+    const serverDomain = this.state.serverDomain;
 
     // Update the formData object
     formData.append('start_coord', start_coord);
     formData.append('end_coord', end_coord);
     
-    var eventSource = new EventSource("http://aca159fa37a8.ngrok.io/api/GSV/stream/" + category);
-
-    eventSource.onmessage = e => {
-      self.setState({
-        dataLoading: true
-      })
-      if (e.data === 'END-OF-STREAM') {
-        eventSource.close()
-        self.setState({
-          dataLoading: false
-        })
-      } else {
-        self.setState({
-          imageList: update(self.state.imageList, {$push: [{
-            original: 'data:image/jpg;base64,' + e.data,
-            thumbnail: 'data:image/jpg;base64,' + e.data,
-          }]
+    axios
+      .post(serverDomain + "api/GSV/stream/set" + category, formData)
+      .then(function(response) {
+        var eventSource = new EventSource(serverDomain + "api/GSV/stream/" + category);
+        eventSource.onmessage = e => {
+          self.setState({
+            dataLoading: true
           })
-        })
-        console.log(self.state.imageList)
+          if (e.data === 'END-OF-STREAM') {
+            eventSource.close()
+            self.setState({
+              dataLoading: false
+            })
+          } else {
+            self.setState({
+              imageList: update(self.state.imageList, {$push: [{
+                original: 'data:image/jpg;base64,' + e.data,
+                thumbnail: 'data:image/jpg;base64,' + e.data,
+              }]
+              })
+            })
+          }
+        }
 
-      }
-    }
-
-    eventSource.onerror = e => {
-      self.setState({
-        serverError: true,
-        dataLoading: false,
-      });
-    }
+        eventSource.onerror = e => {
+          self.setState({
+            serverError: true,
+            dataLoading: false,
+          });
+        }
+      })
+      .catch(function(error) {
+        self.setState({
+          serverError: true,
+          dataLoading: false,
+        });
+      })
   }
 
   handleOptionChange(e) {
@@ -276,7 +286,7 @@ export class MapContainer extends Component {
     const serverError = this.state.serverError;
     const editStart = this.state.editStart;
     const editEnd = this.state.editEnd;
-    // console.log(imageList)
+
     var predictButtonText = ""
     if (dataLoading === false) {
       predictButtonText = "Predict"
@@ -311,10 +321,7 @@ export class MapContainer extends Component {
     }
     
     return (
-
       <div>
-        
-       
         <div style={{position: "absolute", zIndex: 1, marginLeft: "10px", marginTop: "60px"}}>
           <button className="btn btn-primary" onClick={this.handleEditStart.bind(this)} disabled={editEnd}>{startButtonText}</button>
         </div>
@@ -324,16 +331,15 @@ export class MapContainer extends Component {
       
         <div className="row">
           <div className="col-md-6" style={{position: "relative", height: "calc(100vh - 50px)"}}>
-              <div className = 'map-top-center'>
-                <button onClick={this.sendLocation} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
-                  <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)}>
-                    <option value="Utility Poles">Utility Poles</option>
-                    <option value="Vehicle">Vehicle</option>
-                    <option value="Road">Road</option>
-                    <option value="All Categories">All Categories</option>
-                  </select>
-               
-              </div>
+            <div className='map-top-center'>
+              <button onClick={this.sendLocation} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
+                <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)}>
+                  <option value="Utility Poles">Utility Poles</option>
+                  <option value="Vehicle">Vehicle</option>
+                  <option value="Road">Road</option>
+                  <option value="All Categories">All Categories</option>
+                </select>
+            </div>
               
             <Map
               style={{}}
