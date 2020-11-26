@@ -41,7 +41,7 @@ export class MapContainer extends Component {
       firstLoad: true,
       firtImageReturned: false,
       returnedPercent: 0,
-      serverDomain: "http://ad1d1937d614.ngrok.io",
+      serverDomain: "http://edd8ca8ffa9d.ngrok.io",
     };
   }
 
@@ -204,19 +204,21 @@ export class MapContainer extends Component {
         console.log(response.data)
         var eventSource = new EventSource(serverDomain + "/api/GSV/stream/" + category);
         eventSource.onmessage = e => {
-          if (e.data.string === 'END-OF-STREAM') {
+          console.log(e.data)
+          if (e.data === 'END-OF-STREAM') {
             eventSource.close()
             self.setState({
               dataLoading: false
             })
           } else {
+            var jsonData = JSON.parse(e.data)
             self.setState({
               imageList: update(self.state.imageList, {$push: [{
-                original: 'data:image/jpg;base64,' + e.data.string,
-                thumbnail: 'data:image/jpg;base64,' + e.data.string,
+                original: 'data:image/jpg;base64,' + jsonData.image,
+                thumbnail: 'data:image/jpg;base64,' + jsonData.image,
               }]
               }),
-              returnedPercent: e.data.percent
+              returnedPercent: jsonData.progress
             })
           }
 
