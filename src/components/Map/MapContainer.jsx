@@ -12,7 +12,8 @@ export class MapContainer extends Component {
   constructor(props) {
     super(props);
     this.polygonRef = React.createRef();
-    this.eventSource = new EventSource("http://7ccc29610c7f.ngrok.io/time");
+    this.eventSource = new EventSource("http://294f9fdcc724.ngrok.io/api/GSV/stream/utility");
+    
     
     // Purpose of ".bind(this)" is to be able to use 'this' within the function
     this.onMarkerClick = this.onMarkerClick.bind(this);
@@ -81,12 +82,8 @@ export class MapContainer extends Component {
         }
       })
     }
-    this.eventSource.onopen = e => {
-      console.log(e);
-    }
     this.eventSource.onmessage = e => {
       console.log('onmessage');
-      console.log(e.data)
       if (e.data == 'END-OF-STREAM') {
           this.eventSource.close()
       }
@@ -94,10 +91,6 @@ export class MapContainer extends Component {
         randomText: e.data
       })
     }
-    this.eventSource.addEventListener('ping', e => {
-      console.log(e);
-    });
-      
   }
 
   processImageList() {
