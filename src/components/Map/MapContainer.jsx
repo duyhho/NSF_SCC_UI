@@ -38,7 +38,7 @@ export class MapContainer extends Component {
       editStart: false,
       editEnd: false,
       firstLoad: true,
-      serverDomain: "",
+      serverDomain: "http://ad1d1937d614.ngrok.io",
     };
   }
 
@@ -191,9 +191,10 @@ export class MapContainer extends Component {
     formData.append('end_coord', end_coord);
     
     axios
-      .post(serverDomain + "api/GSV/stream/set" + category, formData)
+      .post(serverDomain + "/api/GSV/stream/" + category, formData)
       .then(function(response) {
-        var eventSource = new EventSource(serverDomain + "api/GSV/stream/" + category);
+        console.log(response.data)
+        var eventSource = new EventSource(serverDomain + "/api/GSV/stream/" + category);
         eventSource.onmessage = e => {
           self.setState({
             dataLoading: true
