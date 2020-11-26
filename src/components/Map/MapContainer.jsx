@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import ImageGallery from 'react-image-gallery';
 import { Map, InfoWindow, Marker, GoogleApiWrapper, Polygon } from "google-maps-react";
-import axios from "axios";
 
 import update from 'immutability-helper';
 
@@ -12,7 +11,6 @@ export class MapContainer extends Component {
   constructor(props) {
     super(props);
     this.polygonRef = React.createRef();
-    this.eventSource = new EventSource("http://7ccc29610c7f.ngrok.io/time");
     
     // Purpose of ".bind(this)" is to be able to use 'this' within the function
     this.onMarkerClick = this.onMarkerClick.bind(this);
@@ -24,34 +22,18 @@ export class MapContainer extends Component {
       showingInfoWindow: false,
       activeMarker: {},
       selectedPlace: {},
-      // fields: {
-      //   start_location: {
-      //     lat: 39.0347,
-      //     lng: -94.5785
-      //   },
-      //   location: {
-      //     lat: 39.0347,
-      //     lng: -94.5785
-      //   }
-      // },
       fields: {
         start_location: {lat: 39.0410436302915,lng: -94.5876739197085},
         end_location: {lat: 39.0383456697085, lng: -94.5903718802915}
       },
-      // fields: {
-      //   start_location: {lat: 39.0398658,lng: -94.5888883},
-      //   location: {lat:  39.0395235, lng: -94.5891575}
-      // },
       rectangle_coords: [],
       infoWindowContent: (
         <div></div>
       ),
       imageList: [],
-      imageListRaw: [],
       dataLoading: false,
       serverError: false,
       category: "utility",
-      randomText: '',
       editStart: false,
       editEnd: false,
       firstLoad: true,
@@ -63,7 +45,7 @@ export class MapContainer extends Component {
     var self = this;
     var curLocation = this.getcurrentLocation();
 
-    if (this.state.firstLoad == true) {
+    if (this.state.firstLoad === true) {
       curLocation.then(function(result){
         if (result.lat != null && result.lng != null) {
           self.setState({
@@ -81,39 +63,8 @@ export class MapContainer extends Component {
         }
       })
     }
-    this.eventSource.onopen = e => {
-      console.log(e);
-    }
-    this.eventSource.onmessage = e => {
-      console.log('onmessage');
-      console.log(e.data)
-      if (e.data == 'END-OF-STREAM') {
-          this.eventSource.close()
-      }
-      this.setState({
-        randomText: e.data
-      })
-    }
-    this.eventSource.addEventListener('ping', e => {
-      console.log(e);
-    });
-      
-  }
-
-  processImageList() {
-    const imageListRaw = this.state.imageListRaw;
-    var imageList = [];
-
-    imageListRaw.forEach((imageStr) => {
-      imageList.push({
-        original: 'data:image/jpg;base64,' + imageStr,
-        thumbnail: 'data:image/jpg;base64,' + imageStr,
-      })
-    })
-
     this.setState({
-      imageList: imageList,
-      dataLoading: false,
+      firstLoad: false
     })
   }
 
@@ -168,7 +119,7 @@ export class MapContainer extends Component {
     const editStart = this.state.editStart;
     const editEnd = this.state.editEnd;
 
-    if (editStart == true && editEnd == false) {
+    if (editStart === true && editEnd === false) {
       this.setState(prev => ({
         fields: {
           start_location: {lat: location.lat(), lng: location.lng()},
@@ -226,34 +177,46 @@ export class MapContainer extends Component {
   };
 
   sendLocation = () => {
-    this.setState({
-      dataLoading: true
-    })
-
+    var self = this;
     const start_coord = JSON.stringify(this.state.fields.start_location)
     const end_coord = JSON.stringify(this.state.fields.end_location)
     const formData = new FormData();
-    const category = this.state.category
-    var self = this
+    const category = this.state.category;
+
     // Update the formData object
     formData.append('start_coord', start_coord);
     formData.append('end_coord', end_coord);
-    console.log(formData.get('start_coord'))
-    axios
-      .post("https://320ec70103b8.ngrok.io/api/GSV/predict/" + category, formData)
-      .then(function (response) {
-        self.setState({
-          imageListRaw: response.data,
-        });
-        self.processImageList();
+    
+    var eventSource = new EventSource("https://8073167960be.ngrok.io/api/GSV/stream/" + category);
+
+    eventSource.onmessage = e => {
+      self.setState({
+        dataLoading: true
       })
-      .catch(function (error) {
-        console.log(error);
+      if (e.data === 'END-OF-STREAM') {
+        eventSource.close()
         self.setState({
-          serverError: true,
-          dataLoading: false,
-        });
+          dataLoading: false
+        })
+      } else {
+        var newImageList = self.state.imageList.push({
+          original: 'data:image/jpg;base64,' + e.data,
+          thumbnail: 'data:image/jpg;base64,' + e.data,
+        })
+
+        self.setState(prevState => ({
+          imageList: [...prevState.imageList,
+            newImageList]
+        }))
+      }
+    }
+
+    eventSource.onerror = e => {
+      self.setState({
+        serverError: true,
+        dataLoading: false,
       });
+    }
   }
 
   handleOptionChange(e) {
@@ -279,7 +242,7 @@ export class MapContainer extends Component {
   handleEditStart() {
     const editStart = this.state.editStart;
 
-    if (editStart == false) {
+    if (editStart === false) {
       this.setState({
         editStart: true
       })
@@ -293,7 +256,7 @@ export class MapContainer extends Component {
   handleEditEnd() {
     const editEnd = this.state.editEnd;
 
-    if (editEnd == false) {
+    if (editEnd === false) {
       this.setState({
         editEnd: true
       })
@@ -305,7 +268,6 @@ export class MapContainer extends Component {
   }
   
   render() {
-    const google = window.google;
     const start_location = this.state.fields.start_location;
     const end_location = this.state.fields.end_location;
     const rectangle = this.state.rectangle_coords;
@@ -319,7 +281,7 @@ export class MapContainer extends Component {
     if (dataLoading === false) {
       predictButtonText = "Predict"
     } else {
-      predictButtonText = "Sending..."
+      predictButtonText = "Loading..."
     }
 
     var helpText = ""
@@ -330,14 +292,14 @@ export class MapContainer extends Component {
     }
 
     var startButtonText = ""
-    if (editStart == true) {
+    if (editStart === true) {
       startButtonText = "Cancel Edit..."
     } else {
       startButtonText = "Edit Start Pointer"
     }
 
     var endButtonText = ""
-    if (editEnd == true) {
+    if (editEnd === true) {
       endButtonText = "Cancel Edit..."
     } else {
       endButtonText = "Edit End Pointer"
@@ -347,12 +309,9 @@ export class MapContainer extends Component {
     if (!this.props.google) {
       return <div>Loading...</div>;
     }
-    console.log(this.state.randomText)
     
     return (
       <div>
-        <p>{this.state.randomText}</p>
-
         <div style={{position: "absolute", zIndex: 1, marginLeft: "30.5vw", marginTop: "10px"}}>
           <button onClick={this.sendLocation} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
         </div>
@@ -431,6 +390,12 @@ export class MapContainer extends Component {
               items={imageList}
               showPlayButton={false}
             />
+            {dataLoading === true && (
+            <div align="center">
+              <br />
+              Images are being returned...
+            </div>
+            )}
           </div>
           ) : (
           <div className="col-md-3" align="center">
