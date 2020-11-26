@@ -46,4 +46,25 @@
   margin-Left: "30.5vw";
   margin-Top: "10px"
 }
+.map-top-center select{
+  z-Index: 1;
+  margin: 0;
+  position: absolute;
+  top: 7%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  border: none
+}
+.map-top-center button{
+  z-Index: 1;
+  margin: 0;
+  position: absolute;
+  top: 3%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  border: none
+}
+
 

@@ -187,7 +187,7 @@ export class MapContainer extends Component {
     formData.append('start_coord', start_coord);
     formData.append('end_coord', end_coord);
     
-    var eventSource = new EventSource("https://8073167960be.ngrok.io/api/GSV/stream/" + category);
+    var eventSource = new EventSource("http://aca159fa37a8.ngrok.io/api/GSV/stream/" + category);
 
     eventSource.onmessage = e => {
       self.setState({
@@ -199,15 +199,15 @@ export class MapContainer extends Component {
           dataLoading: false
         })
       } else {
-        var newImageList = self.state.imageList.push({
-          original: 'data:image/jpg;base64,' + e.data,
-          thumbnail: 'data:image/jpg;base64,' + e.data,
+        self.setState({
+          imageList: update(self.state.imageList, {$push: [{
+            original: 'data:image/jpg;base64,' + e.data,
+            thumbnail: 'data:image/jpg;base64,' + e.data,
+          }]
+          })
         })
+        console.log(self.state.imageList)
 
-        self.setState(prevState => ({
-          imageList: [...prevState.imageList,
-            newImageList]
-        }))
       }
     }
 
@@ -276,7 +276,7 @@ export class MapContainer extends Component {
     const serverError = this.state.serverError;
     const editStart = this.state.editStart;
     const editEnd = this.state.editEnd;
-
+    // console.log(imageList)
     var predictButtonText = ""
     if (dataLoading === false) {
       predictButtonText = "Predict"
@@ -311,18 +311,10 @@ export class MapContainer extends Component {
     }
     
     return (
+
       <div>
-        <div style={{position: "absolute", zIndex: 1, marginLeft: "30.5vw", marginTop: "10px"}}>
-          <button onClick={this.sendLocation} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
-        </div>
-        <div style={{position: "absolute", zIndex: 1, marginLeft: "30vw", marginTop: "60px"}}>
-          <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)}>
-            <option value="Utility Poles">Utility Poles</option>
-            <option value="Vehicle">Vehicle</option>
-            <option value="Road">Road</option>
-            <option value="All Categories">All Categories</option>
-          </select>
-        </div>
+        
+       
         <div style={{position: "absolute", zIndex: 1, marginLeft: "10px", marginTop: "60px"}}>
           <button className="btn btn-primary" onClick={this.handleEditStart.bind(this)} disabled={editEnd}>{startButtonText}</button>
         </div>
@@ -331,7 +323,18 @@ export class MapContainer extends Component {
         </div>
       
         <div className="row">
-          <div className="col-md-8" style={{position: "relative", height: "calc(100vh - 50px)"}}>
+          <div className="col-md-6" style={{position: "relative", height: "calc(100vh - 50px)"}}>
+              <div className = 'map-top-center'>
+                <button onClick={this.sendLocation} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
+                  <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)}>
+                    <option value="Utility Poles">Utility Poles</option>
+                    <option value="Vehicle">Vehicle</option>
+                    <option value="Road">Road</option>
+                    <option value="All Categories">All Categories</option>
+                  </select>
+               
+              </div>
+              
             <Map
               style={{}}
               google={this.props.google} 
@@ -385,7 +388,7 @@ export class MapContainer extends Component {
             </Map>
           </div>
           {imageList.length > 0 ? (
-          <div className="col-md-3">
+          <div className="col-md-5">
             <ImageGallery
               items={imageList}
               showPlayButton={false}
@@ -398,7 +401,7 @@ export class MapContainer extends Component {
             )}
           </div>
           ) : (
-          <div className="col-md-3" align="center">
+          <div className="col-md-5" align="center">
             {helpText}
           </div>
           )}
