@@ -38,6 +38,7 @@ export class MapContainer extends Component {
       editStart: false,
       editEnd: false,
       firstLoad: true,
+      firtImageReturned: false,
       serverDomain: "http://ad1d1937d614.ngrok.io",
     };
   }
@@ -179,6 +180,11 @@ export class MapContainer extends Component {
   };
 
   sendLocation = () => {
+    this.setState({
+      imageList: [],
+      dataLoading: true
+    })
+
     var self = this;
     const start_coord = JSON.stringify(this.state.fields.start_location)
     const end_coord = JSON.stringify(this.state.fields.end_location)
@@ -196,9 +202,6 @@ export class MapContainer extends Component {
         console.log(response.data)
         var eventSource = new EventSource(serverDomain + "/api/GSV/stream/" + category);
         eventSource.onmessage = e => {
-          self.setState({
-            dataLoading: true
-          })
           if (e.data === 'END-OF-STREAM') {
             eventSource.close()
             self.setState({
@@ -213,6 +216,10 @@ export class MapContainer extends Component {
               })
             })
           }
+
+          self.setState({
+            firtImageReturned: true
+          })
         }
 
         eventSource.onerror = e => {
@@ -287,6 +294,7 @@ export class MapContainer extends Component {
     const serverError = this.state.serverError;
     const editStart = this.state.editStart;
     const editEnd = this.state.editEnd;
+    const firtImageReturned = this.state.firtImageReturned;
 
     var predictButtonText = ""
     if (dataLoading === false) {
@@ -394,24 +402,28 @@ export class MapContainer extends Component {
               />
             </Map>
           </div>
-          {imageList.length > 0 ? (
-          <div className="col-md-5">
+          <div className="col-md-5" align="center">
+            {imageList.length > 0 ? (
             <ImageGallery
               items={imageList}
               showPlayButton={false}
             />
+            ) : (
+            <div>
+              {firtImageReturned === false && (
+              <div >
+                {helpText}
+              </div>
+              )}
+            </div>
+            )}
             {dataLoading === true && (
-            <div align="center">
+            <div>
               <br />
               Images are being returned...
             </div>
             )}
           </div>
-          ) : (
-          <div className="col-md-5" align="center">
-            {helpText}
-          </div>
-          )}
         </div>
       </div>
     );
