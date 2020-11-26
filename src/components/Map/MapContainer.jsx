@@ -6,6 +6,7 @@ import axios from 'axios';
 import update from 'immutability-helper';
 
 import "../../css/App.css"
+import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 
 export class MapContainer extends Component {
 
@@ -39,6 +40,7 @@ export class MapContainer extends Component {
       editEnd: false,
       firstLoad: true,
       firtImageReturned: false,
+      returnedPercent: 0,
       serverDomain: "http://ad1d1937d614.ngrok.io",
     };
   }
@@ -202,7 +204,7 @@ export class MapContainer extends Component {
         console.log(response.data)
         var eventSource = new EventSource(serverDomain + "/api/GSV/stream/" + category);
         eventSource.onmessage = e => {
-          if (e.data === 'END-OF-STREAM') {
+          if (e.data.string === 'END-OF-STREAM') {
             eventSource.close()
             self.setState({
               dataLoading: false
@@ -210,10 +212,11 @@ export class MapContainer extends Component {
           } else {
             self.setState({
               imageList: update(self.state.imageList, {$push: [{
-                original: 'data:image/jpg;base64,' + e.data,
-                thumbnail: 'data:image/jpg;base64,' + e.data,
+                original: 'data:image/jpg;base64,' + e.data.string,
+                thumbnail: 'data:image/jpg;base64,' + e.data.string,
               }]
-              })
+              }),
+              returnedPercent: e.data.percent
             })
           }
 
@@ -295,6 +298,7 @@ export class MapContainer extends Component {
     const editStart = this.state.editStart;
     const editEnd = this.state.editEnd;
     const firtImageReturned = this.state.firtImageReturned;
+    const returnedPercent = this.state.returnedPercent;
 
     var predictButtonText = ""
     if (dataLoading === false) {
@@ -404,10 +408,12 @@ export class MapContainer extends Component {
           </div>
           <div className="col-md-5" align="center">
             {imageList.length > 0 ? (
-            <ImageGallery
-              items={imageList}
-              showPlayButton={false}
-            />
+            <div>
+              <ImageGallery
+                items={imageList}
+                showPlayButton={false}
+              />
+            </div>
             ) : (
             <div>
               {firtImageReturned === false && (
@@ -421,6 +427,7 @@ export class MapContainer extends Component {
             <div>
               <br />
               Images are being returned...
+              <ProgressBar bgcolor={"#00695c"} completed={returnedPercent} />
             </div>
             )}
           </div>
