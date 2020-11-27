@@ -41,7 +41,7 @@ export class MapContainer extends Component {
       firstLoad: true,
       firstImageReturned: false,
       returnedPercent: 0,
-      serverDomain: "http://edd8ca8ffa9d.ngrok.io",
+      serverDomain: "http://e00778a52fa2.ngrok.io/",
     };
   }
 
