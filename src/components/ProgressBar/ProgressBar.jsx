@@ -8,7 +8,7 @@ const ProgressBar = (props) => {
       width: "inherit",
       backgroundColor: "#e0e0de",
       borderRadius: 50,
-      margin: 50,
+      margin: 30,
       textAlign: 'left',
     }
   
@@ -27,11 +27,20 @@ const ProgressBar = (props) => {
       color: 'white',
       fontWeight: 'bold'
     }
+
+    var completeText = ""
+    if (completed == 100) {
+      completeText = `Stream Completed!`
+    } else if (completed > 25) {
+      completeText = `Streaming ${completed}%`
+    } else {
+      completeText = `${completed}%`
+    }
   
     return (
       <div style={containerStyles}>
         <div style={fillerStyles}>
-          <span style={labelStyles}>{`${completed}%`}</span>
+          <span style={labelStyles}>{completeText}</span>
         </div>
       </div>
     );

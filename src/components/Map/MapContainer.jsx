@@ -202,7 +202,7 @@ export class MapContainer extends Component {
     axios
       .post(serverDomain + "/api/GSV/stream/" + category, formData)
       .then(function(response) {
-        modal.showInfo("Images are being returned! See the progress bar.", "success", "top", "center");
+        modal.showInfo("Images are being streamed! See the progress bar below!", "success", "top", "center");
         var eventSource = new EventSource(serverDomain + "/api/GSV/stream/" + category);
         eventSource.onmessage = e => {
           if (e.data === 'END-OF-STREAM') {
@@ -219,11 +219,12 @@ export class MapContainer extends Component {
                 thumbnail: 'data:image/jpg;base64,' + jsonData.image,
               }]
               }),
-              returnedPercent: jsonData.progress
+              returnedPercent: Math.round(jsonData.progress)
             })
           }
 
           self.setState({
+            serverError: false,
             firstImageReturned: true
           })
         }
@@ -423,19 +424,10 @@ export class MapContainer extends Component {
               )}
             </div>
             )}
-            {(dataLoading === true && serverError === false) ? (
+            {(firstImageReturned === true && serverError === false) && (
             <div>
               <br />
               <ProgressBar bgcolor={"#00695c"} completed={returnedPercent} />
-            </div>
-            ) : (
-            <div>
-              {firstImageReturned === true && (
-              <div>
-                <br />
-                Finished!
-              </div>
-              )}
             </div>
             )}
           </div>
