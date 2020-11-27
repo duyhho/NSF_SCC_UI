@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import ImageGallery from 'react-image-gallery';
 import { Map, InfoWindow, Marker, GoogleApiWrapper, Polygon } from "google-maps-react";
 import axios from 'axios';
-
 import update from 'immutability-helper';
 
 import "../../css/App.css"
+import { modal } from '../../utilities/modal.js'
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 
 export class MapContainer extends Component {
@@ -34,12 +34,12 @@ export class MapContainer extends Component {
       ),
       imageList: [],
       dataLoading: false,
-      serverError: false,
+      serverError: true,
       category: "utility",
       editStart: false,
       editEnd: false,
       firstLoad: true,
-      firtImageReturned: false,
+      firstImageReturned: false,
       returnedPercent: 0,
       serverDomain: "http://edd8ca8ffa9d.ngrok.io",
     };
@@ -184,7 +184,8 @@ export class MapContainer extends Component {
   sendLocation = () => {
     this.setState({
       imageList: [],
-      dataLoading: true
+      dataLoading: true,
+      returnedPercent: 0,
     })
 
     var self = this;
@@ -201,13 +202,13 @@ export class MapContainer extends Component {
     axios
       .post(serverDomain + "/api/GSV/stream/" + category, formData)
       .then(function(response) {
-        console.log(response.data)
+        modal.showInfo("Images are being returned! See the progress bar.", "success", "top", "center");
         var eventSource = new EventSource(serverDomain + "/api/GSV/stream/" + category);
         eventSource.onmessage = e => {
-          console.log(e.data)
           if (e.data === 'END-OF-STREAM') {
             eventSource.close()
             self.setState({
+              serverError: false,
               dataLoading: false
             })
           } else {
@@ -223,11 +224,12 @@ export class MapContainer extends Component {
           }
 
           self.setState({
-            firtImageReturned: true
+            firstImageReturned: true
           })
         }
 
         eventSource.onerror = e => {
+          modal.showInfo("Error while connecting with the server!", "danger", "top", "center");
           self.setState({
             serverError: true,
             dataLoading: false,
@@ -235,6 +237,7 @@ export class MapContainer extends Component {
         }
       })
       .catch(function(error) {
+        modal.showInfo("Error while connecting with the server!", "danger", "top", "center");
         self.setState({
           serverError: true,
           dataLoading: false,
@@ -299,7 +302,7 @@ export class MapContainer extends Component {
     const serverError = this.state.serverError;
     const editStart = this.state.editStart;
     const editEnd = this.state.editEnd;
-    const firtImageReturned = this.state.firtImageReturned;
+    const firstImageReturned = this.state.firstImageReturned;
     const returnedPercent = this.state.returnedPercent;
 
     var predictButtonText = ""
@@ -309,12 +312,7 @@ export class MapContainer extends Component {
       predictButtonText = "Loading..."
     }
 
-    var helpText = ""
-    if (serverError === true) {
-      helpText = "Oops. Looks like something went wrong with the server!"
-    } else {
-      helpText = 'No predictions. Click "Predict" button on the map to start.'
-    }
+    var helpText = 'No predictions. Click "Predict" button on the map to start.'
 
     var startButtonText = ""
     if (editStart === true) {
@@ -418,18 +416,26 @@ export class MapContainer extends Component {
             </div>
             ) : (
             <div>
-              {firtImageReturned === false && (
-              <div >
+              {firstImageReturned === false && (
+              <div>
                 {helpText}
               </div>
               )}
             </div>
             )}
-            {dataLoading === true && (
+            {(dataLoading === true && serverError === false) ? (
             <div>
               <br />
-              Images are being returned...
               <ProgressBar bgcolor={"#00695c"} completed={returnedPercent} />
+            </div>
+            ) : (
+            <div>
+              {firstImageReturned === true && (
+              <div>
+                <br />
+                Finished!
+              </div>
+              )}
             </div>
             )}
           </div>
