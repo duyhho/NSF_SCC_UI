@@ -84,3 +84,10 @@
   top: 50%;
   margin-top: -15px;
 }
+
+img.image-gallery-image {
+  height: 80vh;
+}
+.image-gallery-slide {
+  height: 40vh;
+}
