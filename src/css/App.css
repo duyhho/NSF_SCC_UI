@@ -85,9 +85,9 @@
   margin-top: -15px;
 }
 
-img.image-gallery-image {
-  height: 80vh;
+.image-gallery-content .image-gallery-slide .image-gallery-image {
+  width: 25vw;
 }
 .image-gallery-slide {
-  height: 40vh;
+  height: 45vh;
 }
