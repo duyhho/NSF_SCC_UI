@@ -29,7 +29,7 @@ const ProgressBar = (props) => {
     }
 
     var completeText = ""
-    if (completed == 100) {
+    if (completed === 100) {
       completeText = `Stream Completed!`
     } else if (completed > 25) {
       completeText = `Streaming ${completed}%`

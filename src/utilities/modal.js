@@ -75,7 +75,6 @@ class Modal {
 	 * Displays popover with optional form field
 	 */
 	showPopOverWithDataEntry(title, message, formFields = '', saveMessage = 'Let\'s Go!', callback = null) {
-		var self = this;
 		// #  Reset data
 		this.resetModals();
 		var html = '<div class="modal fade" tabindex="-1" role="dialog">' +
