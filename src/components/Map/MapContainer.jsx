@@ -41,7 +41,7 @@ export class MapContainer extends Component {
       firstLoad: true,
       firstImageReturned: false,
       returnedPercent: 0,
-      serverDomain: "https://8bfe916d8168.ngrok.io",
+      serverDomain: "http://2e7399f42ee7.ngrok.io",
     };
   }
 
@@ -195,55 +195,45 @@ export class MapContainer extends Component {
     const category = this.state.category;
     const serverDomain = this.state.serverDomain;
 
-    // Update the formData object
-    formData.append('start_coord', start_coord);
-    formData.append('end_coord', end_coord);
+    // // Update the formData object
+    // formData.append('start_coord', start_coord);
+    // formData.append('end_coord', end_coord);
     
-    axios
-      .post(serverDomain + "/api/GSV/stream/" + category, formData)
-      .then(function(response) {
-        modal.showInfo("Images are being streamed! See the progress bar below!", "success", "top", "center");
-        var eventSource = new EventSource(serverDomain + "/api/GSV/stream/" + category);
-        eventSource.onmessage = e => {
-          if (e.data === 'END-OF-STREAM') {
-            eventSource.close()
-            self.setState({
-              serverError: false,
-              dataLoading: false
-            })
-          } else {
-            var jsonData = JSON.parse(e.data)
-            self.setState({
-              imageList: update(self.state.imageList, {$push: [{
-                original: 'data:image/jpg;base64,' + jsonData.image,
-                thumbnail: 'data:image/jpg;base64,' + jsonData.image,
-              }]
-              }),
-              returnedPercent: Math.round(jsonData.progress)
-            })
-          }
-
-          self.setState({
-            serverError: false,
-            firstImageReturned: true
-          })
-        }
-
-        eventSource.onerror = e => {
-          modal.showInfo("Error while connecting with the server!", "danger", "top", "center");
-          self.setState({
-            serverError: true,
-            dataLoading: false,
-          });
-        }
-      })
-      .catch(function(error) {
-        modal.showInfo("Error while connecting with the server!", "danger", "top", "center");
+    modal.showInfo("Images are being streamed! See the progress bar below!", "success", "top", "center");
+    var eventSource = new EventSource(serverDomain + "/api/GSV/stream/" + category + 
+                                    '?start_coord=' + start_coord + '&end_coord=' + end_coord);
+    eventSource.onmessage = e => {
+      if (e.data === 'END-OF-STREAM') {
+        eventSource.close()
         self.setState({
-          serverError: true,
-          dataLoading: false,
-        });
+          serverError: false,
+          dataLoading: false
+        })
+      } else {
+        var jsonData = JSON.parse(e.data)
+        self.setState({
+          imageList: update(self.state.imageList, {$push: [{
+            original: 'data:image/jpg;base64,' + jsonData.image,
+            thumbnail: 'data:image/jpg;base64,' + jsonData.image,
+          }]
+          }),
+          returnedPercent: Math.round(jsonData.progress)
+        })
+      }
+
+      self.setState({
+        serverError: false,
+        firstImageReturned: true
       })
+    }
+
+    eventSource.onerror = e => {
+      modal.showInfo("Error while connecting with the server!", "danger", "top", "center");
+      self.setState({
+        serverError: true,
+        dataLoading: false,
+      });
+    }
   }
 
   handleOptionChange(e) {
