@@ -193,12 +193,17 @@ export class MapContainer extends Component {
     const end_coord = JSON.stringify(this.state.fields.end_location)
     const formData = new FormData();
     const category = this.state.category;
-    const serverDomain = this.state.serverDomain;
+    var serverDomain = this.state.serverDomain;
 
     // // Update the formData object
     // formData.append('start_coord', start_coord);
     // formData.append('end_coord', end_coord);
-    
+    if (serverDomain.search('https') === -1){
+      serverDomain = serverDomain.replace("http", 'https')
+      console.log(serverDomain)
+    }
+
+
     modal.showInfo("Images are being streamed! See the progress bar below!", "success", "top", "center");
     var eventSource = new EventSource(serverDomain + "/api/GSV/stream/" + category + 
                                     '?start_coord=' + start_coord + '&end_coord=' + end_coord);
