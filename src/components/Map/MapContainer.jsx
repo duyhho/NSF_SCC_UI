@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import ImageGallery from 'react-image-gallery';
 import { Map, InfoWindow, Marker, GoogleApiWrapper, Polygon } from "google-maps-react";
-import axios from 'axios';
 import update from 'immutability-helper';
 
 import "../../css/App.css"
@@ -191,7 +190,6 @@ export class MapContainer extends Component {
     var self = this;
     const start_coord = JSON.stringify(this.state.fields.start_location)
     const end_coord = JSON.stringify(this.state.fields.end_location)
-    const formData = new FormData();
     const category = this.state.category;
     var serverDomain = this.state.serverDomain;
 
