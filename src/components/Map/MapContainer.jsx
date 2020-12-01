@@ -40,7 +40,7 @@ export class MapContainer extends Component {
       firstLoad: true,
       firstImageReturned: false,
       returnedPercent: 0,
-      serverDomain: "http://2e7399f42ee7.ngrok.io",
+      serverDomain: "http://f5258f074868.ngrok.io",
     };
   }
 
@@ -251,6 +251,9 @@ export class MapContainer extends Component {
     else if (selectedValue === 'Road'){
       cat='road'
     }
+    else if (selectedValue === 'House'){
+      cat='house'
+    }
     else if (selectedValue === 'All Categories'){
       cat ='all'
     }
@@ -344,6 +347,7 @@ export class MapContainer extends Component {
                   <option value="Utility Poles">Utility Poles</option>
                   <option value="Vehicle">Vehicle</option>
                   <option value="Road">Road</option>
+                  <option value="House">House</option>
                   <option value="All Categories">All Categories</option>
                 </select>
             </div>
