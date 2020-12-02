@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ImageGallery from 'react-image-gallery';
 import { Map, InfoWindow, Marker, GoogleApiWrapper, Polygon } from "google-maps-react";
 import update from 'immutability-helper';
-
+// import "../../js/vrview.min.js"
 import "../../css/App.css"
 import { modal } from '../../utilities/modal.js'
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
@@ -12,13 +12,16 @@ export class MapContainer extends Component {
   constructor(props) {
     super(props);
     this.polygonRef = React.createRef();
-    
+    const script = document.createElement("script");
+    script.src = "../../js/vrview.min.js";
+    script.async = true;
+    document.body.appendChild(script);
     // Purpose of ".bind(this)" is to be able to use 'this' within the function
     this.onMarkerClick = this.onMarkerClick.bind(this);
     this.onMapClicked = this.onMapClicked.bind(this);
     this.addMarker = this.addMarker.bind(this);
     this.handleClick = this.handleClick.bind(this);
-    this.onVrViewLoad = this.onVrViewLoad.bind(this);
+    // this.onVrViewLoad = this.onVrViewLoad.bind(this);
 
 
     this.state = {
@@ -51,10 +54,7 @@ export class MapContainer extends Component {
     var self = this;
     var curLocation = this.getcurrentLocation();
 
-    const script = document.createElement("script");
-    script.src = "https://storage.googleapis.com/vrview/2.0/build/vrview.min.js";
-    script.async = true;
-    document.body.appendChild(script);
+    
 
     if (this.state.firstLoad === true) {
       curLocation.then(function(result){
@@ -77,7 +77,7 @@ export class MapContainer extends Component {
     this.setState({
       firstLoad: false
     })
-    window.addEventListener('load', this.onVrViewLoad);
+    // window.addEventListener('load', this.onVrViewLoad);
 
   
   }
@@ -419,7 +419,6 @@ export class MapContainer extends Component {
                 fillOpacity={0.35}
               />
             </Map>
-            <div id='vrview'></div>
 
           </div>
           <div className="col-md-5" align="center">
@@ -446,6 +445,10 @@ export class MapContainer extends Component {
             </div>
             )}
           </div>
+        </div>
+        <div className = 'row'>
+           <div id='vrview'></div>
+            
         </div>
       </div>
     );
