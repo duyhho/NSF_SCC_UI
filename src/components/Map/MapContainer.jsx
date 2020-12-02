@@ -16,12 +16,13 @@ export class MapContainer extends Component {
     script.src = "../../js/vrview.min.js";
     script.async = true;
     document.body.appendChild(script);
+
     // Purpose of ".bind(this)" is to be able to use 'this' within the function
     this.onMarkerClick = this.onMarkerClick.bind(this);
     this.onMapClicked = this.onMapClicked.bind(this);
     this.addMarker = this.addMarker.bind(this);
     this.handleClick = this.handleClick.bind(this);
-    // this.onVrViewLoad = this.onVrViewLoad.bind(this);
+    this.onVrViewLoad = this.onVrViewLoad.bind(this);
 
 
     this.state = {
@@ -77,16 +78,21 @@ export class MapContainer extends Component {
     this.setState({
       firstLoad: false
     })
-    // window.addEventListener('load', this.onVrViewLoad);
+    window.addEventListener('load', this.onVrViewLoad);
 
   
   }
   onVrViewLoad() {
+    const COR_root = 'https://cors-anywhere.herokuapp.com/'
     // Selector '#vrview' finds element with id 'vrview'.
-    var vrView = new VRView.Player('#vrview', {
+    var vrView = new window.VRView.Player('#vrview', {
+      // image: COR_root + "https://images2.imgbox.com/2d/93/HgrP88cP_o.jpg",
       image: 'https://i.ibb.co/8sYTQQk/temp.jpg',
-      is_stereo: false
+      is_stereo: false,
+      width: 'inherit',
+      height: '500'
     });
+    console.log(window.VRView)
   }
   onMarkerClick(props, marker, e) {
     if (props.label === 1) {
@@ -356,7 +362,7 @@ export class MapContainer extends Component {
         </div>
       
         <div className="row">
-          <div className="col-md-6" style={{position: "relative", height: "calc(100vh - 50px)"}}>
+          <div className="col-md-6" style={{position: "relative", height: "50vh"}}>
             <div className='map-top-center'>
               <button onClick={this.sendLocation} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
                 <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)}>
@@ -447,8 +453,9 @@ export class MapContainer extends Component {
           </div>
         </div>
         <div className = 'row'>
-           <div id='vrview'></div>
-            
+            <div className="col-md-6" style={{position: "relative", height: "10"}}>
+                 <div id='vrview'></div>
+            </div>
         </div>
       </div>
     );
