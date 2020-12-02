@@ -12,14 +12,12 @@ export class MapContainer extends Component {
     super(props);
     this.polygonRef = React.createRef();
 
-
     // Purpose of ".bind(this)" is to be able to use 'this' within the function
     this.onMarkerClick = this.onMarkerClick.bind(this);
     this.onMapClicked = this.onMapClicked.bind(this);
     this.addMarker = this.addMarker.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.onVrViewLoad = this.onVrViewLoad.bind(this);
-
 
     this.state = {
       showingInfoWindow: false,
@@ -43,6 +41,7 @@ export class MapContainer extends Component {
       firstImageReturned: false,
       returnedPercent: 0,
       serverDomain: "http://937f1040e71e.ngrok.io",
+      vrViewUrl: "https://f0c06ecb4442.ngrok.io",
       vrView: null,
     };
   }
@@ -51,8 +50,6 @@ export class MapContainer extends Component {
   componentDidMount() {
     var self = this;
     var curLocation = this.getcurrentLocation();
-
-    
 
     if (this.state.firstLoad === true) {
       curLocation.then(function(result){
@@ -77,20 +74,20 @@ export class MapContainer extends Component {
       
     })
    this.onVrViewLoad()
-
-  
   }
+
   onVrViewLoad() {
+    const vrViewUrl = this.state.vrViewUrl;
+
     // Selector '#vrview' finds element with id 'vrview'.
     this.setState({
       vrView: new window.VRView.Player('#vrview', {
-        image: 'https://f0c06ecb4442.ngrok.io' + '/static/temp-big.jpg',
+        image: vrViewUrl + '/static/temp-big.jpg',
         is_stereo: false,
-        // width: '800',
-        // height: '400'
       })
     })
   }
+
   onMarkerClick(props, marker, e) {
     if (props.label === 1) {
       this.setState({
@@ -119,7 +116,6 @@ export class MapContainer extends Component {
            </div>)
       });
     }
-
   }
 
   getcurrentLocation() {
@@ -192,7 +188,6 @@ export class MapContainer extends Component {
 
   handleClick() {
     console.log('in handle click()')
-    
   }
 
   setPolygonOptions = (options) => {
@@ -217,14 +212,15 @@ export class MapContainer extends Component {
     // formData.append('end_coord', end_coord);
     if (serverDomain.search('https') === -1){
       serverDomain = serverDomain.replace("http", 'https')
-      console.log(serverDomain)
     }
 
-
-    modal.showInfo("Images are being streamed! See the progress bar below!", "success", "top", "center");
     var eventSource = new EventSource(serverDomain + "/api/GSV/stream/" + category + 
                                     '?start_coord=' + start_coord + '&end_coord=' + end_coord);
     eventSource.onmessage = e => {
+      if (self.state.firstImageReturned == false) {
+        modal.showInfo("Images are being streamed! See the progress bar below!", "success", "top", "center");
+      }
+
       if (e.data === 'END-OF-STREAM') {
         eventSource.close()
         self.setState({
@@ -351,80 +347,77 @@ export class MapContainer extends Component {
     
     return (
       <div>
-        <div style={{position: "absolute", zIndex: 1, marginLeft: "10px", marginTop: "60px"}}>
+        <div className="edit-start-button">
           <button className="btn btn-primary" onClick={this.handleEditStart.bind(this)} disabled={editEnd}>{startButtonText}</button>
         </div>
-        <div style={{position: "absolute", zIndex: 1, marginLeft: "10px", marginTop: "100px"}}>
+        <div className="edit-end-button">
           <button className="btn btn-primary" onClick={this.handleEditEnd.bind(this)} disabled={editStart}>{endButtonText}</button>
         </div>
       
         <div className="row">
-          <div className="col-md-6" style={{position: "relative", height: "50vh"}}>
-            <div className='map-top-center'>
+          <div className="col-md-6 map-view-container">
+            <div className="map-top-center">
               <button onClick={this.sendLocation} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
-                <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)}>
-                  <option value="Utility Poles">Utility Poles</option>
-                  <option value="Vehicle">Vehicle</option>
-                  <option value="Road">Road</option>
-                  <option value="House">House</option>
-                  <option value="All Categories">All Categories</option>
-                </select>
+              <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)}>
+                <option value="Utility Poles">Utility Poles</option>
+                <option value="Vehicle">Vehicle</option>
+                <option value="Road">Road</option>
+                <option value="House">House</option>
+                <option value="All Categories">All Categories</option>
+              </select>
             </div>
-            <div style={{position: "relative", height: "100%", width: "100%"}}>
-            <Map
-              
-              google={this.props.google} 
-              initialCenter={start_location}
-              center={end_location}
-              zoom={14}
-              onClick={this.onMapClicked}
-            >
-              <Marker
-                label = {{text: 'start', 
-                          fontFamily: "Arial",
-                          fontSize: "12px",}}
-                onClick={this.onMarkerClick}
-                // icon={{
-                //   // url: "http://127.0.0.1:8887/logo192.png",
-                //   anchor: new google.maps.Point(64, 64),
-                //   scaledSize: new google.maps.Size(128, 128)
-                // }}
-                // draggable={true}
-                position={this.state.fields.start_location}
-                name={"Start Location"}
-              />
-              <Marker
-                label = {{text: 'end', 
-                fontFamily: "Arial",
-                fontSize: "12px",}}
-                onClick={this.onMarkerClick}
-                position={this.state.fields.end_location}
-                name={"Stop Location"}
-              />
-              <InfoWindow
-                marker={this.state.activeMarker}
-                visible={this.state.showingInfoWindow}
+            <div className="map-container">
+              <Map
+                google={this.props.google} 
+                initialCenter={start_location}
+                center={end_location}
+                zoom={14}
+                onClick={this.onMapClicked}
               >
-                {this.state.infoWindowContent}
-                {/* <div>
-                  <h1>{this.state.selectedPlace.name}</h1>
-                  <p>{this.state.fields.location.lat.toString() + this.state.fields.location.lng.toString()}</p>
-                </div> */}
-              </InfoWindow>
-              <Polygon
-                ref={this.polygonRef}
-                onClick={this.handleClick}
-                paths={rectangle}
-                strokeColor="#0000FF"
-                strokeOpacity={0.8}
-                strokeWeight={2}
-                fillColor="#0000FF"
-                fillOpacity={0.35}
-              />
-            </Map>
+                <Marker
+                  label = {{text: 'start', 
+                            fontFamily: "Arial",
+                            fontSize: "12px",}}
+                  onClick={this.onMarkerClick}
+                  // icon={{
+                  //   // url: "http://127.0.0.1:8887/logo192.png",
+                  //   anchor: new google.maps.Point(64, 64),
+                  //   scaledSize: new google.maps.Size(128, 128)
+                  // }}
+                  // draggable={true}
+                  position={this.state.fields.start_location}
+                  name={"Start Location"}
+                />
+                <Marker
+                  label = {{text: 'end', 
+                  fontFamily: "Arial",
+                  fontSize: "12px",}}
+                  onClick={this.onMarkerClick}
+                  position={this.state.fields.end_location}
+                  name={"Stop Location"}
+                />
+                <InfoWindow
+                  marker={this.state.activeMarker}
+                  visible={this.state.showingInfoWindow}
+                >
+                  {this.state.infoWindowContent}
+                  {/* <div>
+                    <h1>{this.state.selectedPlace.name}</h1>
+                    <p>{this.state.fields.location.lat.toString() + this.state.fields.location.lng.toString()}</p>
+                  </div> */}
+                </InfoWindow>
+                <Polygon
+                  ref={this.polygonRef}
+                  onClick={this.handleClick}
+                  paths={rectangle}
+                  strokeColor="#0000FF"
+                  strokeOpacity={0.8}
+                  strokeWeight={2}
+                  fillColor="#0000FF"
+                  fillOpacity={0.35}
+                />
+              </Map>
             </div>
-            
-
           </div>
           <div className="col-md-5" align="center">
             {imageList.length > 0 ? (
@@ -451,10 +444,10 @@ export class MapContainer extends Component {
             )}
           </div>
         </div>
-        <div className = 'row'>
-            <div className="col-md-6" style={{position: "relative", height: "10"}}>
-                 <div id='vrview'></div>
-            </div>
+        <div className="row">
+          <div className="col-md-6">
+            <div id='vrview'></div>
+          </div>
         </div>
       </div>
     );

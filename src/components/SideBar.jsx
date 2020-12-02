@@ -9,7 +9,7 @@ import {
 } from 'semantic-ui-react'
 import MapContainer from "./Map/MapContainer";
 
-const SidebarExampleSidebar = () => {
+const SideBar = () => {
   const [visible, setVisible] = React.useState(false)
 
   return (
@@ -61,4 +61,4 @@ const SidebarExampleSidebar = () => {
   )
 }
 
-export default SidebarExampleSidebar
+export default SideBar
