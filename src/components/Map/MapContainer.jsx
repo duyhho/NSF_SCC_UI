@@ -84,8 +84,8 @@ export class MapContainer extends Component {
   onVrViewLoad() {
     // Selector '#vrview' finds element with id 'vrview'.
     var vrView = new VRView.Player('#vrview', {
-      image: '../../../public/img/temp.jpg',
-      is_stereo: true
+      image: 'https://i.ibb.co/8sYTQQk/temp.jpg',
+      is_stereo: false
     });
   }
   onMarkerClick(props, marker, e) {
