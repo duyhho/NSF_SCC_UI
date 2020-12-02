@@ -18,6 +18,8 @@ export class MapContainer extends Component {
     this.onMapClicked = this.onMapClicked.bind(this);
     this.addMarker = this.addMarker.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.onVrViewLoad = this.onVrViewLoad.bind(this);
+
 
     this.state = {
       showingInfoWindow: false,
@@ -40,14 +42,19 @@ export class MapContainer extends Component {
       firstLoad: true,
       firstImageReturned: false,
       returnedPercent: 0,
-      serverDomain: "http://f5258f074868.ngrok.io",
+      serverDomain: "http://937f1040e71e.ngrok.io",
     };
   }
-
+  
   //Always have this function on any .jsx file, even though it's empty
   componentDidMount() {
     var self = this;
     var curLocation = this.getcurrentLocation();
+
+    const script = document.createElement("script");
+    script.src = "https://storage.googleapis.com/vrview/2.0/build/vrview.min.js";
+    script.async = true;
+    document.body.appendChild(script);
 
     if (this.state.firstLoad === true) {
       curLocation.then(function(result){
@@ -70,8 +77,17 @@ export class MapContainer extends Component {
     this.setState({
       firstLoad: false
     })
-  }
+    window.addEventListener('load', this.onVrViewLoad);
 
+  
+  }
+  onVrViewLoad() {
+    // Selector '#vrview' finds element with id 'vrview'.
+    var vrView = new VRView.Player('#vrview', {
+      image: '../../../public/img/temp.jpg',
+      is_stereo: true
+    });
+  }
   onMarkerClick(props, marker, e) {
     if (props.label === 1) {
       this.setState({
@@ -403,6 +419,8 @@ export class MapContainer extends Component {
                 fillOpacity={0.35}
               />
             </Map>
+            <div id='vrview'></div>
+
           </div>
           <div className="col-md-5" align="center">
             {imageList.length > 0 ? (
