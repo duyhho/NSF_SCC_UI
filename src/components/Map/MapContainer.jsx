@@ -87,10 +87,10 @@ export class MapContainer extends Component {
     // Selector '#vrview' finds element with id 'vrview'.
     var vrView = new window.VRView.Player('#vrview', {
       // image: COR_root + "https://images2.imgbox.com/2d/93/HgrP88cP_o.jpg",
-      image: 'https://i.ibb.co/8sYTQQk/temp.jpg',
+      image: 'https://f0c06ecb4442.ngrok.io' + '/static/temp-big.jpg',
       is_stereo: false,
-      width: 'inherit',
-      height: '500'
+      // width: '800',
+      // height: '400'
     });
     console.log(window.VRView)
   }
@@ -373,9 +373,9 @@ export class MapContainer extends Component {
                   <option value="All Categories">All Categories</option>
                 </select>
             </div>
-              
+            <div style={{position: "relative", height: "100%", width: "100%"}}>
             <Map
-              style={{}}
+              
               google={this.props.google} 
               initialCenter={start_location}
               center={end_location}
@@ -425,6 +425,8 @@ export class MapContainer extends Component {
                 fillOpacity={0.35}
               />
             </Map>
+            </div>
+            
 
           </div>
           <div className="col-md-5" align="center">

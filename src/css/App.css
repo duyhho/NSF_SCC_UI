@@ -91,3 +91,7 @@
 .image-gallery-slide {
   height: 45vh;
 }
+#vrview iframe{
+  width: 100%;
+  height: 40vh
+}
