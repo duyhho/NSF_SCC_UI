@@ -6,16 +6,12 @@ import update from 'immutability-helper';
 import "../../css/App.css"
 import { modal } from '../../utilities/modal.js'
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
-
 export class MapContainer extends Component {
 
   constructor(props) {
     super(props);
     this.polygonRef = React.createRef();
-    const script = document.createElement("script");
-    script.src = "../../js/vrview.min.js";
-    script.async = true;
-    document.body.appendChild(script);
+
 
     // Purpose of ".bind(this)" is to be able to use 'this' within the function
     this.onMarkerClick = this.onMarkerClick.bind(this);
@@ -47,6 +43,7 @@ export class MapContainer extends Component {
       firstImageReturned: false,
       returnedPercent: 0,
       serverDomain: "http://937f1040e71e.ngrok.io",
+      vrView: null,
     };
   }
   
@@ -76,23 +73,23 @@ export class MapContainer extends Component {
       })
     }
     this.setState({
-      firstLoad: false
+      firstLoad: false,
+      
     })
-    window.addEventListener('load', this.onVrViewLoad);
+   this.onVrViewLoad()
 
   
   }
   onVrViewLoad() {
-    const COR_root = 'https://cors-anywhere.herokuapp.com/'
     // Selector '#vrview' finds element with id 'vrview'.
-    var vrView = new window.VRView.Player('#vrview', {
-      // image: COR_root + "https://images2.imgbox.com/2d/93/HgrP88cP_o.jpg",
-      image: 'https://f0c06ecb4442.ngrok.io' + '/static/temp-big.jpg',
-      is_stereo: false,
-      // width: '800',
-      // height: '400'
-    });
-    console.log(window.VRView)
+    this.setState({
+      vrView: new window.VRView.Player('#vrview', {
+        image: 'https://f0c06ecb4442.ngrok.io' + '/static/temp-big.jpg',
+        is_stereo: false,
+        // width: '800',
+        // height: '400'
+      })
+    })
   }
   onMarkerClick(props, marker, e) {
     if (props.label === 1) {
