@@ -3,6 +3,8 @@ import { Map, Marker, GoogleApiWrapper, InfoWindow } from "google-maps-react"
 import ImageGallery from 'react-image-gallery'
 import update from 'immutability-helper'
 import axios from 'axios'
+import ReactDOM from 'react-dom';
+import ReactStreetview from 'react-streetview';
 
 import { modal } from '../../utilities/modal.js'
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
@@ -11,7 +13,6 @@ import { FilterTiltShiftSharp } from "@material-ui/icons"
 export class Map311 extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             serverDomain: "https://51a14464797b.ngrok.io",
             processedData: [],
@@ -30,6 +31,9 @@ export class Map311 extends Component {
     
     componentDidMount() {
         this.processData();
+
+
+
     }
 
     processData() {
@@ -87,12 +91,23 @@ export class Map311 extends Component {
     };
 
     render() {
+        // see https://developers.google.com/maps/documentation/javascript
+        const googleMapsApiKey = 'AIzaSyDi4YrgqSjrfFnD5Vs3PsmaDg3teg8pmdE';
+ 
+        // see https://developers.google.com/maps/documentation/javascript/3.exp/reference#StreetViewPanoramaOptions
+        const streetViewPanoramaOptions = {
+            position: {lat: 39.0410436302915, lng: -94.5876739197085},
+            pov: {heading: 100, pitch: 0},
+            zoom: 1,
+            
+        };
+
         const processedData = this.state.processedData;
         const imageList = this.state.imageList;
         const firstImageReturned = this.state.firstImageReturned;
         const returnedPercent = this.state.returnedPercent;
         const serverError = this.state.serverError;
-
+        console.log(document.getElementById('hello'));
         var helpText = 'No predictions. Click "Predict" button on the map to start.'
 
         if (!this.props.google) {
@@ -105,13 +120,14 @@ export class Map311 extends Component {
             <div>
                 <div className="row">
                     <div className="col-md-6 map-view-container">
-                        <div className="map-container">
+                        <div className="map-container" id='maphehe'>
                             <Map
                                 google={this.props.google} 
                                 initialCenter={{lat: processedData[0].lat, lng: processedData[0].lng}}
                                 // center={{lat: processedData[0].lat, lng: processedData[0].lng}}
                                 zoom={11}
                                 onClick={this.onMapClicked.bind(this)}
+                                streetViewControl = {false}
                             >
                             
                             {processedData.map((location) =>
@@ -163,10 +179,21 @@ export class Map311 extends Component {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-md-6" align="center">
-                        GOOGLE STREET VIEW 3D HERE!
-                    </div>
+                        <div className="col-md-6" align="center">
+                            <div style={{
+                                width: '100%',
+                                height: '40vh',
+                                backgroundColor: '#eeeeee'
+                        }}>
+                        <ReactStreetview
+                            apiKey={googleMapsApiKey}
+                            streetViewPanoramaOptions={streetViewPanoramaOptions}
+                        />
+                            </div>
+                        </div>
+                    
                 </div>
+                <div id = 'hello'>Hi How Are you?</div>
             </div>
             )}
         </div>
