@@ -2,10 +2,9 @@ import React, { Component } from "react";
 import ImageGallery from 'react-image-gallery';
 import { Map, InfoWindow, Marker, GoogleApiWrapper, Polygon } from "google-maps-react";
 import update from 'immutability-helper';
-// import "../../js/vrview.min.js"
-import "../../css/App.css"
 import { modal } from '../../utilities/modal.js'
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
+
 export class MapContainer extends Component {
 
   constructor(props) {

@@ -1,11 +1,5 @@
 import React from 'react'
-import {
-  Grid,
-  Icon,
-  Menu,
-  Segment,
-  Sidebar,
-} from 'semantic-ui-react'
+import { Grid, Icon, Menu, Segment, Sidebar } from 'semantic-ui-react'
 
 import MapContainer from "./Map/MapContainer.jsx"
 import File from "./UserUpload/File.js"
