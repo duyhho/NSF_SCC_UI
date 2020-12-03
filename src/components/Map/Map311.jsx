@@ -12,8 +12,8 @@ export class Map311 extends Component {
         super(props);
 
         this.state = {
-            serverDomain: "https://5346cb53f9da.ngrok.io",
-            coordinatesList: [],
+            serverDomain: "https://502c177ca878.ngrok.io",
+            coordinatesList: [{case_id: 0, lat: 39.0410436302915, lng: -94.5876739197085}],
             firstImageReturned: false,
             imageList: [],
             returnedPercent: 0,
@@ -32,11 +32,9 @@ export class Map311 extends Component {
 
         axios.get(this.state.serverDomain + "/api/311/get/all")
         .then(function(response) {
-            console.log(response.data)
-            console.log(response.data[0] + response.data[1] + response.data[2] + response.data[3])
             var jsonData = JSON.parse(response.data)
             self.setState({
-                rawData: response.jsonData
+                rawData: jsonData
             })
 
             jsonData.forEach(function(request) {
@@ -53,6 +51,7 @@ export class Map311 extends Component {
         })
         .catch(function(error) {
             console.log(error)
+            modal.showInfo("Error while connecting with the server!", "danger", "top", "center");
             self.setState({
                 serverError: true
             })
@@ -89,14 +88,14 @@ export class Map311 extends Component {
                     <div className="map-container">
                         <Map
                             google={this.props.google} 
-                            initialCenter={coordinatesList[0]}
-                            center={coordinatesList[1]}
+                            initialCenter={{lat: coordinatesList[0].lat, lng: coordinatesList[0].lng}}
+                            center={{lat: coordinatesList[0].lat, lng: coordinatesList[0].lng}}
                             zoom={14}
                         >
                         
-                        {coordinatesList.map((coord) =>
+                        {coordinatesList.map((location) =>
                         <Marker
-                            position={coord}
+                            position={{lat: location.lat, lng: location.lng}}
                             name={"311 Location"}
                             icon={{
                                 //TODO: Move image to local
