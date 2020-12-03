@@ -115,8 +115,7 @@ export class Map311 extends Component {
                                 position={{lat: location.lat, lng: location.lng}}
                                 caseId={location.case_id}
                                 icon={{
-                                    //TODO: Move image to local
-                                url: "https://p7.hiclipart.com/preview/1020/199/663/computer-icons-clip-art-green-circle-icon.jpg",
+                                url: process.env.PUBLIC_URL + '/img/case_active_icon_2.png',
                                 anchor: new window.google.maps.Point(64, 64),
                                 scaledSize: new window.google.maps.Size(10, 10)
                                 }}
