@@ -64,6 +64,10 @@ export class Map311 extends Component {
                     <div>
                         <h2>Address</h2>
                         <b>{location.address + ", Kansas City, MO " + location.zip_code}</b>
+                        <div>
+                        <button>Predict</button>
+
+                        </div>
                     </div>
                     )
                 });
@@ -105,8 +109,8 @@ export class Map311 extends Component {
                             <Map
                                 google={this.props.google} 
                                 initialCenter={{lat: processedData[0].lat, lng: processedData[0].lng}}
-                                center={{lat: processedData[0].lat, lng: processedData[0].lng}}
-                                zoom={14}
+                                // center={{lat: processedData[0].lat, lng: processedData[0].lng}}
+                                zoom={11}
                                 onClick={this.onMapClicked.bind(this)}
                             >
                             
@@ -117,7 +121,7 @@ export class Map311 extends Component {
                                 icon={{
                                 url: process.env.PUBLIC_URL + '/img/case_active_icon_2.png',
                                 anchor: new window.google.maps.Point(64, 64),
-                                scaledSize: new window.google.maps.Size(10, 10)
+                                scaledSize: new window.google.maps.Size(15, 15)
                                 }}
                                 onClick={this.onMarkerClick.bind(this)}
                             />
