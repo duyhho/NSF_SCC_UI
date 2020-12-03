@@ -3,7 +3,7 @@ import { Grid, Icon, Menu, Segment, Sidebar } from 'semantic-ui-react'
 
 import MapContainer from "./Map/MapContainer.jsx"
 import File from "./UserUpload/File.js"
-import Call311 from "./Call311/Call311.jsx"
+import Map311 from "./Map/Map311.jsx"
 
 export default class SideBar extends React.Component {
   constructor(props) {
@@ -14,7 +14,6 @@ export default class SideBar extends React.Component {
   }
 
   handleMenuSelect(option) {
-    console.log(option)
     this.setState({
       currentView: option
     })
@@ -29,7 +28,7 @@ export default class SideBar extends React.Component {
     } else if (currentView == 1) {
       view = <File/>
     } else {
-      view = <Call311/>
+      view = <Map311/>
     }
 
     return (
@@ -71,11 +70,9 @@ export default class SideBar extends React.Component {
               </Menu.Item>
             </Sidebar>
 
-            <Sidebar.Pusher >
+            <Sidebar.Pusher>
               <Segment basic>
-                <div>
-                  {view}
-                </div>
+                {view}
               </Segment>
             </Sidebar.Pusher>
           </Sidebar.Pushable>

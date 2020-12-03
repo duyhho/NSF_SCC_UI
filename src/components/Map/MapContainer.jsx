@@ -6,7 +6,6 @@ import { modal } from '../../utilities/modal.js'
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 
 export class MapContainer extends Component {
-
   constructor(props) {
     super(props);
     this.polygonRef = React.createRef();
@@ -23,7 +22,7 @@ export class MapContainer extends Component {
       activeMarker: {},
       selectedPlace: {},
       fields: {
-        start_location: {lat: 39.0410436302915,lng: -94.5876739197085},
+        start_location: {lat: 39.0410436302915, lng: -94.5876739197085},
         end_location: {lat: 39.0383456697085, lng: -94.5903718802915}
       },
       rectangle_coords: [],
@@ -384,7 +383,7 @@ export class MapContainer extends Component {
                   //   scaledSize: new google.maps.Size(128, 128)
                   // }}
                   // draggable={true}
-                  position={this.state.fields.start_location}
+                  position={start_location}
                   name={"Start Location"}
                 />
                 <Marker
@@ -392,7 +391,7 @@ export class MapContainer extends Component {
                   fontFamily: "Arial",
                   fontSize: "12px",}}
                   onClick={this.onMarkerClick}
-                  position={this.state.fields.end_location}
+                  position={end_location}
                   name={"Stop Location"}
                 />
                 <InfoWindow

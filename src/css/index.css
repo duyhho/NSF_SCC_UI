@@ -143,3 +143,8 @@ code {
 .ui.inverted.menu {
   background: peru !important;
 }
+
+.map-311 {
+  position: relative;
+  height: 90vh
+}
