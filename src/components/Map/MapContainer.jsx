@@ -87,7 +87,7 @@ export class MapContainer extends Component {
   }
 
   onMarkerClick(props, marker, e) {
-    if (props.label === 1) {
+    if (props.name === "Start Location") {
       this.setState({
         selectedPlace: props,
         activeMarker: marker,
@@ -98,7 +98,7 @@ export class MapContainer extends Component {
            </div>)
       });
     }
-    else if (props.label === 2) {
+    else if (props.name === "Stop Location") {
       var lat =  props.position.lat.toFixed(4).toString()
       var lng =  props.position.lng.toFixed(4).toString()
 
@@ -377,12 +377,6 @@ export class MapContainer extends Component {
                             fontFamily: "Arial",
                             fontSize: "12px",}}
                   onClick={this.onMarkerClick}
-                  // icon={{
-                  //   // url: "http://127.0.0.1:8887/logo192.png",
-                  //   anchor: new google.maps.Point(64, 64),
-                  //   scaledSize: new google.maps.Size(128, 128)
-                  // }}
-                  // draggable={true}
                   position={start_location}
                   name={"Start Location"}
                 />
@@ -399,10 +393,6 @@ export class MapContainer extends Component {
                   visible={this.state.showingInfoWindow}
                 >
                   {this.state.infoWindowContent}
-                  {/* <div>
-                    <h1>{this.state.selectedPlace.name}</h1>
-                    <p>{this.state.fields.location.lat.toString() + this.state.fields.location.lng.toString()}</p>
-                  </div> */}
                 </InfoWindow>
                 <Polygon
                   ref={this.polygonRef}
