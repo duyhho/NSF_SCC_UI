@@ -446,7 +446,7 @@ export class MapContainer extends Component {
         </div>
         <div className="row">
           <div className="col-md-6">
-            <div id='vrview'></div>
+            <div id="vrview"></div>
           </div>
         </div>
       </div>
