@@ -69,9 +69,8 @@ export class MapContainer extends Component {
     }
     this.setState({
       firstLoad: false,
-      
     })
-   this.onVrViewLoad()
+    this.onVrViewLoad()
   }
 
   onVrViewLoad() {
