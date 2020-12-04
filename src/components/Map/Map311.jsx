@@ -14,7 +14,7 @@ export class Map311 extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            serverDomain: "https://51a14464797b.ngrok.io",
+            serverDomain: "http://9a71f2ff04f6.ngrok.io",
             processedData: [{lat: 39.0410436302915, lng: -94.5876739197085}],
             firstImageReturned: false,
             imageList: [],
@@ -69,7 +69,7 @@ export class Map311 extends Component {
                         <h2>Address</h2>
                         <b>{location.address + ", Kansas City, MO " + location.zip_code}</b>
                         <div>
-                        <button onClick={this.sendLocation} disabled={false} className="btn btn-primary">Predict</button>
+                        <button disabled={false} className="btn btn-primary">Predict</button>
 
                         </div>
                     </div>
@@ -193,7 +193,6 @@ export class Map311 extends Component {
                         </div>
                     
                 </div>
-                <div id = 'hello'>Hi How Are you?</div>
             </div>
             )}
         </div>
