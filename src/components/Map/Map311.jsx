@@ -15,7 +15,7 @@ export class Map311 extends Component {
         super(props);
         this.state = {
             serverDomain: "https://51a14464797b.ngrok.io",
-            processedData: [],
+            processedData: [{lat: 39.0410436302915, lng: -94.5876739197085}],
             firstImageReturned: false,
             imageList: [],
             returnedPercent: 0,
@@ -69,7 +69,7 @@ export class Map311 extends Component {
                         <h2>Address</h2>
                         <b>{location.address + ", Kansas City, MO " + location.zip_code}</b>
                         <div>
-                        <button>Predict</button>
+                        <button onClick={this.sendLocation} disabled={false} className="btn btn-primary">Predict</button>
 
                         </div>
                     </div>
@@ -89,7 +89,7 @@ export class Map311 extends Component {
             })
         }
     };
-
+    
     render() {
         // see https://developers.google.com/maps/documentation/javascript
         const googleMapsApiKey = 'AIzaSyDi4YrgqSjrfFnD5Vs3PsmaDg3teg8pmdE';

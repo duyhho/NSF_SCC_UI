@@ -38,8 +38,8 @@ export class MapContainer extends Component {
       firstLoad: true,
       firstImageReturned: false,
       returnedPercent: 0,
-      serverDomain: "http://937f1040e71e.ngrok.io",
-      vrViewUrl: "https://f0c06ecb4442.ngrok.io",
+      serverDomain: "http://068b41684f4a.ngrok.io",
+      // vrViewUrl: "https://f0c06ecb4442.ngrok.io",
       vrView: null,
     };
   }
@@ -212,8 +212,8 @@ export class MapContainer extends Component {
       serverDomain = serverDomain.replace("http", 'https')
     }
 
-    var eventSource = new EventSource(serverDomain + "/api/GSV/stream/" + category + 
-                                    '?start_coord=' + start_coord + '&end_coord=' + end_coord);
+    var eventSource = new EventSource(serverDomain + "/api/GSV/stream?category=" + category + 
+                                    '&start_coord=' + start_coord + '&end_coord=' + end_coord);
     eventSource.onmessage = e => {
       if (self.state.firstImageReturned == false) {
         modal.showInfo("Images are being streamed! See the progress bar below!", "success", "top", "center");
