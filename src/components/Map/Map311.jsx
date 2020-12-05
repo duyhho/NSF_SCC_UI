@@ -14,7 +14,7 @@ export class Map311 extends Component {
 
         this.polygonRef = React.createRef();
         this.state = {
-            serverDomain: "http://e94b0d176d73.ngrok.io",
+            serverDomain: "http://bb4b4fe62b36.ngrok.io",
             processedData: [],
             firstImageReturned: false,
             imageList: [],
@@ -321,31 +321,36 @@ export class Map311 extends Component {
                             />
                         </div>
                     </div>
-                    <div className="col-md-5 currentSelectedLocationDiv" align="center">
-                        <div>CURRENT SELECTED LOCATION</div>
-                        <br />
-                        <div className="row">
-                            <div className="col-md-3">
-                                Location:
+                    <div className="col-md-5 currentSelectedLocationDiv" align="left">
+                        
+                        <div className = 'col-md-10'>
+                            <div align="center">CURRENT SELECTED LOCATION</div>
+                            <br />
+                            <div className="row">
+                                <div className="col-md-4">
+                                    Location:
+                                </div>
+                                <div className="col-md-8">
+                                    {currentAddress + ", " + currentLocation.neighborhood + ", " + currentLocation.county + " County"}
+                                </div>
+                            </div><br></br>
+                            <div className="row">
+                                <div className="col-md-4">
+                                    Request Type:
+                                </div>
+                                <div className="col-md-8">
+                                    {currentLocation.request_type}
+                                </div>
                             </div>
-                            <div className="col-md-8">
-                                {currentAddress + ", " + currentLocation.neighborhood + ", " + currentLocation.county + " County"}
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-3">
-                                Request Type:
-                            </div>
-                            <div className="col-md-8">
-                                {currentLocation.request_type}
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-3">
-                                Submitted:
-                            </div>
-                            <div className="col-md-8">
-                                {currentLocation.date + ", " + currentLocation.time}
+                           <br></br>
+                            
+                            <div className="row">
+                                <div className="col-md-4">
+                                    Submitted:
+                                </div>
+                                <div className="col-md-8">
+                                    {currentLocation.date + ", " + currentLocation.time}
+                                </div>
                             </div>
                         </div>
                     </div>
