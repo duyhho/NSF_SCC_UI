@@ -143,3 +143,9 @@ code {
 .ui.inverted.menu {
   background: peru !important;
 }
+
+.react-street-view {
+  width: 100%;
+  height: 40vh;
+  background-color: #eeeeee
+}
