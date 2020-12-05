@@ -214,15 +214,14 @@ export class Map311 extends Component {
             predictButtonText = "Loading..."
         }
 
-        // see https://developers.google.com/maps/documentation/javascript
         const googleMapsApiKey = 'AIzaSyDi4YrgqSjrfFnD5Vs3PsmaDg3teg8pmdE';
-
-        // see https://developers.google.com/maps/documentation/javascript/3.exp/reference#StreetViewPanoramaOptions
-        const streetViewPanoramaOptions = {
+        var streetViewPanoramaOptions = {
             position: {lat: currentLocation.lat, lng: currentLocation.lng},
             pov: {heading: 100, pitch: 0},
             zoom: 1,
         };
+
+        console.log(streetViewPanoramaOptions)
         
         var helpText = 'No predictions. Select a location on the map and click "Predict" to start.'
 
@@ -322,7 +321,6 @@ export class Map311 extends Component {
                         </div>
                     </div>
                     <div className="col-md-5 currentSelectedLocationDiv" align="left">
-                        
                         <div className = 'col-md-10'>
                             <div align="center">CURRENT SELECTED LOCATION</div>
                             <br />
@@ -333,7 +331,8 @@ export class Map311 extends Component {
                                 <div className="col-md-8">
                                     {currentAddress + ", " + currentLocation.neighborhood + ", " + currentLocation.county + " County"}
                                 </div>
-                            </div><br></br>
+                            </div>
+                            <br />
                             <div className="row">
                                 <div className="col-md-4">
                                     Request Type:
@@ -342,8 +341,7 @@ export class Map311 extends Component {
                                     {currentLocation.request_type}
                                 </div>
                             </div>
-                           <br></br>
-                            
+                            <br />
                             <div className="row">
                                 <div className="col-md-4">
                                     Submitted:
