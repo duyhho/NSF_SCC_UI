@@ -149,3 +149,7 @@ code {
   height: 40vh;
   background-color: #eeeeee
 }
+
+.currentSelectedLocationDiv {
+  background-image: url('../case_background.png');
+}

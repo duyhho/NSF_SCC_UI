@@ -14,7 +14,7 @@ export class Map311 extends Component {
 
         this.polygonRef = React.createRef();
         this.state = {
-            serverDomain: "http://c90bee96cf2a.ngrok.io",
+            serverDomain: "http://e94b0d176d73.ngrok.io",
             processedData: [],
             firstImageReturned: false,
             imageList: [],
@@ -30,6 +30,7 @@ export class Map311 extends Component {
             category: "utility",
             firstLoad: true,
             rectangle_coords: [],
+            loadingImageError: false,
         };
     }
     
@@ -83,13 +84,14 @@ export class Map311 extends Component {
 
         
         eventSource.onmessage = e => {
-            if (self.state.firstImageReturned == false) {
+            if (self.state.firstImageReturned === false) {
                 modal.showInfo("Images are being streamed! See the progress bar below!", "success", "top", "center");
             }
 
-            console.log()
-        
             if (e.data === 'END-OF-STREAM') {
+                if (self.state.returnedPercent !== 100) {
+                    modal.showInfo("Something went wrong while loading images. Streaming stopped at " + self.state.returnedPercent + "%!", "danger", "top", "center");
+                }
                 eventSource.close()
                 self.setPolygonOptions({
                     paths:[  
@@ -97,11 +99,10 @@ export class Map311 extends Component {
                 ]});
                 self.setState({
                     serverError: false,
-                    dataLoading: false
+                    dataLoading: false,
                 })
             } else {
                 var jsonData = JSON.parse(e.data)
-                console.log(jsonData)
                 self.setState({
                     imageList: update(self.state.imageList, {$push: [{
                         original: 'data:image/jpg;base64,' + jsonData.image,
@@ -125,7 +126,7 @@ export class Map311 extends Component {
         }
     
         eventSource.onerror = e => {
-            modal.showInfo("Error while loading the images!", "danger", "top", "center");
+            modal.showInfo("Error while connecting with the server!", "danger", "top", "center");
             self.setState({
                 serverError: true,
                 dataLoading: false,
@@ -237,7 +238,7 @@ export class Map311 extends Component {
                     <div className="col-md-6 map-view-container">
                         <div className="map-top-center">
                             <button onClick={this.sendLocation.bind(this)} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
-                            <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)}>
+                            <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)} disabled={dataLoading}>
                                 <option value="Utility Poles">Utility Poles</option>
                                 <option value="Vehicle">Vehicle</option>
                                 <option value="Road">Road</option>
@@ -247,7 +248,7 @@ export class Map311 extends Component {
                         </div>
                         <div className="map-container">
                             <Map
-                                google={this.props.google} 
+                                google={this.props.google}
                                 initialCenter={{lat: currentLocation.lat, lng: currentLocation.lng}}
                                 zoom={11}
                                 onClick={this.onMapClicked.bind(this)}
@@ -260,7 +261,6 @@ export class Map311 extends Component {
                                 caseId={location.case_id}
                                 icon={{
                                 url: process.env.PUBLIC_URL + '/img/case_active_icon_2.png',
-                                anchor: new window.google.maps.Point(64, 64),
                                 scaledSize: new window.google.maps.Size(15, 15)
                                 }}
                                 onClick={this.onMarkerClick.bind(this)}
@@ -321,7 +321,7 @@ export class Map311 extends Component {
                             />
                         </div>
                     </div>
-                    <div className="col-md-5" align="center">
+                    <div className="col-md-5 currentSelectedLocationDiv" align="center">
                         <div>CURRENT SELECTED LOCATION</div>
                         <br />
                         <div className="row">

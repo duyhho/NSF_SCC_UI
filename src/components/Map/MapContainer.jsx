@@ -355,7 +355,7 @@ export class MapContainer extends Component {
           <div className="col-md-6 map-view-container">
             <div className="map-top-center">
               <button onClick={this.sendLocation} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
-              <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)}>
+              <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)} disabled={dataLoading}>
                 <option value="Utility Poles">Utility Poles</option>
                 <option value="Vehicle">Vehicle</option>
                 <option value="Road">Road</option>
