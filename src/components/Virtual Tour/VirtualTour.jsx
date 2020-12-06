@@ -12,7 +12,7 @@ export class VirtualTour extends Component {
         this.pano= React.createRef();
 
         this.state = {
-            serverDomain: "http://3739fd2f5410.ngrok.io",
+            serverDomain: "http://455c553d9889.ngrok.io",
             category: "utility",
             firstImageReturned: false,
             imageList: [],
