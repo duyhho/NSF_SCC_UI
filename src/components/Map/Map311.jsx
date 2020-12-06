@@ -33,8 +33,7 @@ export class Map311 extends Component {
             firstLoad: true,
             rectangle_coords: [],
             loadingImageError: false,
-            panorama: null
-            
+            panorama: null,
         };
     }
     
@@ -134,10 +133,7 @@ export class Map311 extends Component {
             self.setState({
                 serverError: true,
                 dataLoading: false,
-                // currentLocation: {lat: 39.040155811003395, lng:  -94.59033253490084}
             });
-
-            
         }
     }
 
@@ -263,7 +259,6 @@ export class Map311 extends Component {
                             </select>
                         </div>
                         <div className="map-container">
-                            {/* <div id="map"></div> */}
                             <Map
                                 google={this.props.google}
                                 initialCenter={{lat: currentLocation.lat, lng: currentLocation.lng}}
@@ -331,12 +326,6 @@ export class Map311 extends Component {
                 </div>
                 <div className="row">
                     <div className="col-md-6" align="center">
-                        {/* <div className="react-street-view">
-                            <ReactStreetview ref={this.pano}
-                                apiKey={googleMapsApiKey}
-                                streetViewPanoramaOptions={streetViewPanoramaOptions}
-                            />
-                        </div> */}
                          <div id="pano"></div>
                     </div>
                     <div className="col-md-5 currentSelectedLocationDiv" align="left">
