@@ -24,6 +24,7 @@ export class VirtualTour extends Component {
             currentHeading: 34,
             currentPitch: 10,
             imageHasObjects: true,
+            tempState: {position: {lat: 39.0410436302915, lng: -94.5876739197085}, heading: 50, pitch: 10, panoId: null}
         };
     }
     
@@ -166,21 +167,29 @@ export class VirtualTour extends Component {
         )
         // panorama.addListener("pano_changed", () => {
         //     this.setState({
-        //         currentPanoId: panorama.getPano()
+        //         tempState: update(this.state.tempState, {
+        //             panoId: {$set: panorama.getPano()},
+        //           })
         //     })
+           
         // });
         // panorama.addListener("position_changed", () => {
         //     this.setState({
-        //         currentPosition: panorama.getPosition()
+        //         tempState: update(this.state.tempState, {
+        //             position: {$set: panorama.getPosition()},
+        //           })
         //     })
         // });
-        // panorama.addListener("pov_changed", () => {
-        //     this.setState({
-        //         currentHeading: panorama.getPov().heading,
-        //         currentPitch: panorama.getPov().pitch
-        //     })
-        // });
-
+        panorama.addListener("pov_changed", () => {
+            // this.setState({
+            //     tempState: update(this.state.tempState, {
+            //         heading: {$set: panorama.getPov().heading},
+            //         pitch: {$set: panorama.getPov().pitch}
+            //       })
+            // })
+            // console.log(this.state.tempState)
+            console.log(panorama.getPov())
+        });
         var predictButtonText = ""
         if (dataLoading === false) {
             predictButtonText = "Predict"
