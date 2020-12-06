@@ -2,7 +2,6 @@ import React, { Component } from "react"
 import { GoogleApiWrapper } from "google-maps-react"
 import ImageGallery from 'react-image-gallery'
 import update from 'immutability-helper'
-import ReactDOM from 'react-dom';
 import { modal } from '../../utilities/modal.js'
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 
@@ -42,24 +41,19 @@ export class VirtualTour extends Component {
                     currentPosition: location,
                     panorama: new window.google.maps.StreetViewPanorama(
                         self.pano.current,
-                         {
-                             position: location,
-                             pov: {
-                                 heading: 50,
-                                 pitch: 16,
-                             },
-                             addressControl: false,
-                             visible: true
-                         }
+                        {
+                            position: location,
+                            pov: {
+                                heading: 50,
+                                pitch: 16,
+                            },
+                            addressControl: false,
+                            visible: true
+                        }
                      )
                 }, )
             }
         })
-        
-        console.log(this.state.currentPosition)
-        // self.setState({
-            
-        // })
     }
     componentDidUpdate() {
         this.state.panorama.addListener("pov_changed", () => {
@@ -141,11 +135,12 @@ export class VirtualTour extends Component {
         })
       
         var self = this;
-        const location = this.state.panorama.getPosition()
-        console.log(location)
+        const location = this.state.panorama.getPosition();
+        const panorama = this.state.panorama;
+
         const currentPosition = {lat:location.lat(), lng:location.lng()}
-        const currentHeading = this.state.panorama.getPov().heading;
-        const currentPitch = this.state.panorama.getPov().pitch;
+        const currentHeading = panorama.getPov().heading;
+        const currentPitch = panorama.getPov().pitch;
         const category = this.state.category;
         var serverDomain = this.state.serverDomain;
       
@@ -204,24 +199,8 @@ export class VirtualTour extends Component {
         const firstImageReturned = this.state.firstImageReturned;
         const returnedPercent = this.state.returnedPercent;
         const serverError = this.state.serverError;
-        const currentPosition = this.state.currentPosition;
-        const currentHeading = this.state.currentHeading;
-        const currentPitch = this.state.currentPitch;
         const dataLoading = this.state.dataLoading;
         const imageHasObjects = this.state.imageHasObjects;
-
-        // const panorama = new window.google.maps.StreetViewPanorama(
-        //     document.getElementById("pano"),
-        //     {
-        //         position: currentPosition,
-        //         pov: {
-        //             heading: currentHeading,
-        //             pitch: currentPitch,
-        //         },
-        //         addressControl: false,
-        //         visible: true
-        //     }
-        // )
         
         var predictButtonText = ""
         if (dataLoading === false) {

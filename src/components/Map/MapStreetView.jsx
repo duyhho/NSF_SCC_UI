@@ -214,7 +214,7 @@ export class MapStreetView extends Component {
     var eventSource = new EventSource(serverDomain + "/api/GSV/stream?category=" + category + 
                                     '&start_coord=' + start_coord + '&end_coord=' + end_coord);
     eventSource.onmessage = e => {
-      if (self.state.firstImageReturned == false) {
+      if (self.state.firstImageReturned === false) {
         modal.showInfo("Images are being streamed! See the progress bar below!", "success", "top", "center");
       }
 

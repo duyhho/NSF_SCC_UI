@@ -24,11 +24,11 @@ export default class SideBar extends React.Component {
     const currentView = this.state.currentView;
 
     var view = <MapStreetView/>;
-    if (currentView == 0) {
+    if (currentView === 0) {
       view = <MapStreetView/>
-    } else if (currentView == 1) {
+    } else if (currentView === 1) {
       view = <File/>
-    } else if (currentView == 2) {
+    } else if (currentView === 2) {
       view = <Map311/>
     } else {
       view = <VirtualTour/>
