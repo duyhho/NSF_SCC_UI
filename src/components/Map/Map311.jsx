@@ -3,8 +3,6 @@ import { Map, Marker, GoogleApiWrapper, InfoWindow, Polygon } from "google-maps-
 import ImageGallery from 'react-image-gallery'
 import update from 'immutability-helper'
 import axios from 'axios'
-// import ReactStreetview from '../../js/ReactStreetview.js';
-// import ReactStreetview from 'react-streetview';
 
 import { modal } from '../../utilities/modal.js'
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
@@ -57,11 +55,20 @@ export class Map311 extends Component {
                 currentLocation: response.data[0],
                 currentAddress: response.data[0].address + ", Kansas City, MO " + response.data[0].zip_code
             })
+            new window.google.maps.StreetViewPanorama(
+                document.getElementById("pano"),
+                {
+                  position: response.data[0],
+                  pov: {
+                    heading: 34,
+                    pitch: 10,
+                  },
+                  addressControl: false
+                }
+            )
         })
         .catch(function(error) {
             modal.showInfo("Error while connecting with the server!", "danger", "top", "center");
-
-           
         })
     }
 
@@ -204,19 +211,6 @@ export class Map311 extends Component {
         // const processedData = JSON.parse('[{"case_id": 2020117327, "request_type": "Trees-Storm Damage-Tree Down", "date": "08/29/2020", "time": "10:42 PM", "lat": 39.04231736302915, "lng":  -94.5876839197085, "address": "7370 NE 76th St", "zip_code": 64119.0, "neighborhood": "Shoal Creek", "county": "Clay"}, {"case_id": 2020117327, "request_type": "Trees-Storm Damage-Tree Down", "date": "08/29/2020", "time": "10:42 PM", "lat": 39.2339117, "lng": -94.5428878, "address": "7370 NE 76th St", "zip_code": 64119.0, "neighborhood": "Shoal Creek", "county": "Clay"}]');
         // const currentLocation =  {lat: 39.0410436302915, lng: -94.5876739197085};
         // const currentAddress = 'UMKC';
-
-        var panorama = new window.google.maps.StreetViewPanorama(
-            document.getElementById("pano"),
-            {
-              position: this.state.currentLocation,
-              pov: {
-                heading: 34,
-                pitch: 10,
-              },
-              addressControl: false
-            }
-        )
-        
         const processedData = this.state.processedData;
         const imageList = this.state.imageList;
         const firstImageReturned = this.state.firstImageReturned;
@@ -226,7 +220,18 @@ export class Map311 extends Component {
         const currentAddress = this.state.currentAddress;
         const dataLoading = this.state.dataLoading;
         const rectangle = this.state.rectangle_coords;
-        
+
+        new window.google.maps.StreetViewPanorama(
+            document.getElementById("pano"),
+            {
+              position: currentLocation,
+              pov: {
+                heading: 34,
+                pitch: 10,
+              },
+              addressControl: false
+            }
+        )
 
         var predictButtonText = ""
         if (dataLoading === false) {
@@ -235,8 +240,6 @@ export class Map311 extends Component {
             predictButtonText = "Loading..."
         }
 
-        const googleMapsApiKey = 'AIzaSyDi4YrgqSjrfFnD5Vs3PsmaDg3teg8pmdE';
-        
         var helpText = 'No predictions. Select a location on the map and click "Predict" to start.'
         if (!this.props.google) {
             return <div>Loading...</div>;
