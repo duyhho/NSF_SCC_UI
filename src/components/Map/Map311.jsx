@@ -16,7 +16,7 @@ export class Map311 extends Component {
         this.polygonRef = React.createRef();
 
         this.state = {
-            serverDomain: "http://eab80a4a932d.ngrok.io",
+            serverDomain: "http://da75aa412b00.ngrok.io",
             processedData: [],
             firstImageReturned: false,
             imageList: [],
@@ -217,6 +217,7 @@ export class Map311 extends Component {
                 heading: 34,
                 pitch: 10,
               },
+              addressControl: false
             }
         )
         
