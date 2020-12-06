@@ -21,7 +21,6 @@ export class Map311 extends Component {
             returnedPercent: 0,
             dataLoading: false,
             serverError: true,
-            rawData: null,
             showingInfoWindow: false,
             activeMarker: {},
             currentLocation:  {lat: 39.0410436302915, lng: -94.5876739197085},
@@ -30,8 +29,6 @@ export class Map311 extends Component {
             category: "utility",
             firstLoad: true,
             rectangle_coords: [],
-            loadingImageError: false,
-            panorama: null,
         };
     }
     
@@ -58,12 +55,12 @@ export class Map311 extends Component {
             new window.google.maps.StreetViewPanorama(
                 document.getElementById("pano"),
                 {
-                  position: response.data[0],
-                  pov: {
-                    heading: 34,
-                    pitch: 10,
-                  },
-                  addressControl: false
+                    position: response.data[0],
+                    pov: {
+                        heading: 34,
+                        pitch: 10,
+                    },
+                    addressControl: false
                 }
             )
         })
@@ -88,8 +85,7 @@ export class Map311 extends Component {
             serverDomain = serverDomain.replace("http", 'https')
         }
       
-        var eventSource = new EventSource(serverDomain + "/api/311/predict?category=" + category + 
-                                        '&address=' + currentAddress);
+        var eventSource = new EventSource(serverDomain + "/api/311/predict?category=" + category + '&address=' + currentAddress);
 
         
         eventSource.onmessage = e => {
@@ -224,12 +220,12 @@ export class Map311 extends Component {
         new window.google.maps.StreetViewPanorama(
             document.getElementById("pano"),
             {
-              position: currentLocation,
-              pov: {
-                heading: 34,
-                pitch: 10,
-              },
-              addressControl: false
+                position: currentLocation,
+                pov: {
+                    heading: 34,
+                    pitch: 10,
+                },
+                addressControl: false
             }
         )
 
@@ -241,13 +237,14 @@ export class Map311 extends Component {
         }
 
         var helpText = 'No predictions. Select a location on the map and click "Predict" to start.'
+
         if (!this.props.google) {
             return <div>Loading...</div>;
         }
         
         return (
         <div>
-            {processedData.length > 0 && (
+            {processedData.length > 0 ? (
             <div>
                 <div className="row">
                     <div className="col-md-6 map-view-container">
@@ -320,10 +317,10 @@ export class Map311 extends Component {
                         </div>
                         )}
                         {(firstImageReturned === true && serverError === false) && (
-                            <div>
-                                <br />
-                                <ProgressBar bgcolor={"#00695c"} completed={returnedPercent} />
-                            </div>
+                        <div>
+                            <br />
+                            <ProgressBar bgcolor={"#00695c"} completed={returnedPercent} />
+                        </div>
                         )}
                     </div>
                 </div>
@@ -364,6 +361,10 @@ export class Map311 extends Component {
                         </div>
                     </div>
                 </div>
+            </div>
+            ) : (
+            <div align="center">
+                Cannot load page due to server error!
             </div>
             )}
         </div>

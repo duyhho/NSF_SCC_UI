@@ -1,15 +1,16 @@
 import React from 'react'
 import { Grid, Icon, Menu, Segment, Sidebar } from 'semantic-ui-react'
 
-import MapContainer from "./Map/MapContainer.jsx"
+import MapStreetView from "./Map/MapStreetView.jsx"
 import File from "./UserUpload/File.js"
 import Map311 from "./Map/Map311.jsx"
+import VirtualTour from "./Virtual Tour/VirtualTour.jsx"
 
 export default class SideBar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentView: 0
+      currentView: 3
     }
   }
 
@@ -22,13 +23,15 @@ export default class SideBar extends React.Component {
   render() {
     const currentView = this.state.currentView;
 
-    var view = <MapContainer/>;
+    var view = <MapStreetView/>;
     if (currentView == 0) {
-      view = <MapContainer/>
+      view = <MapStreetView/>
     } else if (currentView == 1) {
       view = <File/>
-    } else {
+    } else if (currentView == 2) {
       view = <Map311/>
+    } else {
+      view = <VirtualTour/>
     }
 
     return (
@@ -67,6 +70,14 @@ export default class SideBar extends React.Component {
               >
                 <Icon name="call" />
                 311 Call
+              </Menu.Item>
+              <Menu.Item
+                name="Virtual Tour"
+                onClick={this.handleMenuSelect.bind(this, 3)}
+                active={currentView === 3}
+              >
+                <Icon name="magnify" />
+                Virtual Tour
               </Menu.Item>
             </Sidebar>
 

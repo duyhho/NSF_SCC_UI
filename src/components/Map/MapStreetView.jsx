@@ -5,7 +5,7 @@ import update from 'immutability-helper';
 import { modal } from '../../utilities/modal.js'
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 
-export class MapContainer extends Component {
+export class MapStreetView extends Component {
   constructor(props) {
     super(props);
     this.polygonRef = React.createRef();
@@ -443,4 +443,4 @@ export class MapContainer extends Component {
 export default GoogleApiWrapper({
   apiKey: "AIzaSyAAKEUHaLzR2U_-XBdTwPE_VZ39ZPh6hb8",
   v: "3.30"
-})(MapContainer);
+})(MapStreetView);

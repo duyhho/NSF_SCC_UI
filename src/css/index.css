@@ -64,12 +64,12 @@ code {
 
 .predict-button {
   position: "absolute";
-  z-Index: 1;
+  z-Index: 9999;
   margin-Left: "30.5vw";
   margin-Top: "10px"
 }
 .map-top-center select{
-  z-Index: 1;
+  z-Index: 9999;
   margin: 0;
   position: absolute;
   top: 15%;
@@ -79,7 +79,7 @@ code {
   border: none
 }
 .map-top-center button{
-  z-Index: 1;
+  z-Index: 9999;
   margin: 0;
   position: absolute;
   top: 6%;
@@ -90,13 +90,13 @@ code {
 }
 .edit-start-button {
   position: absolute;
-  z-Index: 1;
+  z-Index: 9999;
   margin-Left: 10px;
   margin-Top: 60px
 }
 .edit-end-button {
   position: absolute;
-  z-Index: 1;
+  z-Index: 9999;
   margin-Left: 10px;
   margin-Top: 100px
 }
@@ -108,6 +108,10 @@ code {
   position: relative;
   height: 100%;
   width: 100%
+}
+.pano-view-container {
+  position: relative;
+  height: 90vh
 }
 
 .alert[data-notify="container"] {
