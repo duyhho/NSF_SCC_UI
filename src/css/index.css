@@ -162,3 +162,8 @@ code {
   padding-right: 5vw;
   font-size: 1.1vw;
 }
+#pano {
+  float: left;
+  height: 100%;
+  width: 100%;
+}

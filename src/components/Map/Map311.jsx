@@ -3,7 +3,8 @@ import { Map, Marker, GoogleApiWrapper, InfoWindow, Polygon } from "google-maps-
 import ImageGallery from 'react-image-gallery'
 import update from 'immutability-helper'
 import axios from 'axios'
-import ReactStreetview from 'react-streetview';
+// import ReactStreetview from '../../js/ReactStreetview.js';
+// import ReactStreetview from 'react-streetview';
 
 import { modal } from '../../utilities/modal.js'
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
@@ -11,10 +12,11 @@ import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 export class Map311 extends Component {
     constructor(props) {
         super(props);
-
+        this.pano= React.createRef();
         this.polygonRef = React.createRef();
+
         this.state = {
-            serverDomain: "http://bb4b4fe62b36.ngrok.io",
+            serverDomain: "http://eab80a4a932d.ngrok.io",
             processedData: [],
             firstImageReturned: false,
             imageList: [],
@@ -24,13 +26,15 @@ export class Map311 extends Component {
             rawData: null,
             showingInfoWindow: false,
             activeMarker: {},
-            currentLocation: {},
+            currentLocation:  {lat: 39.0410436302915, lng: -94.5876739197085},
             currentAddress: "",
             currentRectangle: [],
             category: "utility",
             firstLoad: true,
             rectangle_coords: [],
             loadingImageError: false,
+            panorama: null
+            
         };
     }
     
@@ -57,9 +61,8 @@ export class Map311 extends Component {
         })
         .catch(function(error) {
             modal.showInfo("Error while connecting with the server!", "danger", "top", "center");
-            self.setState({
-                serverError: true
-            })
+
+           
         })
     }
 
@@ -126,11 +129,15 @@ export class Map311 extends Component {
         }
     
         eventSource.onerror = e => {
+            eventSource.close()
             modal.showInfo("Error while connecting with the server!", "danger", "top", "center");
             self.setState({
                 serverError: true,
                 dataLoading: false,
+                // currentLocation: {lat: 39.040155811003395, lng:  -94.59033253490084}
             });
+
+            
         }
     }
 
@@ -197,6 +204,22 @@ export class Map311 extends Component {
     };
     
     render() {
+        // Dummy Data (used when no server is around)
+        // const processedData = JSON.parse('[{"case_id": 2020117327, "request_type": "Trees-Storm Damage-Tree Down", "date": "08/29/2020", "time": "10:42 PM", "lat": 39.04231736302915, "lng":  -94.5876839197085, "address": "7370 NE 76th St", "zip_code": 64119.0, "neighborhood": "Shoal Creek", "county": "Clay"}, {"case_id": 2020117327, "request_type": "Trees-Storm Damage-Tree Down", "date": "08/29/2020", "time": "10:42 PM", "lat": 39.2339117, "lng": -94.5428878, "address": "7370 NE 76th St", "zip_code": 64119.0, "neighborhood": "Shoal Creek", "county": "Clay"}]');
+        // const currentLocation =  {lat: 39.0410436302915, lng: -94.5876739197085};
+        // const currentAddress = 'UMKC';
+
+        var panorama = new window.google.maps.StreetViewPanorama(
+            document.getElementById("pano"),
+            {
+              position: this.state.currentLocation,
+              pov: {
+                heading: 34,
+                pitch: 10,
+              },
+            }
+        )
+        
         const processedData = this.state.processedData;
         const imageList = this.state.imageList;
         const firstImageReturned = this.state.firstImageReturned;
@@ -206,7 +229,8 @@ export class Map311 extends Component {
         const currentAddress = this.state.currentAddress;
         const dataLoading = this.state.dataLoading;
         const rectangle = this.state.rectangle_coords;
-            
+        
+
         var predictButtonText = ""
         if (dataLoading === false) {
             predictButtonText = "Predict"
@@ -215,16 +239,8 @@ export class Map311 extends Component {
         }
 
         const googleMapsApiKey = 'AIzaSyDi4YrgqSjrfFnD5Vs3PsmaDg3teg8pmdE';
-        var streetViewPanoramaOptions = {
-            position: {lat: currentLocation.lat, lng: currentLocation.lng},
-            pov: {heading: 100, pitch: 0},
-            zoom: 1,
-        };
-
-        console.log(streetViewPanoramaOptions)
         
         var helpText = 'No predictions. Select a location on the map and click "Predict" to start.'
-
         if (!this.props.google) {
             return <div>Loading...</div>;
         }
@@ -246,6 +262,7 @@ export class Map311 extends Component {
                             </select>
                         </div>
                         <div className="map-container">
+                            {/* <div id="map"></div> */}
                             <Map
                                 google={this.props.google}
                                 initialCenter={{lat: currentLocation.lat, lng: currentLocation.lng}}
@@ -313,12 +330,13 @@ export class Map311 extends Component {
                 </div>
                 <div className="row">
                     <div className="col-md-6" align="center">
-                        <div className="react-street-view">
-                            <ReactStreetview
+                        {/* <div className="react-street-view">
+                            <ReactStreetview ref={this.pano}
                                 apiKey={googleMapsApiKey}
                                 streetViewPanoramaOptions={streetViewPanoramaOptions}
                             />
-                        </div>
+                        </div> */}
+                         <div id="pano"></div>
                     </div>
                     <div className="col-md-5 currentSelectedLocationDiv" align="left">
                         <div className = 'col-md-10'>
@@ -360,6 +378,6 @@ export class Map311 extends Component {
     }
 }
 export default GoogleApiWrapper({
-apiKey: "AIzaSyAAKEUHaLzR2U_-XBdTwPE_VZ39ZPh6hb8",
-v: "3.30"
-})(Map311);
+    apiKey: "AIzaSyAAKEUHaLzR2U_-XBdTwPE_VZ39ZPh6hb8",
+    v: "3.30"
+  })(Map311);
