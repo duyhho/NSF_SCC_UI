@@ -6,6 +6,7 @@ import MapStreetView from "./Map/MapStreetView.jsx"
 import File from "./UserUpload/File.js"
 import Map311 from "./Map/Map311.jsx"
 import VirtualTour from "./Virtual Tour/VirtualTour.jsx"
+import NotFound from "./NotFound/NotFound.jsx"
 
 export default class SideBar extends React.Component {
   constructor(props) {
@@ -97,6 +98,7 @@ export default class SideBar extends React.Component {
                 <Route exact path="/realImageDetect" component={File} />
                 <Route exact path="/call311" component={Map311} />
                 <Route exact path="/virtualTour" component={VirtualTour} />
+                <Route component={NotFound} />
               </Switch>
 
               {/* <Sidebar.Pusher>
