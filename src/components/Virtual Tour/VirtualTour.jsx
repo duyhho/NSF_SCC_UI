@@ -111,7 +111,8 @@ export class VirtualTour extends Component {
       
         var eventSource = new EventSource(serverDomain + '/api/virtualtour/predict?coord=' + JSON.stringify(currentPosition)
                                         + "&pitch=" + currentPitch + "&heading=" + currentHeading + "&category=" + category);
-        
+        console.log('calling ' + serverDomain + '/api/virtualtour/predict?coord=' + JSON.stringify(currentPosition)
+        + "&pitch=" + currentPitch + "&heading=" + currentHeading + "&category=" + category)
         eventSource.onmessage = e => {
             if (self.state.firstImageReturned === false) {
                 modal.showInfo("Images are being streamed! See the progress bar below!", "success", "top", "center");
