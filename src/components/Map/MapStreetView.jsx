@@ -6,7 +6,7 @@ import axios from 'axios'
 import $ from 'jquery'
 
 import { modal } from '../../utilities/modal.js'
-import { server } from '../../controllers/Server.js'
+// import { server } from '../../controllers/Server.js'
 
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 
