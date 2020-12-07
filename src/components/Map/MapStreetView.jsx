@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import ImageGallery from 'react-image-gallery';
 import { Map, InfoWindow, Marker, GoogleApiWrapper, Polygon } from "google-maps-react";
 import update from 'immutability-helper';
+import axios from 'axios'
 
 import { modal } from '../../utilities/modal.js'
 import { server } from '../../controllers/Server.js'
@@ -44,6 +45,7 @@ export class MapStreetView extends Component {
       serverDomain: server.getServerDomain(),
       // vrViewUrl: "https://f0c06ecb4442.ngrok.io",
       vrView: null,
+      neighborhoodList: [],
     };
   }
   
@@ -70,10 +72,25 @@ export class MapStreetView extends Component {
         }
       })
     }
+    // this.onVrViewLoad()
+    this.loadNeighborhoodList()
     this.setState({
       firstLoad: false,
     })
-    this.onVrViewLoad()
+  }
+
+  loadNeighborhoodList() {
+    var self = this;
+    
+    axios.get(this.state.serverDomain + "/api/community/get/")
+    .then(function(response) {
+        self.setState({
+          neighborhoodList: response.data,
+        })
+    })
+    .catch(function(error) {
+      modal.showInfo("Cannot load the neighborhood list!", "danger", "top", "center");
+    })
   }
 
   onVrViewLoad() {
@@ -304,6 +321,39 @@ export class MapStreetView extends Component {
       })
     }
   }
+
+  getNeighborhoodOptions() {
+    const neighborhoodList = this.state.neighborhoodList;
+
+    neighborhoodList.map(function(item) {
+      return <option value={item.name}>{item.name}</option>
+    })
+  }
+
+  handleNeighborhoodChange(e) {
+    var self = this;
+    const selectedValue = e.target.value;
+    const neighborhoodList = this.state.neighborhoodList;
+
+    if (selectedValue !== "Custom") {
+      neighborhoodList.forEach(function(item) {
+        if (item.name === selectedValue) {
+          self.setState(prev => ({
+            fields: {
+              start_location: item.start,
+              end_location: item.end
+            },
+            rectangle_coords: [
+              item.start,
+              {lat: item.start.lat, lng: item.end.lng},
+              item.end,
+              {lat: item.end.lat, lng: item.start.lng}
+            ]
+          }));
+        }
+      })
+    }
+  }
   
   render() {
     const start_location = this.state.fields.start_location;
@@ -316,6 +366,7 @@ export class MapStreetView extends Component {
     const editEnd = this.state.editEnd;
     const firstImageReturned = this.state.firstImageReturned;
     const returnedPercent = this.state.returnedPercent;
+    const neighborhoodOptions = this.getNeighborhoodOptions();
 
     var predictButtonText = ""
     if (dataLoading === false) {
@@ -352,6 +403,11 @@ export class MapStreetView extends Component {
         </div>
         <div className="edit-end-button">
           <button className="btn btn-primary" onClick={this.handleEditEnd.bind(this)} disabled={editStart}>{endButtonText}</button>
+        </div>
+        <div className="neighborhood-select">
+          <select defaultValue="Custom" onChange={this.handleNeighborhoodChange.bind(this)} disabled={dataLoading}>
+            {neighborhoodOptions}
+          </select>
         </div>
       
         <div className="row">
