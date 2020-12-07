@@ -43,7 +43,7 @@ export class MapStreetView extends Component {
       firstLoad: true,
       firstImageReturned: false,
       returnedPercent: 0,
-      serverDomain: 'https://cb734b23d812.ngrok.io/',
+      serverDomain: 'http://cb734b23d812.ngrok.io/',
       // vrViewUrl: "https://f0c06ecb4442.ngrok.io",
       vrView: null,
       neighborhoodList: [],
