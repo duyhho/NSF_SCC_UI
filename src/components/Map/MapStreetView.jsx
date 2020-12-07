@@ -228,7 +228,6 @@ export class MapStreetView extends Component {
     if (serverDomain.search('https') === -1){
       serverDomain = serverDomain.replace("http", 'https')
     }
-    console.log(serverDomain)
     var eventSource = new EventSource(serverDomain + "/api/GSV/stream?category=" + category + 
                                     '&start_coord=' + start_coord + '&end_coord=' + end_coord);
     eventSource.onmessage = e => {
