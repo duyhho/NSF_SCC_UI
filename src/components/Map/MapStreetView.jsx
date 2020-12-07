@@ -221,7 +221,7 @@ export class MapStreetView extends Component {
     })
 
     var self = this;
-    // const start_coord = JSON.stringify(this.state.fields.start_location)
+    const start_coord = JSON.stringify(this.state.fields.start_location)
     const end_coord = JSON.stringify(this.state.fields.end_location)
     // const category = this.state.category;
     // var serverDomain = this.state.serverDomain;
