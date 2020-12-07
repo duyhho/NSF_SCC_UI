@@ -4,12 +4,12 @@ class Server {
     }
 
     getServerDomain() {
-        // var serverDomainEdit = "";
+        var serverDomainEdit = "";
 
-        // if (this.serverDomain.search('https') === -1){
-        //     serverDomainEdit = this.serverDomain.replace("http", 'https')
-        // }
-        return this.serverDomain
+        if (this.serverDomain.search('https') === -1){
+            serverDomainEdit = this.serverDomain.replace("http", 'https')
+        }
+        return serverDomainEdit
     }
 }
 
