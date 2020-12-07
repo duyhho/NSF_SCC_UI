@@ -228,11 +228,9 @@ export class MapStreetView extends Component {
     if (serverDomain.search('https') === -1){
       serverDomain = serverDomain.replace("http", 'https')
     }
-    const URL = serverDomain + "/api/GSV/stream?category=" + category + 
-    '&start_coord=' + start_coord + '&end_coord=' + end_coord
-    console.log('calling' + URL)
-
-    var eventSource = new EventSource(URL);
+    console.log(serverDomain)
+    var eventSource = new EventSource(serverDomain + "/api/GSV/stream?category=" + category + 
+                                    '&start_coord=' + start_coord + '&end_coord=' + end_coord);
     eventSource.onmessage = e => {
       if (self.state.firstImageReturned === false) {
         modal.showInfo("Images are being streamed! See the progress bar below!", "success", "top", "center");
@@ -263,8 +261,6 @@ export class MapStreetView extends Component {
     }
 
     eventSource.onerror = e => {
-      console.log('error at: ' + URL)
-
       modal.showInfo("Error while connecting with the server!", "danger", "top", "center");
       self.setState({
         serverError: true,
