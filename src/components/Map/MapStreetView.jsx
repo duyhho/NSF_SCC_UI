@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import ImageGallery from 'react-image-gallery';
 import { Map, InfoWindow, Marker, GoogleApiWrapper, Polygon } from "google-maps-react";
 import update from 'immutability-helper';
+
 import { modal } from '../../utilities/modal.js'
+import { server } from '../../controllers/Server.js'
+
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 
 export class MapStreetView extends Component {
@@ -38,7 +41,7 @@ export class MapStreetView extends Component {
       firstLoad: true,
       firstImageReturned: false,
       returnedPercent: 0,
-      serverDomain: "http://068b41684f4a.ngrok.io",
+      serverDomain: server.getServerDomain(),
       // vrViewUrl: "https://f0c06ecb4442.ngrok.io",
       vrView: null,
     };

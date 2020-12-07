@@ -4,7 +4,9 @@ import ImageGallery from 'react-image-gallery'
 import update from 'immutability-helper'
 import axios from 'axios'
 
+import { server } from '../../controllers/Server.js'
 import { modal } from '../../utilities/modal.js'
+
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 
 export class Map311 extends Component {
@@ -14,7 +16,7 @@ export class Map311 extends Component {
         this.polygonRef = React.createRef();
 
         this.state = {
-            serverDomain: "http://da75aa412b00.ngrok.io",
+            serverDomain: server.getServerDomain(),
             processedData: [],
             firstImageReturned: false,
             imageList: [],

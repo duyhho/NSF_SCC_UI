@@ -2,7 +2,10 @@ import React, { Component } from "react"
 import { GoogleApiWrapper } from "google-maps-react"
 import ImageGallery from 'react-image-gallery'
 import update from 'immutability-helper'
+
 import { modal } from '../../utilities/modal.js'
+import { server } from '../../controllers/Server.js'
+
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 
 export class VirtualTour extends Component {
@@ -11,7 +14,7 @@ export class VirtualTour extends Component {
         this.pano= React.createRef();
 
         this.state = {
-            serverDomain: "http://49e90ad9bb6a.ngrok.io",
+            serverDomain: server.getServerDomain(),
             category: "utility",
             firstImageReturned: false,
             imageList: [],
