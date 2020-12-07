@@ -166,8 +166,14 @@ code {
   padding-right: 5vw;
   font-size: 1.1vw;
 }
+
 #pano {
   float: left;
   height: 100%;
   width: 100%;
+}
+
+/* 150px is the width of sidebar */
+.page-container {
+  margin-left: 151px;
 }

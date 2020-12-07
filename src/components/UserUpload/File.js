@@ -89,7 +89,7 @@ class File extends Component {
     const returnedImage = this.state.returnedImage;
 
     return (
-      <div align="center" className="bg-light" style={{ height: "900px" }}>
+      <div align="center" className="page-container bg-light" style={{ height: "900px" }}>
         <h1>Community Engagement</h1>
         <h3>File Upload for prediction</h3>
         <div className="row">

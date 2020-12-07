@@ -216,7 +216,7 @@ export class VirtualTour extends Component {
         }
         
         return (
-        <div>
+        <div className="page-container">
             <div className="row">
                 <div className="col-md-6 pano-view-container">
                     <div className="map-top-center">

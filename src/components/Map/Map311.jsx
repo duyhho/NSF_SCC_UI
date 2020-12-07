@@ -243,7 +243,7 @@ export class Map311 extends Component {
         }
         
         return (
-        <div>
+        <div className="page-container">
             {processedData.length > 0 ? (
             <div>
                 <div className="row">

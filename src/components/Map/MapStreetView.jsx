@@ -343,7 +343,7 @@ export class MapStreetView extends Component {
     }
     
     return (
-      <div>
+      <div className="page-container">
         <div className="edit-start-button">
           <button className="btn btn-primary" onClick={this.handleEditStart.bind(this)} disabled={editEnd}>{startButtonText}</button>
         </div>
