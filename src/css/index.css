@@ -72,8 +72,8 @@ code {
   z-Index: 9999;
   margin: 0;
   position: absolute;
-  top: 15%;
-  left: 50%;
+  top: 8vh;
+  left: 23vw;
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   border: none
@@ -82,8 +82,8 @@ code {
   z-Index: 9999;
   margin: 0;
   position: absolute;
-  top: 6%;
-  left: 50%;
+  top: 4vh;
+  left: 23vw;
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   border: none
@@ -161,7 +161,7 @@ code {
   background-size: 83%;
   background-repeat: no-repeat;
   background-position: center;
-  padding-top: 14vh;
+  padding-top: 15vh;
   padding-left: 9vw;
   padding-right: 5vw;
   font-size: 1.1vw;
@@ -177,4 +177,12 @@ code {
 .page-container {
   margin-left: 151px;
   height: 97vh
+}
+.desc1 {
+  font-size: 1vw;
+  padding-right: 0vw
+}
+.desc2 {
+  font-size: 0.9vw;
+  padding-left: 0vw
 }

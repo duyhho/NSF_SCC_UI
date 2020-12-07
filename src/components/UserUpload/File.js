@@ -14,7 +14,7 @@ class File extends Component {
   onFileChange = (event) => {
     // Update the state
     const reader = new FileReader();
-    const currentImage = reader.readAsDataURL(event.target.files[0]);
+    // const currentImage = reader.readAsDataURL(event.target.files[0]);
     this.setState({ selectedFile: event.target.files[0] });
     reader.onloadend = function (e) {
       this.setState({
@@ -102,6 +102,7 @@ class File extends Component {
                   className="img-fluid"
                   width="320"
                   height="320"
+                  alt = 'Uploaded'
                 ></img>
               </div>
             ) : (
@@ -115,7 +116,7 @@ class File extends Component {
                 <img
                   src={"data:image/jpg;base64," + returnedImage}
                   className="img-fluid"
-                  alt="Predicted Image"
+                  alt="Prediction"
                   width="320"
                   height="320"
                 />
