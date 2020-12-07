@@ -231,7 +231,7 @@ export class MapStreetView extends Component {
     var URL = "https://a2361fd1c157.ngrok.io/api/GSV/stream?category=utility"
     // var URL = "https://a2361fd1c157.ngrok.io/api/GSV/stream?category=utility&start_coord={%22lat%22:39.091172069883214,%22lng%22:-94.56332980256805}&end_coord=" + end_coord
 
-    // URL = 'https://a2361fd1c157.ngrok.io/api/GSV/stream/?category=vehicle&start_coord={%22lat%22:39.091172069883214,%22lng%22:-94.56332980256805}&end_coord={%22lat%22:39.077120436304114,%22lng%22:-94.55237284327451}'
+    URL = 'https://a2361fd1c157.ngrok.io/api/GSV/stream/?category=vehicle&start_coord={%22lat%22:39.091172069883214,%22lng%22:-94.56332980256805}&end_coord={%22lat%22:39.077120436304114,%22lng%22:-94.55237284327451}'
     console.log('calling ' + URL)
 
     var eventSource = new EventSource(URL);
