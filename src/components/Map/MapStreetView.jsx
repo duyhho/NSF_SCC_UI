@@ -228,8 +228,9 @@ export class MapStreetView extends Component {
     if (serverDomain.search('https') === -1){
       serverDomain = serverDomain.replace("http", 'https')
     }
-    const URL = serverDomain + "/api/GSV/stream?category=" + category + '&start_coord=' + start_coord + '&end_coord=' + end_coord
-    console.log('calling ' + URL)
+    const URL = serverDomain + "/api/GSV/stream?category=" + category + 
+    '&start_coord=' + start_coord + '&end_coord=' + end_coord
+    console.log('calling' + URL)
 
     var eventSource = new EventSource(URL);
     eventSource.onmessage = e => {
@@ -269,7 +270,6 @@ export class MapStreetView extends Component {
         serverError: true,
         dataLoading: false,
       });
-      eventSource.close()
     }
   }
 
