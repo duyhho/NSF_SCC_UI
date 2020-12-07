@@ -43,7 +43,7 @@ export class MapStreetView extends Component {
       firstLoad: true,
       firstImageReturned: false,
       returnedPercent: 0,
-      serverDomain: 'https://a2361fd1c157.ngrok.io',
+      serverDomain: 'http://cb734b23d812.ngrok.io/',
       // vrViewUrl: "https://f0c06ecb4442.ngrok.io",
       vrView: null,
       neighborhoodList: [],
@@ -221,17 +221,14 @@ export class MapStreetView extends Component {
     })
 
     var self = this;
-    // const start_coord = JSON.stringify(this.state.fields.start_location)
-    // const end_coord = JSON.stringify(this.state.fields.end_location)
-    // const category = this.state.category;
-    // var serverDomain = this.state.serverDomain;
-    // if (serverDomain.search('https') === -1){
-    //   serverDomain = serverDomain.replace("http", 'https')
-    // }
-    var URL = "http://cb734b23d812.ngrok.io/api/GSV/stream/?category=utility"
-    // var URL = "https://a2361fd1c157.ngrok.io/api/GSV/stream?category=utility&start_coord={%22lat%22:39.091172069883214,%22lng%22:-94.56332980256805}&end_coord=" + end_coord
-
-    URL = 'https://a2361fd1c157.ngrok.io/api/GSV/stream/?category=vehicle&start_coord={%22lat%22:39.091172069883214,%22lng%22:-94.56332980256805}&end_coord={%22lat%22:39.077120436304114,%22lng%22:-94.55237284327451}'
+    const start_coord = JSON.stringify(this.state.fields.start_location)
+    const end_coord = JSON.stringify(this.state.fields.end_location)
+    const category = this.state.category;
+    var serverDomain = this.state.serverDomain;
+    if (serverDomain.search('https') === -1){
+      serverDomain = serverDomain.replace("http", 'https')
+    }
+    const URL = serverDomain + "/api/GSV/stream?category=" + category + '&start_coord=' + start_coord + '&end_coord=' + end_coord
     console.log('calling ' + URL)
 
     var eventSource = new EventSource(URL);
@@ -265,7 +262,6 @@ export class MapStreetView extends Component {
     }
 
     eventSource.onerror = e => {
-      console.log(e)
       console.log('error at: ' + URL)
 
       modal.showInfo("Error while connecting with the server!", "danger", "top", "center");
