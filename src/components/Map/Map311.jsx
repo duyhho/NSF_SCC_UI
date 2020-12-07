@@ -81,11 +81,7 @@ export class Map311 extends Component {
         var self = this;
         const currentAddress = this.state.currentAddress;
         const category = this.state.category;
-        var serverDomain = this.state.serverDomain;
-      
-        if (serverDomain.search('https') === -1){
-            serverDomain = serverDomain.replace("http", 'https')
-        }
+        const serverDomain = this.state.serverDomain;
       
         var eventSource = new EventSource(serverDomain + "/api/311/predict?category=" + category + '&address=' + currentAddress);
 

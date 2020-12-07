@@ -107,11 +107,7 @@ export class VirtualTour extends Component {
         const currentHeading = panorama.getPov().heading;
         const currentPitch = panorama.getPov().pitch;
         const category = this.state.category;
-        var serverDomain = this.state.serverDomain;
-      
-        if (serverDomain.search('https') === -1){
-            serverDomain = serverDomain.replace("http", 'https')
-        }
+        const serverDomain = this.state.serverDomain;
       
         var eventSource = new EventSource(serverDomain + '/api/virtualtour/predict?coord=' + JSON.stringify(currentPosition)
                                         + "&pitch=" + currentPitch + "&heading=" + currentHeading + "&category=" + category);

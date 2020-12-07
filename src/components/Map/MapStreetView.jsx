@@ -3,6 +3,7 @@ import ImageGallery from 'react-image-gallery';
 import { Map, InfoWindow, Marker, GoogleApiWrapper, Polygon } from "google-maps-react";
 import update from 'immutability-helper';
 import axios from 'axios'
+import $ from 'jquery'
 
 import { modal } from '../../utilities/modal.js'
 import { server } from '../../controllers/Server.js'
@@ -81,7 +82,7 @@ export class MapStreetView extends Component {
 
   loadNeighborhoodList() {
     var self = this;
-    
+
     axios.get(this.state.serverDomain + "/api/community/get/")
     .then(function(response) {
         self.setState({
@@ -201,6 +202,7 @@ export class MapStreetView extends Component {
     }
     
     this.addMarker(clickEvent.latLng, map)
+    $("#neighborhood_select").val("Custom")
   };
 
   handleClick() {
@@ -222,14 +224,7 @@ export class MapStreetView extends Component {
     const start_coord = JSON.stringify(this.state.fields.start_location)
     const end_coord = JSON.stringify(this.state.fields.end_location)
     const category = this.state.category;
-    var serverDomain = this.state.serverDomain;
-
-    // // Update the formData object
-    // formData.append('start_coord', start_coord);
-    // formData.append('end_coord', end_coord);
-    if (serverDomain.search('https') === -1){
-      serverDomain = serverDomain.replace("http", 'https')
-    }
+    const serverDomain = this.state.serverDomain;
 
     var eventSource = new EventSource(serverDomain + "/api/GSV/stream?category=" + category + 
                                     '&start_coord=' + start_coord + '&end_coord=' + end_coord);
@@ -322,14 +317,6 @@ export class MapStreetView extends Component {
     }
   }
 
-  getNeighborhoodOptions() {
-    const neighborhoodList = this.state.neighborhoodList;
-
-    neighborhoodList.map(function(item) {
-      return <option value={item.name}>{item.name}</option>
-    })
-  }
-
   handleNeighborhoodChange(e) {
     var self = this;
     const selectedValue = e.target.value;
@@ -366,7 +353,7 @@ export class MapStreetView extends Component {
     const editEnd = this.state.editEnd;
     const firstImageReturned = this.state.firstImageReturned;
     const returnedPercent = this.state.returnedPercent;
-    const neighborhoodOptions = this.getNeighborhoodOptions();
+    const neighborhoodList = this.state.neighborhoodList;
 
     var predictButtonText = ""
     if (dataLoading === false) {
@@ -405,8 +392,13 @@ export class MapStreetView extends Component {
           <button className="btn btn-primary" onClick={this.handleEditEnd.bind(this)} disabled={editStart}>{endButtonText}</button>
         </div>
         <div className="neighborhood-select">
-          <select defaultValue="Custom" onChange={this.handleNeighborhoodChange.bind(this)} disabled={dataLoading}>
-            {neighborhoodOptions}
+          <select id="neighborhood_select" defaultValue="Custom" onChange={this.handleNeighborhoodChange.bind(this)} disabled={dataLoading}>
+            <option value={"Custom"}>Custom</option>
+            {
+              neighborhoodList.map(function(item) {
+                return <option value={item.name}>{item.name}</option>
+              })
+            }
           </select>
         </div>
       

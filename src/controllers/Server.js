@@ -4,7 +4,12 @@ class Server {
     }
 
     getServerDomain() {
-        return this.serverDomain
+        var serverDomainEdit = "";
+
+        if (this.serverDomain.search('https') === -1){
+            serverDomainEdit = this.serverDomain.replace("http", 'https')
+        }
+        return serverDomainEdit
     }
 }
 
