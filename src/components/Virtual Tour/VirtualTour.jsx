@@ -168,7 +168,7 @@ export class VirtualTour extends Component {
         const returnedPercent = this.state.returnedPercent;
         const serverError = this.state.serverError;
         const dataLoading = this.state.dataLoading;
-        // const imageHasObjects = this.state.imageHasObjects;
+        const imageHasObjects = this.state.imageHasObjects;
         
         var predictButtonText = ""
         if (dataLoading === false) {
