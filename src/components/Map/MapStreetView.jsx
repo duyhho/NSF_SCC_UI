@@ -224,8 +224,10 @@ export class MapStreetView extends Component {
     const start_coord = JSON.stringify(this.state.fields.start_location)
     const end_coord = JSON.stringify(this.state.fields.end_location)
     const category = this.state.category;
-    const serverDomain = this.state.serverDomain;
-
+    var serverDomain = this.state.serverDomain;
+    if (serverDomain.search('https') === -1){
+      serverDomain = serverDomain.replace("http", 'https')
+    }
     var eventSource = new EventSource(serverDomain + "/api/GSV/stream?category=" + category + 
                                     '&start_coord=' + start_coord + '&end_coord=' + end_coord);
     eventSource.onmessage = e => {
