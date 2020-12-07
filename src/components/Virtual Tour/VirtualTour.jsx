@@ -23,10 +23,8 @@ export class VirtualTour extends Component {
             currentHeading: 34,
             currentPitch: 10,
             imageHasObjects: true,
-            tempState: {position: {lat: 39.0410436302915, lng: -94.5876739197085}, heading: 50, pitch: 10, panoId: null},
             panorama: null,
         };
-
     }
     
     componentDidMount() {
@@ -34,7 +32,6 @@ export class VirtualTour extends Component {
         var curLocation = this.getcurrentLocation();
         
         curLocation.then(function(result){
-            console.log('Update Current Location Based on GPS...')
             const location = {lat: result.lat, lng: result.lng}
             if (result.lat != null && result.lng != null) {
                 self.setState({
@@ -55,9 +52,7 @@ export class VirtualTour extends Component {
             }
         })
     }
-    componentDidUpdate() {
-        
-    }
+
     getcurrentLocation() {
         if (navigator && navigator.geolocation) {
             return new Promise((resolve, reject) => {
@@ -97,7 +92,6 @@ export class VirtualTour extends Component {
 
     predictImage() {
         this.setState({
-            imageList: [],
             dataLoading: true,
             returnedPercent: 0,
         })
@@ -135,6 +129,11 @@ export class VirtualTour extends Component {
                 })
             } else {
                 var jsonData = JSON.parse(e.data)
+                if (self.state.imageList.length === 5) {
+                    self.setState({
+                        imageList: self.state.imageList.slice(1)
+                    })
+                }
                 self.setState({
                     imageList: update(self.state.imageList, {$push: [{
                         original: 'data:image/jpg;base64,' + jsonData.image,
@@ -208,11 +207,11 @@ export class VirtualTour extends Component {
                             items={imageList}
                             showPlayButton={false}
                         />
-                        {imageHasObjects === false && (
+                        {/* {imageHasObjects === false && (
                         <div>
-                            This image does not contain any objects for the selected category.
+                            The returned image does not contain any objects for the selected category.
                         </div>
-                        )}
+                        )} */}
                     </div>
                     ) : (
                     <div>
