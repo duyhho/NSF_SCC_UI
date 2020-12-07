@@ -11,7 +11,7 @@ export class VirtualTour extends Component {
         this.pano= React.createRef();
 
         this.state = {
-            serverDomain: "http://455c553d9889.ngrok.io",
+            serverDomain: "http://49e90ad9bb6a.ngrok.io",
             category: "utility",
             firstImageReturned: false,
             imageList: [],
@@ -56,39 +56,7 @@ export class VirtualTour extends Component {
         })
     }
     componentDidUpdate() {
-        this.state.panorama.addListener("pov_changed", () => {
-            // console.log('POV changed!')
-            // this.setState({
-            //     tempState: update(this.state.tempState, {
-            //         heading: {$set: this.state.panorama.getPov().heading},
-            //         pitch: {$set: this.state.panorama.getPov().pitch}
-            //         })
-            // }, )
-            // console.log(this.state.tempState)
-            // console.log(this.state.panorama.getPov())
-        });
         
-        // this.state.panorama.addListener("pano_changed", () => {
-        //     // console.log('Pano changed!')
-
-        //     this.setState({
-        //         tempState: update(this.state.tempState, {
-        //             panoId: {$set: this.state.panorama.getPano()},
-        //           })
-        //     })
-        // });
-        // this.state.panorama.addListener("position_changed", () => {
-        //     // console.log('Position changed!')
-
-        //     this.setState({
-        //         tempState: update(this.state.tempState, {
-        //             position: {$set: this.state.panorama.getPosition()},
-        //           })
-        //     })
-        //     // console.log(this.state.tempState)
-        // });
-
-
     }
     getcurrentLocation() {
         if (navigator && navigator.geolocation) {
