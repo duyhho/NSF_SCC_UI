@@ -403,7 +403,7 @@ export class MapStreetView extends Component {
         </div>
       
         <div className="row">
-          <div className="col-md-6 map-view-container">
+          <div className="col-md-6 map-view-container" style = {{height: "95vh"}}>
             <div className="map-top-center">
               <button onClick={this.sendLocation} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
               <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)} disabled={dataLoading}>
@@ -482,11 +482,11 @@ export class MapStreetView extends Component {
             )}
           </div>
         </div>
-        <div className="row">
+        {/* <div className="row">
           <div className="col-md-6">
             <div id="vrview"></div>
           </div>
-        </div>
+        </div> */}
       </div>
     );
   }

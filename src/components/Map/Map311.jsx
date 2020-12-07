@@ -31,6 +31,7 @@ export class Map311 extends Component {
             category: "utility",
             firstLoad: true,
             rectangle_coords: [],
+            panorama: null,
         };
     }
     
@@ -155,7 +156,19 @@ export class Map311 extends Component {
                             <h2>Address</h2>
                             <b>{location.address + ", Kansas City, MO " + location.zip_code}</b>
                         </div>
-                        )
+                        ),
+                        panorama: new window.google.maps.StreetViewPanorama(
+                            self.pano.current,
+                            {
+                                position: location,
+                                pov: {
+                                    heading: 50,
+                                    pitch: 16,
+                                },
+                                addressControl: false,
+                                visible: true
+                            }
+                         )
                     });
                 }
             })
@@ -215,17 +228,17 @@ export class Map311 extends Component {
         const dataLoading = this.state.dataLoading;
         const rectangle = this.state.rectangle_coords;
 
-        new window.google.maps.StreetViewPanorama(
-            document.getElementById("pano"),
-            {
-                position: currentLocation,
-                pov: {
-                    heading: 34,
-                    pitch: 10,
-                },
-                addressControl: false
-            }
-        )
+        // new window.google.maps.StreetViewPanorama(
+        //     document.getElementById("pano"),
+        //     {
+        //         position: currentLocation,
+        //         pov: {
+        //             heading: 34,
+        //             pitch: 10,
+        //         },
+        //         addressControl: false
+        //     }
+        // )
 
         var predictButtonText = ""
         if (dataLoading === false) {
@@ -324,35 +337,35 @@ export class Map311 extends Component {
                 </div>
                 <div className="row">
                     <div className="col-md-6" align="center">
-                         <div id="pano"></div>
+                         <div id="pano" ref = {this.pano}></div>
                     </div>
                     <div className="col-md-5 currentSelectedLocationDiv" align="left">
                         <div className = 'col-md-10'>
-                            <div align="center">CURRENT SELECTED LOCATION</div>
+                            <div align="center" style = {{fontWeight: 'bold', fontSize: '1.15vw'}}>CURRENT SELECTED LOCATION</div>
                             <br />
                             <div className="row">
-                                <div className="col-md-4">
-                                    Location:
+                                <div className="col-md-6 desc1">
+                                    <b>Location:</b>
                                 </div>
-                                <div className="col-md-8">
+                                <div className="col-md-6 desc2">
                                     {currentAddress + ", " + currentLocation.neighborhood + ", " + currentLocation.county + " County"}
                                 </div>
                             </div>
-                            <br />
+                            {/* <br /> */}
                             <div className="row">
-                                <div className="col-md-4">
-                                    Request Type:
+                                <div className="col-md-6 desc1">
+                                    <b>Request Type:</b>
                                 </div>
-                                <div className="col-md-8">
+                                <div className="col-md-6 desc2">
                                     {currentLocation.request_type}
                                 </div>
                             </div>
-                            <br />
+                            {/* <br /> */}
                             <div className="row">
-                                <div className="col-md-4">
-                                    Submitted:
+                                <div className="col-md-6 desc1">
+                                   <b>Submitted: </b>
                                 </div>
-                                <div className="col-md-8">
+                                <div className="col-md-6 desc2">
                                     {currentLocation.date + ", " + currentLocation.time}
                                 </div>
                             </div>
