@@ -263,6 +263,7 @@ export class MapStreetView extends Component {
     }
 
     eventSource.onerror = e => {
+      console.log(e)
       console.log('error at: ' + URL)
 
       modal.showInfo("Error while connecting with the server!", "danger", "top", "center");
