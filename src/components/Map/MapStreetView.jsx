@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import ImageGallery from 'react-image-gallery';
 import { Map, InfoWindow, Marker, GoogleApiWrapper, Polygon } from "google-maps-react";
 import update from 'immutability-helper';
+import axios from 'axios'
+import $ from 'jquery'
 
 import { modal } from '../../utilities/modal.js'
 import { server } from '../../controllers/Server.js'
@@ -44,6 +46,7 @@ export class MapStreetView extends Component {
       serverDomain: server.getServerDomain(),
       // vrViewUrl: "https://f0c06ecb4442.ngrok.io",
       vrView: null,
+      neighborhoodList: [],
     };
   }
   
@@ -70,10 +73,25 @@ export class MapStreetView extends Component {
         }
       })
     }
+    // this.onVrViewLoad()
+    this.loadNeighborhoodList()
     this.setState({
       firstLoad: false,
     })
-    // this.onVrViewLoad()
+  }
+
+  loadNeighborhoodList() {
+    var self = this;
+
+    axios.get(this.state.serverDomain + "/api/community/get/")
+    .then(function(response) {
+        self.setState({
+          neighborhoodList: response.data,
+        })
+    })
+    .catch(function(error) {
+      modal.showInfo("Cannot load the neighborhood list!", "danger", "top", "center");
+    })
   }
 
   onVrViewLoad() {
@@ -184,6 +202,7 @@ export class MapStreetView extends Component {
     }
     
     this.addMarker(clickEvent.latLng, map)
+    $("#neighborhood_select").val("Custom")
   };
 
   handleClick() {
@@ -205,14 +224,7 @@ export class MapStreetView extends Component {
     const start_coord = JSON.stringify(this.state.fields.start_location)
     const end_coord = JSON.stringify(this.state.fields.end_location)
     const category = this.state.category;
-    var serverDomain = this.state.serverDomain;
-
-    // // Update the formData object
-    // formData.append('start_coord', start_coord);
-    // formData.append('end_coord', end_coord);
-    if (serverDomain.search('https') === -1){
-      serverDomain = serverDomain.replace("http", 'https')
-    }
+    const serverDomain = this.state.serverDomain;
 
     var eventSource = new EventSource(serverDomain + "/api/GSV/stream?category=" + category + 
                                     '&start_coord=' + start_coord + '&end_coord=' + end_coord);
@@ -304,6 +316,31 @@ export class MapStreetView extends Component {
       })
     }
   }
+
+  handleNeighborhoodChange(e) {
+    var self = this;
+    const selectedValue = e.target.value;
+    const neighborhoodList = this.state.neighborhoodList;
+
+    if (selectedValue !== "Custom") {
+      neighborhoodList.forEach(function(item) {
+        if (item.name === selectedValue) {
+          self.setState(prev => ({
+            fields: {
+              start_location: item.start,
+              end_location: item.end
+            },
+            rectangle_coords: [
+              item.start,
+              {lat: item.start.lat, lng: item.end.lng},
+              item.end,
+              {lat: item.end.lat, lng: item.start.lng}
+            ]
+          }));
+        }
+      })
+    }
+  }
   
   render() {
     const start_location = this.state.fields.start_location;
@@ -316,6 +353,7 @@ export class MapStreetView extends Component {
     const editEnd = this.state.editEnd;
     const firstImageReturned = this.state.firstImageReturned;
     const returnedPercent = this.state.returnedPercent;
+    const neighborhoodList = this.state.neighborhoodList;
 
     var predictButtonText = ""
     if (dataLoading === false) {
@@ -352,6 +390,16 @@ export class MapStreetView extends Component {
         </div>
         <div className="edit-end-button">
           <button className="btn btn-primary" onClick={this.handleEditEnd.bind(this)} disabled={editStart}>{endButtonText}</button>
+        </div>
+        <div className="neighborhood-select">
+          <select id="neighborhood_select" defaultValue="Custom" onChange={this.handleNeighborhoodChange.bind(this)} disabled={dataLoading}>
+            <option value={"Custom"}>Custom</option>
+            {
+              neighborhoodList.map(function(item) {
+                return <option value={item.name}>{item.name}</option>
+              })
+            }
+          </select>
         </div>
       
         <div className="row">
