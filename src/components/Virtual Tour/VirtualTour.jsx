@@ -161,6 +161,7 @@ export class VirtualTour extends Component {
     }
     
     render() {
+
         const imageList = this.state.imageList;
         const firstImageReturned = this.state.firstImageReturned;
         const returnedPercent = this.state.returnedPercent;

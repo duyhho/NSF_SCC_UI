@@ -354,6 +354,7 @@ export class MapStreetView extends Component {
     const firstImageReturned = this.state.firstImageReturned;
     const returnedPercent = this.state.returnedPercent;
     const neighborhoodList = this.state.neighborhoodList;
+    // console.log(this.state.serverDomain)
 
     var predictButtonText = ""
     if (dataLoading === false) {
