@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { GoogleApiWrapper } from "google-maps-react"
+import { Map, Marker, GoogleApiWrapper } from "google-maps-react"
 import ImageGallery from 'react-image-gallery'
 import update from 'immutability-helper'
 
@@ -50,8 +50,23 @@ export class VirtualTour extends Component {
                             addressControl: false,
                             visible: true
                         }
-                     )
-                }, )
+                    )
+                })
+            } else {
+                self.setState({
+                    panorama: new window.google.maps.StreetViewPanorama(
+                        self.pano.current,
+                        {
+                            position: {lat: 39.0410436302915, lng: -94.5876739197085},
+                            pov: {
+                                heading: 50,
+                                pitch: 16,
+                            },
+                            addressControl: false,
+                            visible: true
+                        }
+                    )
+                })
             }
         })
     }
@@ -159,6 +174,26 @@ export class VirtualTour extends Component {
             });
         }
     }
+
+    onMapClicked(mapProps, map, clickEvent) {
+        this.setState({
+            currentPosition: {lat: clickEvent.latLng.lat(), lng: clickEvent.latLng.lng()},
+            panorama: new window.google.maps.StreetViewPanorama(
+                this.pano.current,
+                {
+                    position: {lat: clickEvent.latLng.lat(), lng: clickEvent.latLng.lng()},
+                    pov: {
+                        heading: 50,
+                        pitch: 16,
+                    },
+                    addressControl: false,
+                    visible: true
+                }
+            )
+        })
+
+        map.panTo(clickEvent.latLng);
+    };
     
     render() {
 
@@ -168,6 +203,7 @@ export class VirtualTour extends Component {
         const serverError = this.state.serverError;
         const dataLoading = this.state.dataLoading;
         // const imageHasObjects = this.state.imageHasObjects;
+        const currentPosition = this.state.currentPosition;
         
         var predictButtonText = ""
         if (dataLoading === false) {
@@ -176,7 +212,7 @@ export class VirtualTour extends Component {
             predictButtonText = "Loading..."
         }
 
-        var helpText = 'No predictions. Select a location on the map and click "Predict" to start.'
+        var helpText = 'No predictions. Navigate around the map and click "Predict" to start.'
 
         if (!this.props.google) {
             return <div>Loading...</div>;
@@ -185,7 +221,7 @@ export class VirtualTour extends Component {
         return (
         <div className="page-container">
             <div className="row">
-                <div className="col-md-6 pano-view-container">
+                <div className="col-md-6 map-view-container">
                     <div className="map-top-center">
                         <button onClick={this.predictImage.bind(this)} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
                         <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)} disabled={dataLoading}>
@@ -197,7 +233,21 @@ export class VirtualTour extends Component {
                         </select>
                     </div>
                     <div className="map-container">
-                        <div id="pano" ref={this.pano}></div>
+                        <Map
+                            google={this.props.google} 
+                            initialCenter={currentPosition}
+                            zoom={14}
+                            onClick={this.onMapClicked.bind(this)}
+                            streetViewControl={false}
+                        >
+                            <Marker
+                                position={currentPosition}
+                                // icon={{
+                                //     url: process.env.PUBLIC_URL + '/img/IMAGE_NAME_HERE',
+                                //     scaledSize: new window.google.maps.Size(15, 15)
+                                // }}
+                            />
+                        </Map>
                     </div>
                 </div>
                 <div className="col-md-5" align="center">
@@ -228,6 +278,11 @@ export class VirtualTour extends Component {
                         <ProgressBar bgcolor={"#00695c"} completed={returnedPercent} />
                     </div>
                     )}
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-md-6 pano-view-container">
+                    <div id="pano" ref={this.pano}></div>
                 </div>
             </div>
         </div>
