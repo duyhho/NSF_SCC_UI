@@ -45,13 +45,16 @@ export class VirtualTour extends Component {
                             position: location,
                             pov: {
                                 heading: 50,
-                                pitch: 16,
+                                pitch: 0,
                             },
                             addressControl: false,
                             visible: true
                         }
                     )
+                }, function() {
+                    this.initPositionListener();
                 })
+                
             } else {
                 self.setState({
                     panorama: new window.google.maps.StreetViewPanorama(
@@ -60,7 +63,7 @@ export class VirtualTour extends Component {
                             position: {lat: 39.0410436302915, lng: -94.5876739197085},
                             pov: {
                                 heading: 50,
-                                pitch: 16,
+                                pitch: 0,
                             },
                             addressControl: false,
                             visible: true
@@ -69,8 +72,28 @@ export class VirtualTour extends Component {
                 })
             }
         })
+        
+        
     }
-
+    initPositionListener(){
+        console.log(this.state.panorama)
+        if (this.state.panorama != null) 
+        {
+          
+            this.state.panorama.addListener("position_changed", () => {
+                const location = this.state.panorama.getPosition()
+                const new_location = {lat: location.lat(), lng: location.lng()}
+                if (new_location != this.state.currentPosition){
+                    console.log(new_location)
+                
+                    this.setState({
+                        currentPosition: new_location
+                    })
+                }
+                
+            });   
+        }
+    }
     getcurrentLocation() {
         if (navigator && navigator.geolocation) {
             return new Promise((resolve, reject) => {
@@ -174,8 +197,9 @@ export class VirtualTour extends Component {
             });
         }
     }
-
+    
     onMapClicked(mapProps, map, clickEvent) {
+        var self = this
         this.setState({
             currentPosition: {lat: clickEvent.latLng.lat(), lng: clickEvent.latLng.lng()},
             panorama: new window.google.maps.StreetViewPanorama(
@@ -184,18 +208,21 @@ export class VirtualTour extends Component {
                     position: {lat: clickEvent.latLng.lat(), lng: clickEvent.latLng.lng()},
                     pov: {
                         heading: 50,
-                        pitch: 16,
+                        pitch: 0,
                     },
                     addressControl: false,
                     visible: true
                 }
             )
+        }, function(){
+            this.initPositionListener()
         })
 
         map.panTo(clickEvent.latLng);
     };
 
     onMarkerDrag(coord, map) {
+        var self = this
         this.setState({
             currentPosition: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
             panorama: new window.google.maps.StreetViewPanorama(
@@ -210,6 +237,8 @@ export class VirtualTour extends Component {
                     visible: true
                 }
             )
+        }, function(){
+            this.initPositionListener()
         })
     }
     
@@ -254,7 +283,8 @@ export class VirtualTour extends Component {
                         <Map
                             google={this.props.google} 
                             initialCenter={currentPosition}
-                            zoom={14}
+                            center={currentPosition}
+                            zoom={16}
                             onClick={this.onMapClicked.bind(this)}
                             streetViewControl={false}
                         >
@@ -262,7 +292,7 @@ export class VirtualTour extends Component {
                                 position={currentPosition}
                                 icon={{
                                     url: process.env.PUBLIC_URL + '/img/human_marker.png',
-                                    scaledSize: new window.google.maps.Size(30, 30)
+                                    scaledSize: new window.google.maps.Size(40, 40)
                                 }}
                                 draggable={true}
                                 onDragend={(t, map, coord) => this.onMarkerDrag(coord, map)}
