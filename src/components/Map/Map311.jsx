@@ -47,7 +47,7 @@ export class Map311 extends Component {
     processData() {
         var self = this;
 
-        axios.get(this.state.serverDomain + "/api/311/get/all")
+        axios.get(this.state.serverDomain + "/api/311/get")
         .then(function(response) {
             self.setState({
                 processedData: response.data,
