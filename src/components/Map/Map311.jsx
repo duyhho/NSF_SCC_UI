@@ -336,8 +336,8 @@ export class Map311 extends Component {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-md-6" align="center">
-                         <div id="pano" ref = {this.pano}></div>
+                    <div className="col-md-6 pano-view-container" align="center">
+                        <div id="pano" ref = {this.pano}></div>
                     </div>
                     <div className="col-md-5 currentSelectedLocationDiv" align="left">
                         <div className = 'col-md-10'>

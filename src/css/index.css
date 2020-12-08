@@ -117,7 +117,7 @@ code {
 }
 .pano-view-container {
   position: relative;
-  height: 90vh
+  height: 45vh
 }
 
 .alert[data-notify="container"] {
@@ -184,6 +184,7 @@ code {
   margin-left: 151px;
   height: 97vh
 }
+
 .desc1 {
   font-size: 1vw;
   padding-right: 0vw
