@@ -194,6 +194,24 @@ export class VirtualTour extends Component {
 
         map.panTo(clickEvent.latLng);
     };
+
+    onMarkerDrag(coord, map) {
+        this.setState({
+            currentPosition: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
+            panorama: new window.google.maps.StreetViewPanorama(
+                this.pano.current,
+                {
+                    position: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
+                    pov: {
+                        heading: 50,
+                        pitch: 16,
+                    },
+                    addressControl: false,
+                    visible: true
+                }
+            )
+        })
+    }
     
     render() {
 
@@ -242,10 +260,12 @@ export class VirtualTour extends Component {
                         >
                             <Marker
                                 position={currentPosition}
-                                // icon={{
-                                //     url: process.env.PUBLIC_URL + '/img/IMAGE_NAME_HERE',
-                                //     scaledSize: new window.google.maps.Size(15, 15)
-                                // }}
+                                icon={{
+                                    url: process.env.PUBLIC_URL + '/img/human_marker.png',
+                                    scaledSize: new window.google.maps.Size(30, 30)
+                                }}
+                                draggable={true}
+                                onDragend={(t, map, coord) => this.onMarkerDrag(coord, map)}
                             />
                         </Map>
                     </div>
