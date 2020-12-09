@@ -299,7 +299,7 @@ export class VirtualTour extends Component {
                             </Map>
                         </div>
                     </div>
-                    <div className="row" >
+                    <div className="row" style={{marginTop:"1vh"}}>
                         <div className = 'col-md-12' align="center">
                         {imageList.length > 0 ? (
                             <div>

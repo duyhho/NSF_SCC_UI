@@ -112,7 +112,7 @@ code {
 }
 .map-view-container2 {
   position: relative;
-  height: 45vh
+  height: 40vh
 }
 .map-container {
   position: relative;
@@ -150,7 +150,7 @@ code {
   width: 25vw;
 }
 .image-gallery-slide {
-  height: 45vh;
+  height: 35vh;
 }
 
 #vrview iframe{
