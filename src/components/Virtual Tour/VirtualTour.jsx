@@ -83,7 +83,7 @@ export class VirtualTour extends Component {
             this.state.panorama.addListener("position_changed", () => {
                 const location = this.state.panorama.getPosition()
                 const new_location = {lat: location.lat(), lng: location.lng()}
-                if (new_location != this.state.currentPosition){
+                if (new_location !== this.state.currentPosition){
                     console.log(new_location)
                 
                     this.setState({
@@ -199,7 +199,6 @@ export class VirtualTour extends Component {
     }
     
     onMapClicked(mapProps, map, clickEvent) {
-        var self = this
         this.setState({
             currentPosition: {lat: clickEvent.latLng.lat(), lng: clickEvent.latLng.lng()},
             panorama: new window.google.maps.StreetViewPanorama(
@@ -222,7 +221,6 @@ export class VirtualTour extends Component {
     };
 
     onMarkerDrag(coord, map) {
-        var self = this
         this.setState({
             currentPosition: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
             panorama: new window.google.maps.StreetViewPanorama(
