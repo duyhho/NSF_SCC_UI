@@ -35,6 +35,7 @@ export class Map311 extends Component {
             allNeighborhoodsCoords: [],
             panorama: null,
             showAllNeighborhoods: false,
+            neighborhoodList:[],
         };
     }
     
@@ -55,6 +56,7 @@ export class Map311 extends Component {
 
         axios.get(this.state.serverDomain + "/api/311/get")
         .then(function(response) {
+            // console.log(response.data)
             self.setState({
                 processedData: response.data,
                 serverError: false,
