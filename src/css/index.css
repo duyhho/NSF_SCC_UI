@@ -126,6 +126,12 @@ code {
   margin-Left: 10px;
   margin-Top: 140px
 }
+.neighborhood-select-2 {
+  position: absolute;
+  z-Index: 9999;
+  margin-Left: 10px;
+  margin-Top: 70px
+}
 .map-view-container {
   position: relative;
   height: 50vh

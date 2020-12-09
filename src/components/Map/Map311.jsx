@@ -3,6 +3,7 @@ import { Map, Marker, GoogleApiWrapper, InfoWindow, Polygon } from "google-maps-
 import ImageGallery from 'react-image-gallery'
 import update from 'immutability-helper'
 import axios from 'axios'
+import $ from 'jquery'
 
 import { server } from '../../controllers/Server.js'
 import { modal } from '../../utilities/modal.js'
@@ -31,7 +32,9 @@ export class Map311 extends Component {
             category: "utility",
             firstLoad: true,
             rectangle_coords: [],
+            allNeighborhoodsCoords: [],
             panorama: null,
+            showAllNeighborhoods: false,
         };
     }
     
@@ -39,6 +42,9 @@ export class Map311 extends Component {
         if (this.state.firstLoad === true) {
             this.processData();
         }
+
+        this.loadNeighborhoodList()
+
         this.setState({
             firstLoad: false,
         })
@@ -101,6 +107,7 @@ export class Map311 extends Component {
                     paths:[  
                     self.state.rectangle_coords
                 ]});
+                $("#neighborhood_select").val("Custom Prediction")
                 self.setState({
                     serverError: false,
                     dataLoading: false,
@@ -212,6 +219,66 @@ export class Map311 extends Component {
     setPolygonOptions = (options) => {
         this.polygonRef.current.polygon.setOptions(options);
     };
+
+    loadNeighborhoodList() {
+        var self = this;
+
+        axios.get(this.state.serverDomain + "/api/community/get")
+        .then(function(response) {
+            self.setState({
+                neighborhoodList: response.data,
+            })
+
+            response.data.forEach(function(item) {
+                self.setState({
+                    allNeighborhoodsCoords: update(self.state.allNeighborhoodsCoords, {$push: [[
+                        item.start,
+                        {lat: item.start.lat, lng: item.end.lng},
+                        item.end,
+                        {lat: item.end.lat, lng: item.start.lng}
+                    ]]
+                    })
+                })
+            })
+        })
+        .catch(function(error) {
+            modal.showInfo("Cannot load the neighborhood list!", "danger", "top", "center");
+        })
+    }
+
+    handleNeighborhoodChange(e) {
+        var self = this;
+        const selectedValue = e.target.value;
+        const neighborhoodList = this.state.neighborhoodList;
+
+        if (selectedValue !== "Custom Prediction") {
+            if (selectedValue === "None") {
+                self.setState(prev => ({
+                    rectangle_coords: [],
+                    showAllNeighborhoods: false
+                }));
+            } else if (selectedValue === "All Neighborhoods") {
+                self.setState(prev => ({
+                    rectangle_coords: [],
+                    showAllNeighborhoods: true
+                }));
+            } else {
+                neighborhoodList.forEach(function(item) {
+                    if (item.name === selectedValue) {
+                        self.setState(prev => ({
+                            rectangle_coords: [
+                                item.start,
+                                {lat: item.start.lat, lng: item.end.lng},
+                                item.end,
+                                {lat: item.end.lat, lng: item.start.lng}
+                            ],
+                            showAllNeighborhoods: false
+                        }));
+                    }
+                })
+            }
+        }
+    }
     
     render() {
         // Dummy Data (used when no server is around)
@@ -227,18 +294,8 @@ export class Map311 extends Component {
         const currentAddress = this.state.currentAddress;
         const dataLoading = this.state.dataLoading;
         const rectangle = this.state.rectangle_coords;
-
-        // new window.google.maps.StreetViewPanorama(
-        //     document.getElementById("pano"),
-        //     {
-        //         position: currentLocation,
-        //         pov: {
-        //             heading: 34,
-        //             pitch: 10,
-        //         },
-        //         addressControl: false
-        //     }
-        // )
+        const neighborhoodList = this.state.neighborhoodList;
+        const allNeighborhoodsCoords = this.state.allNeighborhoodsCoords;
 
         var predictButtonText = ""
         if (dataLoading === false) {
@@ -257,6 +314,18 @@ export class Map311 extends Component {
         <div className="page-container">
             {processedData.length > 0 ? (
             <div>
+                <div className="neighborhood-select-2">
+                    <select id="neighborhood_select" defaultValue="None" onChange={this.handleNeighborhoodChange.bind(this)} disabled={dataLoading}>
+                        <option value={"None"}>None</option>
+                        <option disabled value={"Custom Prediction"}>Custom Prediction</option>
+                        {
+                        neighborhoodList.map(function(item) {
+                            return <option value={item.name}>{item.name}</option>
+                        })
+                        }
+                        <option value={"All Neighborhoods"}>All Neighborhoods</option>
+                    </select>
+                </div>
                 <div className="row">
                     <div className="col-md-6 map-view-container">
                         <div className="map-top-center">
@@ -283,7 +352,8 @@ export class Map311 extends Component {
                                 position={{lat: location.lat, lng: location.lng}}
                                 caseId={location.case_id}
                                 icon={{
-                                url: process.env.PUBLIC_URL + '/img/case_active_icon_2.png',
+                                // url: process.env.PUBLIC_URL + '/img/case_active/case_active_icon_' + location.category + '.png',
+                                url: process.env.PUBLIC_URL + '/img/case_active/case_active_icon_2.png',
                                 scaledSize: new window.google.maps.Size(15, 15)
                                 }}
                                 onClick={this.onMarkerClick.bind(this)}
@@ -306,6 +376,18 @@ export class Map311 extends Component {
                                 fillColor="#0000FF"
                                 fillOpacity={0.35}
                             />
+
+                            {this.state.showAllNeighborhoods === true && (
+                            <Polygon
+                                ref={this.polygonRef}
+                                paths={allNeighborhoodsCoords}
+                                strokeColor="#0000FF"
+                                strokeOpacity={0.8}
+                                strokeWeight={2}
+                                fillColor="#0000FF"
+                                fillOpacity={0.35}
+                            />
+                            )}
 
                             </Map>
                         </div>
