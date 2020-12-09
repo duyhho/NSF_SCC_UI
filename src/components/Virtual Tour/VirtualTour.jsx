@@ -268,73 +268,80 @@ export class VirtualTour extends Component {
         return (
         <div className="page-container">
             <div className="row">
-                <div className="col-md-6 map-view-container">
-                    <div className="map-top-center">
-                        <button onClick={this.predictImage.bind(this)} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
-                        <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)} disabled={dataLoading}>
-                            <option value="Utility Poles">Utility Poles</option>
-                            <option value="Vehicle">Vehicle</option>
-                            <option value="Road">Road</option>
-                            <option value="House">House</option>
-                            <option value="All Categories">All Categories</option>
-                        </select>
-                    </div>
-                    <div className="map-container">
-                        <Map
-                            google={this.props.google} 
-                            initialCenter={currentPosition}
-                            center={currentPosition}
-                            zoom={16}
-                            onClick={this.onMapClicked.bind(this)}
-                            streetViewControl={false}
-                        >
-                            <Marker
-                                position={currentPosition}
-                                icon={{
-                                    url: process.env.PUBLIC_URL + '/img/human_marker.png',
-                                    scaledSize: new window.google.maps.Size(40, 40)
-                                }}
-                                draggable={true}
-                                onDragend={(t, map, coord) => this.onMarkerDrag(coord, map)}
-                            />
-                        </Map>
-                    </div>
-                </div>
-                <div className="col-md-5" align="center">
-                    {imageList.length > 0 ? (
-                    <div>
-                        <ImageGallery
-                            items={imageList}
-                            showPlayButton={false}
-                        />
-                        {/* {imageHasObjects === false && (
-                        <div>
-                            The returned image does not contain any objects for the selected category.
+                <div className="col-md-5">
+                    <div className="row map-view-container2">
+                        <div className="map-top-center">
+                            <button onClick={this.predictImage.bind(this)} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
+                            <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)} disabled={dataLoading}>
+                                <option value="Utility Poles">Utility Poles</option>
+                                <option value="Vehicle">Vehicle</option>
+                                <option value="Road">Road</option>
+                                <option value="House">House</option>
+                                <option value="All Categories">All Categories</option>
+                            </select>
                         </div>
-                        )} */}
-                    </div>
-                    ) : (
-                    <div>
-                        {firstImageReturned === false && (
-                        <div>
-                            {helpText}
+                        <div className="map-container">
+                            <Map
+                                google={this.props.google} 
+                                initialCenter={currentPosition}
+                                center={currentPosition}
+                                zoom={16}
+                                onClick={this.onMapClicked.bind(this)}
+                                streetViewControl={false}
+                            >
+                                <Marker
+                                    position={currentPosition}
+                                    icon={{
+                                        url: process.env.PUBLIC_URL + '/img/human_marker.png',
+                                        scaledSize: new window.google.maps.Size(40, 40)
+                                    }}
+                                    draggable={true}
+                                    onDragend={(t, map, coord) => this.onMarkerDrag(coord, map)}
+                                />
+                            </Map>
                         </div>
-                        )}
                     </div>
-                    )}
-                    {(firstImageReturned === true && serverError === false) && (
-                    <div>
-                        <br />
-                        <ProgressBar bgcolor={"#00695c"} completed={returnedPercent} />
+                    <div className="row" >
+                        <div className = 'col-md-12' align="center">
+                        {imageList.length > 0 ? (
+                            <div>
+                                <ImageGallery
+                                    items={imageList}
+                                    showPlayButton={false}
+                                />
+                                {/* {imageHasObjects === false && (
+                                <div>
+                                    The returned image does not contain any objects for the selected category.
+                                </div>
+                                )} */}
+                            </div>
+                            ) : (
+                            <div>
+                                {firstImageReturned === false && (
+                                <div>
+                                    {helpText}
+                                </div>
+                                )}
+                            </div>
+                            )}
+                            {(firstImageReturned === true && serverError === false) && (
+                            <div>
+                                <br />
+                                <ProgressBar bgcolor={"#00695c"} completed={returnedPercent} />
+                            </div>
+                            )}
                     </div>
-                    )}
+                        </div>
+                        
+                   
                 </div>
-            </div>
-            <div className="row">
-                <div className="col-md-6 pano-view-container">
+                <div className="col-md-7 pano-view-container2" align="center">
                     <div id="pano" ref={this.pano}></div>
+
+                    
                 </div>
             </div>
+            
         </div>
         );
     }

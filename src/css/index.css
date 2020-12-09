@@ -110,6 +110,10 @@ code {
   position: relative;
   height: 50vh
 }
+.map-view-container2 {
+  position: relative;
+  height: 45vh
+}
 .map-container {
   position: relative;
   height: 100%;
@@ -118,6 +122,10 @@ code {
 .pano-view-container {
   position: relative;
   height: 45vh
+}
+.pano-view-container2 {
+  position: relative;
+  height: 95vh
 }
 
 .alert[data-notify="container"] {
