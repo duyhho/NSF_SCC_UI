@@ -17,7 +17,23 @@ export default class SideBar extends React.Component {
   }
 
   componentDidMount() {
-    console.log(window.location.href)
+    if (window.location.pathname === "/realImageDetect") {
+      this.setState({
+        currentView: 1
+      })
+    } else if (window.location.pathname === "/call311") {
+      this.setState({
+        currentView: 2
+      })
+    } else if (window.location.pathname === "/virtualTour") {
+      this.setState({
+        currentView: 3
+      })
+    } else { //Default to 0
+      this.setState({
+        currentView: 0
+      })
+    }
   }
 
   handleMenuSelect(option) {
