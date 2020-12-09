@@ -78,12 +78,32 @@ code {
   transform: translate(-50%, -50%);
   border: none
 }
+.map-top-center-2 select{
+  z-Index: 9999;
+  margin: 0;
+  position: absolute;
+  top: 8vh;
+  left: 20vw;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  border: none
+}
 .map-top-center button{
   z-Index: 9999;
   margin: 0;
   position: absolute;
   top: 4vh;
   left: 23vw;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  border: none
+}
+.map-top-center-2 button{
+  z-Index: 9999;
+  margin: 0;
+  position: absolute;
+  top: 4vh;
+  left: 20vw;
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   border: none
@@ -110,9 +130,10 @@ code {
   position: relative;
   height: 50vh
 }
-.map-view-container2 {
+.map-view-container-2 {
   position: relative;
-  height: 40vh
+  height: 40vh;
+  padding-right: 0;
 }
 .map-container {
   position: relative;
@@ -123,9 +144,10 @@ code {
   position: relative;
   height: 45vh
 }
-.pano-view-container2 {
+.pano-view-container-2 {
   position: relative;
-  height: 95vh
+  height: 95vh;
+  padding-left: 0;
 }
 
 .alert[data-notify="container"] {

@@ -16,6 +16,10 @@ export default class SideBar extends React.Component {
     }
   }
 
+  componentDidMount() {
+    console.log(window.location.href)
+  }
+
   handleMenuSelect(option) {
     this.setState({
       currentView: option
