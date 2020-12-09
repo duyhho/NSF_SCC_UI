@@ -200,11 +200,11 @@ code {
   background-image: url('../case_background.png');
   width: 100%;
   height: 55vh;
-  background-size: 83%;
+  background-size: 85%;
   background-repeat: no-repeat;
   background-position: center;
   padding-top: 15vh;
-  padding-left: 9vw;
+  padding-left: 9.5vw;
   padding-right: 5vw;
   font-size: 1.1vw;
 }
@@ -226,6 +226,6 @@ code {
   padding-right: 0vw
 }
 .desc2 {
-  font-size: 0.9vw;
+  font-size: 1vw;
   padding-left: 0vw
 }

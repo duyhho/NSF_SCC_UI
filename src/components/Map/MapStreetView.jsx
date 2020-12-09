@@ -225,7 +225,8 @@ export class MapStreetView extends Component {
     const end_coord = JSON.stringify(this.state.fields.end_location)
     const category = this.state.category;
     var serverDomain = this.state.serverDomain;
-
+    console.log(start_coord)
+    console.log(end_coord)
     var eventSource = new EventSource(serverDomain + "/api/GSV/predict?category=" + category + 
                                     '&start_coord=' + start_coord + '&end_coord=' + end_coord);
     eventSource.onmessage = e => {

@@ -343,8 +343,8 @@ export class Map311 extends Component {
                         <div className="map-container">
                             <Map
                                 google={this.props.google}
-                                initialCenter={{lat: currentLocation.lat, lng: currentLocation.lng}}
-                                zoom={11}
+                                initialCenter={{"lat":39.08078758473217,"lng":-94.55568075124583}}
+                                zoom={14}
                                 onClick={this.onMapClicked.bind(this)}
                                 streetViewControl = {false}
                             >
@@ -354,9 +354,9 @@ export class Map311 extends Component {
                                 position={{lat: location.lat, lng: location.lng}}
                                 caseId={location.case_id}
                                 icon={{
-                                // url: process.env.PUBLIC_URL + '/img/case_active/case_active_icon_' + location.category + '.png',
-                                url: process.env.PUBLIC_URL + '/img/case_active/case_active_icon_2.png',
-                                scaledSize: new window.google.maps.Size(15, 15)
+                                url: process.env.PUBLIC_URL + '/img/case_active/' + location.category + '.png',
+                                // url: process.env.PUBLIC_URL + '/img/case_active/case_active_icon_2.png',
+                                scaledSize: new window.google.maps.Size(25, 25)
                                 }}
                                 onClick={this.onMarkerClick.bind(this)}
                             />
@@ -423,7 +423,7 @@ export class Map311 extends Component {
                     <div className="col-md-6 pano-view-container" align="center">
                         <div id="pano" ref = {this.pano}></div>
                     </div>
-                    <div className="col-md-5 currentSelectedLocationDiv" align="left">
+                    <div className="col-md-6 currentSelectedLocationDiv" align="left">
                         <div className = 'col-md-10'>
                             <div align="center" style = {{fontWeight: 'bold', fontSize: '1.15vw'}}>CURRENT SELECTED LOCATION</div>
                             <br />
@@ -436,7 +436,7 @@ export class Map311 extends Component {
                                 </div>
                             </div>
                             {/* <br /> */}
-                            <div className="row">
+                            <div className="row" style={{marginTop:"1vh"}}>
                                 <div className="col-md-6 desc1">
                                     <b>Request Type:</b>
                                 </div>
@@ -445,12 +445,20 @@ export class Map311 extends Component {
                                 </div>
                             </div>
                             {/* <br /> */}
-                            <div className="row">
+                            <div className="row" style={{marginTop:"1vh"}}>
                                 <div className="col-md-6 desc1">
                                    <b>Submitted: </b>
                                 </div>
                                 <div className="col-md-6 desc2">
                                     {currentLocation.date + ", " + currentLocation.time}
+                                </div>
+                            </div>
+                            <div className="row" style={{marginTop:"1vh"}}>
+                                <div className="col-md-6 desc1">
+                                   <b>Category: </b>
+                                </div>
+                                <div className="col-md-6 desc2">
+                                    {currentLocation.category}
                                 </div>
                             </div>
                         </div>
