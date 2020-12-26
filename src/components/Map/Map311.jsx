@@ -297,7 +297,6 @@ export class Map311 extends Component {
         const neighborhoodInfo = this.state.neighborhoodInfo;
 
         neighborhoodInfo.forEach(function(location) {
-            console.log(location)
             if (location.properties.nbhid === props.nbh_id) {
                 self.setState({
                     activePolygonPosition: {lat: location.geometry.coordinates[0][0][0][0], lng: location.geometry.coordinates[0][0][0][1]},
