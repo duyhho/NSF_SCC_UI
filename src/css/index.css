@@ -229,3 +229,5 @@ code {
   font-size: 1vw;
   padding-left: 0vw
 }
+.gm-style-iw + div {display: none;}
+.gm-style-iw {text-align:center;}

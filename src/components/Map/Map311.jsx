@@ -15,8 +15,11 @@ export class Map311 extends Component {
         super(props);
         this.pano= React.createRef();
         this.polygonRef = React.createRef();
+        this.polygonInfoWindowRef = React.createRef();
         this.onPolygonMouseOver = this.onPolygonMouseOver.bind(this);
         this.onPolygonMouseOut = this.onPolygonMouseOut.bind(this);
+        this.onPolygonClick = this.onPolygonClick.bind(this);
+        this.onInfoWindowClose = this.onInfoWindowClose.bind(this)
         this.state = {
             serverDomain: server.getServerDomain(),
             processedData: [],
@@ -292,39 +295,92 @@ export class Map311 extends Component {
         this.setPolygonOptions({
             paths:props.paths
         });
-
+        // console.log(props.center)
         var self = this;
         const neighborhoodInfo = this.state.neighborhoodInfo;
 
         neighborhoodInfo.forEach(function(location) {
             if (location.properties.nbhid === props.nbh_id) {
-                self.setState({
-                    activePolygonPosition: {lat: location.geometry.coordinates[0][0][0][0], lng: location.geometry.coordinates[0][0][0][1]},
-                    showingInfoWindowPolygon: true,
-                    infoWindowContentPolygon: (
-                    <div>
-                        <h2>{location.properties.nbhname}</h2>
-                    </div>
-                    ),
-                });
+                // console.log(self.state.showingInfoWindowPolygon)
+
+                if (self.state.showingInfoWindowPolygon == false) {
+                    self.setState({
+                        // activePolygonPosition: {lat: location.geometry.coordinates[0][0][0][0], lng: location.geometry.coordinates[0][0][0][1]},
+                        showingInfoWindowPolygon: true,
+                        // infoWindowContentPolygon: (
+                        // <div>
+                        //     <h2>{location.properties.nbhname}</h2>
+                        // </div>
+                        // ),
+                    });
+                }
+                self.polygonInfoWindowRef.current.infowindow.setOptions({
+                    content: location.properties.nbhname,
+                    visible: true,
+                    position:  props.center_coord,
+                })
+                
+                // console.log(self.polygonInfoWindowRef.current.infowindow.visible)
+                // self.polygonInfoWindowRef.current.infowindow.setPosition(props.center_coord)
+                // console.log(self.polygonInfoWindowRef.current.infowindow)
+                
             }
         })
         
       }
    
     onPolygonMouseOut(props, polygon, e){
-        this.setPolygonOptions({
-            paths:[]
-        });
+        // this.setPolygonOptions({
+        //     paths:[]
+        // });
+        // this.polygonInfoWindowRef.current.infowindow.setOptions({
+        //     content: 'Nothing',
+        //     visible: false,
+        //     position:  props.center_coord,
+        //     maxWidth: 0
+        // })
 
-        if (this.state.dataLoading === false) {
-            if (this.state.showingInfoWindowPolygon) {
-                this.setState({
+        // console.log(self.polygonInfoWindowRef.current.infowindow)
+        // if (this.state.dataLoading === false) {
+        //     if (this.state.showingInfoWindowPolygon) {
+        //         this.setState({
+        //             showingInfoWindowPolygon: false,
+        //             activePolygonPosition: null,
+        //         })
+        //     }
+        // }
+    }
+    onInfoWindowClose(){
+         this.setState({
                     showingInfoWindowPolygon: false,
                     activePolygonPosition: null,
+        })
+    }
+    onPolygonClick(props, polygon, e){
+        var self = this;
+        const neighborhoodInfo = this.state.neighborhoodInfo;
+        // console.log(self.polygonInfoWindowRef.current.infowindow.position.lat())
+        console.log(props.center_coord)
+        neighborhoodInfo.forEach(function(location) {
+            if (location.properties.nbhid === props.nbh_id) {
+                console.log(location.properties.nbhname)
+                self.polygonInfoWindowRef.current.infowindow.setOptions({
+                    content: location.properties.nbhname,
+                    visible: true,
+                    position:  props.center
                 })
+                console.log(self.polygonInfoWindowRef.current.infowindow.position.lat())
+                self.setState({
+                    // activePolygonPosition: {lat: location.geometry.coordinates[0][0][0][0], lng: location.geometry.coordinates[0][0][0][1]},
+                    showingInfoWindowPolygon: true,
+                    // infoWindowContentPolygon: (
+                    // <div>
+                    //     <h2>{location.properties.nbhname}</h2>
+                    // </div>
+                    // ),
+                });
             }
-        }
+        })
     }
 
     render() {
@@ -397,16 +453,31 @@ export class Map311 extends Component {
                             >
                             {neighborhoodInfo.map(region => {
                             const coords = region.geometry.coordinates[0][0]
-                            let coord_arr = []
+                            let coord_arr = []; let x_coords = []; let y_coords = []
                             coords.forEach(coord => {
                                 coord_arr.push({
                                     lat: coord[1], lng: coord[0]
-                                })
+                                });
+                                x_coords.push(coord[0]);
+                                y_coords.push(coord[1])
                             })
+                            // console.log(x_coords)
+                        
+                            const x_min = Math.min(...x_coords);
+                            const y_min = Math.min(...y_coords);
+                            const x_max = Math.max(...x_coords);
+                            const y_max = Math.max(...y_coords);
+                            // console.log(x_min)
+                            const center = {
+                                lat: y_min + ((y_max - y_min) / 2),
+                                lng: x_min + ((x_max - x_min) / 2),
+                            }
+                            // console.log(coord_arr, center)
                             
                             var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
                             return (<Polygon
                                 ref = {React.createRef()}
+                                center_coord = {center}
                                 nbh_id = {region.properties.nbhid}
                                 paths={coord_arr}
                                 strokeColor={randomColor}
@@ -416,6 +487,7 @@ export class Map311 extends Component {
                                 fillOpacity={0.5}
                                 onMouseover = {this.onPolygonMouseOver}
                                 onMouseout = {this.onPolygonMouseOut}
+                                onClick = {this.onPolygonClick}
                             />)
                         })}
                             {processedData.map((location) =>
@@ -435,14 +507,16 @@ export class Map311 extends Component {
                                 marker={this.state.activeMarker}
                                 visible={this.state.showingInfoWindow}
                             >
-                                {this.state.infoWindowContent}
+                                
                             </InfoWindow>
 
                             <InfoWindow
-                                position={this.state.activePolygonPosition}
+                                ref={this.polygonInfoWindowRef}
+                                position={ {lat: 39.0410436302915, lng: -94.5876739197085} }
                                 visible={this.state.showingInfoWindowPolygon}
+                                onClose={this.onInfoWindowClose}
                             >
-                                {this.state.infoWindowContentPolygon}
+                                {/* {this.state.infoWindowContentPolygon} */}
                             </InfoWindow>
 
                             <Polygon
