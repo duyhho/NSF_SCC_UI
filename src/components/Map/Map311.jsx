@@ -59,7 +59,6 @@ export class Map311 extends Component {
 
         axios.get(this.state.serverDomain + "/api/311/get")
         .then(function(response) {
-            // console.log(response.data)
             self.setState({
                 processedData: response.data,
                 serverError: false,
@@ -224,6 +223,7 @@ export class Map311 extends Component {
     setPolygonOptions = (options) => {
         this.polygonRef.current.polygon.setOptions(options);
     };
+
     loadNeighborhoodInfo(){
         var self = this
         axios.get(this.state.serverDomain + "/api/neighborhoods/get")
@@ -231,10 +231,13 @@ export class Map311 extends Component {
             console.log(response.data);
             self.setState({
               neighborhoodInfo: response.data,
-    
             })
         })
-      }
+        .catch(function(error) {
+            modal.showInfo("Cannot load the neighborhood infos!", "danger", "top", "center");
+        })
+    }
+
     loadNeighborhoodList() {
         var self = this;
     
@@ -247,13 +250,7 @@ export class Map311 extends Component {
         .catch(function(error) {
           modal.showInfo("Cannot load the neighborhood list!", "danger", "top", "center");
         })
-    
-        
-        .catch(function(error) {
-          modal.showInfo("Cannot load the neighborhood infos!", "danger", "top", "center");
-        })
-        
-      }
+    }
 
     handleNeighborhoodChange(e) {
         var self = this;
@@ -288,6 +285,7 @@ export class Map311 extends Component {
             }
         }
     }
+
     onPolygonMouseOver(props, polygon, e){
         console.log('hovered')
         // console.log(this.state.polygonIsHovered)
@@ -296,12 +294,14 @@ export class Map311 extends Component {
           paths:props.paths
         });
       }
-      onPolygonMouseOut(props, polygon, e){
+   
+    onPolygonMouseOut(props, polygon, e){
         this.setPolygonOptions({
-          // fillColor: "green", 
-          paths:[]
+            // fillColor: "green", 
+            paths:[]
         });
-      }
+    }
+
     render() {
         // Dummy Data (used when no server is around)
         // const processedData = JSON.parse('[{"case_id": 2020117327, "request_type": "Trees-Storm Damage-Tree Down", "date": "08/29/2020", "time": "10:42 PM", "lat": 39.04231736302915, "lng":  -94.5876839197085, "address": "7370 NE 76th St", "zip_code": 64119.0, "neighborhood": "Shoal Creek", "county": "Clay"}, {"case_id": 2020117327, "request_type": "Trees-Storm Damage-Tree Down", "date": "08/29/2020", "time": "10:42 PM", "lat": 39.2339117, "lng": -94.5428878, "address": "7370 NE 76th St", "zip_code": 64119.0, "neighborhood": "Shoal Creek", "county": "Clay"}]');
@@ -371,34 +371,28 @@ export class Map311 extends Component {
                                 streetViewControl = {false}
                             >
                             {neighborhoodInfo.map(region => {
-                    const coords = region.geometry.coordinates[0][0]
-                    let coord_arr = []
-                    coords.map(coord => {
-                      // console.log({
-                      //   lat: coord[1], lng: coord[0]
-                      // })
-                      coord_arr.push({
-                        lat: coord[1], lng: coord[0]
-                      })
-                      // console.log(coord_arr)
-
-                    })
-                    
-                    var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
-                    return (<Polygon
-                      ref = {React.createRef()}
-                      nbh_id = {region.properties.nbhid}
-                      paths={coord_arr}
-                      strokeColor={randomColor}
-                      strokeOpacity={0.8}
-                      strokeWeight={1.75}
-                      fillColor={randomColor}
-                      fillOpacity={0.5}
-                      onMouseover = {this.onPolygonMouseOver}
-                      onMouseout = {this.onPolygonMouseOut}
-                    />)
-                
-            })}
+                            const coords = region.geometry.coordinates[0][0]
+                            let coord_arr = []
+                            coords.forEach(coord => {
+                                coord_arr.push({
+                                    lat: coord[1], lng: coord[0]
+                                })
+                            })
+                            
+                            var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+                            return (<Polygon
+                                ref = {React.createRef()}
+                                nbh_id = {region.properties.nbhid}
+                                paths={coord_arr}
+                                strokeColor={randomColor}
+                                strokeOpacity={0.8}
+                                strokeWeight={1.75}
+                                fillColor={randomColor}
+                                fillOpacity={0.5}
+                                onMouseover = {this.onPolygonMouseOver}
+                                onMouseout = {this.onPolygonMouseOut}
+                            />)
+                        })}
                             {processedData.map((location) =>
                             <Marker
                                 position={{lat: location.lat, lng: location.lng}}
