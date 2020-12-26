@@ -27,6 +27,8 @@ export class Map311 extends Component {
             serverError: true,
             showingInfoWindow: false,
             activeMarker: {},
+            showingInfoWindowPolygon: false,
+            activePolygonPosition: {},
             currentLocation:  {lat: 39.0410436302915, lng: -94.5876739197085},
             currentAddress: "",
             currentRectangle: [],
@@ -287,19 +289,43 @@ export class Map311 extends Component {
     }
 
     onPolygonMouseOver(props, polygon, e){
-        console.log('hovered')
-        // console.log(this.state.polygonIsHovered)
         this.setPolygonOptions({
-          // fillColor: "green", 
-          paths:props.paths
+            paths:props.paths
         });
+
+        var self = this;
+        const neighborhoodInfo = this.state.neighborhoodInfo;
+
+        neighborhoodInfo.forEach(function(location) {
+            console.log(location)
+            if (location.properties.nbhid === props.nbh_id) {
+                self.setState({
+                    activePolygonPosition: {lat: location.geometry.coordinates[0][0][0][0], lng: location.geometry.coordinates[0][0][0][1]},
+                    showingInfoWindowPolygon: true,
+                    infoWindowContentPolygon: (
+                    <div>
+                        <h2>{location.properties.nbhname}</h2>
+                    </div>
+                    ),
+                });
+            }
+        })
+        
       }
    
     onPolygonMouseOut(props, polygon, e){
         this.setPolygonOptions({
-            // fillColor: "green", 
             paths:[]
         });
+
+        if (this.state.dataLoading === false) {
+            if (this.state.showingInfoWindowPolygon) {
+                this.setState({
+                    showingInfoWindowPolygon: false,
+                    activePolygonPosition: null,
+                })
+            }
+        }
     }
 
     render() {
@@ -333,7 +359,7 @@ export class Map311 extends Component {
         if (!this.props.google) {
             return <div>Loading...</div>;
         }
-        
+
         return (
         <div className="page-container">
             {processedData.length > 0 ? (
@@ -411,6 +437,13 @@ export class Map311 extends Component {
                                 visible={this.state.showingInfoWindow}
                             >
                                 {this.state.infoWindowContent}
+                            </InfoWindow>
+
+                            <InfoWindow
+                                position={this.state.activePolygonPosition}
+                                visible={this.state.showingInfoWindowPolygon}
+                            >
+                                {this.state.infoWindowContentPolygon}
                             </InfoWindow>
 
                             <Polygon
