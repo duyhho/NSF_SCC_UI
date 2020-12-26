@@ -15,7 +15,8 @@ export class Map311 extends Component {
         super(props);
         this.pano= React.createRef();
         this.polygonRef = React.createRef();
-
+        this.onPolygonMouseOver = this.onPolygonMouseOver.bind(this);
+        this.onPolygonMouseOut = this.onPolygonMouseOut.bind(this);
         this.state = {
             serverDomain: server.getServerDomain(),
             processedData: [],
@@ -36,6 +37,7 @@ export class Map311 extends Component {
             panorama: null,
             showAllNeighborhoods: false,
             neighborhoodList:[],
+            neighborhoodInfo: [],
         };
     }
     
@@ -45,6 +47,7 @@ export class Map311 extends Component {
         }
 
         this.loadNeighborhoodList()
+        this.loadNeighborhoodInfo()
 
         this.setState({
             firstLoad: false,
@@ -221,32 +224,36 @@ export class Map311 extends Component {
     setPolygonOptions = (options) => {
         this.polygonRef.current.polygon.setOptions(options);
     };
-
+    loadNeighborhoodInfo(){
+        var self = this
+        axios.get(this.state.serverDomain + "/api/neighborhoods/get")
+        .then(function(response) {
+            console.log(response.data);
+            self.setState({
+              neighborhoodInfo: response.data,
+    
+            })
+        })
+      }
     loadNeighborhoodList() {
         var self = this;
-
+    
         axios.get(this.state.serverDomain + "/api/community/get")
         .then(function(response) {
             self.setState({
-                neighborhoodList: response.data,
-            })
-
-            response.data.forEach(function(item) {
-                self.setState({
-                    allNeighborhoodsCoords: update(self.state.allNeighborhoodsCoords, {$push: [[
-                        item.start,
-                        {lat: item.start.lat, lng: item.end.lng},
-                        item.end,
-                        {lat: item.end.lat, lng: item.start.lng}
-                    ]]
-                    })
-                })
+              neighborhoodList: response.data,
             })
         })
         .catch(function(error) {
-            modal.showInfo("Cannot load the neighborhood list!", "danger", "top", "center");
+          modal.showInfo("Cannot load the neighborhood list!", "danger", "top", "center");
         })
-    }
+    
+        
+        .catch(function(error) {
+          modal.showInfo("Cannot load the neighborhood infos!", "danger", "top", "center");
+        })
+        
+      }
 
     handleNeighborhoodChange(e) {
         var self = this;
@@ -281,7 +288,20 @@ export class Map311 extends Component {
             }
         }
     }
-    
+    onPolygonMouseOver(props, polygon, e){
+        console.log('hovered')
+        // console.log(this.state.polygonIsHovered)
+        this.setPolygonOptions({
+          // fillColor: "green", 
+          paths:props.paths
+        });
+      }
+      onPolygonMouseOut(props, polygon, e){
+        this.setPolygonOptions({
+          // fillColor: "green", 
+          paths:[]
+        });
+      }
     render() {
         // Dummy Data (used when no server is around)
         // const processedData = JSON.parse('[{"case_id": 2020117327, "request_type": "Trees-Storm Damage-Tree Down", "date": "08/29/2020", "time": "10:42 PM", "lat": 39.04231736302915, "lng":  -94.5876839197085, "address": "7370 NE 76th St", "zip_code": 64119.0, "neighborhood": "Shoal Creek", "county": "Clay"}, {"case_id": 2020117327, "request_type": "Trees-Storm Damage-Tree Down", "date": "08/29/2020", "time": "10:42 PM", "lat": 39.2339117, "lng": -94.5428878, "address": "7370 NE 76th St", "zip_code": 64119.0, "neighborhood": "Shoal Creek", "county": "Clay"}]');
@@ -297,6 +317,8 @@ export class Map311 extends Component {
         const dataLoading = this.state.dataLoading;
         const rectangle = this.state.rectangle_coords;
         const neighborhoodList = this.state.neighborhoodList;
+        const neighborhoodInfo = this.state.neighborhoodInfo;
+
         const allNeighborhoodsCoords = this.state.allNeighborhoodsCoords;
 
         var predictButtonText = ""
@@ -348,7 +370,35 @@ export class Map311 extends Component {
                                 onClick={this.onMapClicked.bind(this)}
                                 streetViewControl = {false}
                             >
-                            
+                            {neighborhoodInfo.map(region => {
+                    const coords = region.geometry.coordinates[0][0]
+                    let coord_arr = []
+                    coords.map(coord => {
+                      // console.log({
+                      //   lat: coord[1], lng: coord[0]
+                      // })
+                      coord_arr.push({
+                        lat: coord[1], lng: coord[0]
+                      })
+                      // console.log(coord_arr)
+
+                    })
+                    
+                    var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+                    return (<Polygon
+                      ref = {React.createRef()}
+                      nbh_id = {region.properties.nbhid}
+                      paths={coord_arr}
+                      strokeColor={randomColor}
+                      strokeOpacity={0.8}
+                      strokeWeight={1.75}
+                      fillColor={randomColor}
+                      fillOpacity={0.5}
+                      onMouseover = {this.onPolygonMouseOver}
+                      onMouseout = {this.onPolygonMouseOut}
+                    />)
+                
+            })}
                             {processedData.map((location) =>
                             <Marker
                                 position={{lat: location.lat, lng: location.lng}}

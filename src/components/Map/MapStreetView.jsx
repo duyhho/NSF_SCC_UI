@@ -14,13 +14,15 @@ export class MapStreetView extends Component {
   constructor(props) {
     super(props);
     this.polygonRef = React.createRef();
-
     // Purpose of ".bind(this)" is to be able to use 'this' within the function
     this.onMarkerClick = this.onMarkerClick.bind(this);
     this.onMapClicked = this.onMapClicked.bind(this);
     this.addMarker = this.addMarker.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.onVrViewLoad = this.onVrViewLoad.bind(this);
+    this.onPolygonMouseOver = this.onPolygonMouseOver.bind(this);
+    this.onPolygonMouseOut = this.onPolygonMouseOut.bind(this);
+
 
     this.state = {
       showingInfoWindow: false,
@@ -47,6 +49,9 @@ export class MapStreetView extends Component {
       // vrViewUrl: "https://f0c06ecb4442.ngrok.io",
       vrView: null,
       neighborhoodList: [],
+      neighborhoodInfo: [],
+
+
     };
   }
   
@@ -75,11 +80,23 @@ export class MapStreetView extends Component {
     }
     // this.onVrViewLoad()
     this.loadNeighborhoodList()
+    this.loadNeighborhoodInfo()
+
     this.setState({
       firstLoad: false,
     })
   }
+  loadNeighborhoodInfo(){
+    var self = this
+    axios.get(this.state.serverDomain + "/api/neighborhoods/get")
+    .then(function(response) {
+        console.log(response.data);
+        self.setState({
+          neighborhoodInfo: response.data,
 
+        })
+    })
+  }
   loadNeighborhoodList() {
     var self = this;
 
@@ -92,6 +109,12 @@ export class MapStreetView extends Component {
     .catch(function(error) {
       modal.showInfo("Cannot load the neighborhood list!", "danger", "top", "center");
     })
+
+    
+    .catch(function(error) {
+      modal.showInfo("Cannot load the neighborhood infos!", "danger", "top", "center");
+    })
+    
   }
 
   onVrViewLoad() {
@@ -342,7 +365,35 @@ export class MapStreetView extends Component {
       })
     }
   }
-  
+  // autoCenterMap = ({ google }, map) => {
+  //   console.log(this.props.google.maps)
+  //   console.log(map)
+
+  //   this.loadGeoJson(map);
+  // }
+  // loadGeoJson = async (map) => {
+  //   // const geojsonRoutes = await this.getRoutes(feed_code);
+  //   // const geojsonEnvelope = await this.getEnvelope(feed_code)
+  //   // map.data.addGeoJson(geojsonEnvelope);
+  //   if (this.state.neighborhoodInfo !== null){
+  //     console.log(this.state.neighborhoodInfo)
+  //     map.data.addGeoJson(this.state.neighborhoodInfo); // # load geojson layer
+  //   }
+// }
+  onPolygonMouseOver(props, polygon, e){
+    console.log('hovered')
+    // console.log(this.state.polygonIsHovered)
+    this.setPolygonOptions({
+      // fillColor: "green", 
+      paths:props.paths
+    });
+  }
+  onPolygonMouseOut(props, polygon, e){
+    this.setPolygonOptions({
+      // fillColor: "green", 
+      paths:[]
+    });
+  }
   render() {
     const start_location = this.state.fields.start_location;
     const end_location = this.state.fields.end_location;
@@ -355,6 +406,8 @@ export class MapStreetView extends Component {
     const firstImageReturned = this.state.firstImageReturned;
     const returnedPercent = this.state.returnedPercent;
     const neighborhoodList = this.state.neighborhoodList;
+    const neighborhoodInfo = this.state.neighborhoodInfo;
+
     // console.log(this.state.serverDomain)
 
     var predictButtonText = ""
@@ -424,6 +477,35 @@ export class MapStreetView extends Component {
                 zoom={14}
                 onClick={this.onMapClicked}
               >
+                {neighborhoodInfo.map(region => {
+                    const coords = region.geometry.coordinates[0][0]
+                    let coord_arr = []
+                    coords.map(coord => {
+                      // console.log({
+                      //   lat: coord[1], lng: coord[0]
+                      // })
+                      coord_arr.push({
+                        lat: coord[1], lng: coord[0]
+                      })
+                      // console.log(coord_arr)
+
+                    })
+                    
+                    var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+                    return (<Polygon
+                      ref = {React.createRef()}
+                      nbh_id = {region.properties.nbhid}
+                      paths={coord_arr}
+                      strokeColor={randomColor}
+                      strokeOpacity={0.8}
+                      strokeWeight={1.75}
+                      fillColor={randomColor}
+                      fillOpacity={0.5}
+                      onMouseover = {this.onPolygonMouseOver}
+                      onMouseout = {this.onPolygonMouseOut}
+                    />)
+                
+            })}
                 <Marker
                   label = {{text: 'start', 
                             fontFamily: "Arial",
