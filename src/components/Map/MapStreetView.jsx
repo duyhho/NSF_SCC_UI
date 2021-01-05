@@ -14,13 +14,15 @@ export class MapStreetView extends Component {
   constructor(props) {
     super(props);
     this.polygonRef = React.createRef();
-
     // Purpose of ".bind(this)" is to be able to use 'this' within the function
     this.onMarkerClick = this.onMarkerClick.bind(this);
     this.onMapClicked = this.onMapClicked.bind(this);
     this.addMarker = this.addMarker.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.onVrViewLoad = this.onVrViewLoad.bind(this);
+    this.onPolygonMouseOver = this.onPolygonMouseOver.bind(this);
+    this.onPolygonMouseOut = this.onPolygonMouseOut.bind(this);
+
 
     this.state = {
       showingInfoWindow: false,
@@ -47,9 +49,12 @@ export class MapStreetView extends Component {
       // vrViewUrl: "https://f0c06ecb4442.ngrok.io",
       vrView: null,
       neighborhoodList: [],
+      neighborhoodInfo: [],
+
+
     };
   }
-  
+
   //Always have this function on any .jsx file, even though it's empty
   componentDidMount() {
     var self = this;
@@ -75,15 +80,27 @@ export class MapStreetView extends Component {
     }
     // this.onVrViewLoad()
     this.loadNeighborhoodList()
+    this.loadNeighborhoodInfo()
+
     this.setState({
       firstLoad: false,
     })
   }
+  loadNeighborhoodInfo(){
+    var self = this
+    axios.get(this.state.serverDomain + "/api/neighborhoods/get")
+    .then(function(response) {
+        console.log(response.data);
+        self.setState({
+          neighborhoodInfo: response.data,
 
+        })
+    })
+  }
   loadNeighborhoodList() {
     var self = this;
 
-    axios.get(this.state.serverDomain + "/api/community/get/")
+    axios.get(this.state.serverDomain + "/api/community/get")
     .then(function(response) {
         self.setState({
           neighborhoodList: response.data,
@@ -92,6 +109,12 @@ export class MapStreetView extends Component {
     .catch(function(error) {
       modal.showInfo("Cannot load the neighborhood list!", "danger", "top", "center");
     })
+
+
+    .catch(function(error) {
+      modal.showInfo("Cannot load the neighborhood infos!", "danger", "top", "center");
+    })
+
   }
 
   onVrViewLoad() {
@@ -183,24 +206,24 @@ export class MapStreetView extends Component {
         ]
       }));
     }
-    
+
     map.panTo(location);
 
     this.setPolygonOptions({
-      // fillColor: "green", 
-      paths:[  
+      // fillColor: "green",
+      paths:[
       this.state.rectangle_coords
     ]});
   };
 
-  onMapClicked(mapProps, map, clickEvent) { 
+  onMapClicked(mapProps, map, clickEvent) {
     if (this.state.showingInfoWindow) {
       this.setState({
         showingInfoWindow: false,
         activeMarker: null,
       })
     }
-    
+
     this.addMarker(clickEvent.latLng, map)
     $("#neighborhood_select").val("Custom")
   };
@@ -226,7 +249,7 @@ export class MapStreetView extends Component {
     const category = this.state.category;
     const serverDomain = this.state.serverDomain;
 
-    var eventSource = new EventSource(serverDomain + "/api/GSV/stream?category=" + category + 
+    var eventSource = new EventSource(serverDomain + "/api/GSV/stream?category=" + category +
                                     '&start_coord=' + start_coord + '&end_coord=' + end_coord);
     eventSource.onmessage = e => {
       if (self.state.firstImageReturned === false) {
@@ -341,7 +364,35 @@ export class MapStreetView extends Component {
       })
     }
   }
-  
+  // autoCenterMap = ({ google }, map) => {
+  //   console.log(this.props.google.maps)
+  //   console.log(map)
+
+  //   this.loadGeoJson(map);
+  // }
+  // loadGeoJson = async (map) => {
+  //   // const geojsonRoutes = await this.getRoutes(feed_code);
+  //   // const geojsonEnvelope = await this.getEnvelope(feed_code)
+  //   // map.data.addGeoJson(geojsonEnvelope);
+  //   if (this.state.neighborhoodInfo !== null){
+  //     console.log(this.state.neighborhoodInfo)
+  //     map.data.addGeoJson(this.state.neighborhoodInfo); // # load geojson layer
+  //   }
+// }
+  onPolygonMouseOver(props, polygon, e){
+    console.log('hovered')
+    // console.log(this.state.polygonIsHovered)
+    this.setPolygonOptions({
+      // fillColor: "green",
+      paths:props.paths
+    });
+  }
+  onPolygonMouseOut(props, polygon, e){
+    this.setPolygonOptions({
+      // fillColor: "green",
+      paths:[]
+    });
+  }
   render() {
     const start_location = this.state.fields.start_location;
     const end_location = this.state.fields.end_location;
@@ -354,6 +405,8 @@ export class MapStreetView extends Component {
     const firstImageReturned = this.state.firstImageReturned;
     const returnedPercent = this.state.returnedPercent;
     const neighborhoodList = this.state.neighborhoodList;
+    const neighborhoodInfo = this.state.neighborhoodInfo;
+
     // console.log(this.state.serverDomain)
 
     var predictButtonText = ""
@@ -383,7 +436,7 @@ export class MapStreetView extends Component {
     if (!this.props.google) {
       return <div>Loading...</div>;
     }
-    
+
     return (
       <div className="page-container">
         <div className="edit-start-button">
@@ -402,7 +455,7 @@ export class MapStreetView extends Component {
             }
           </select>
         </div>
-      
+
         <div className="row">
           <div className="col-md-6 map-view-container" style = {{height: "95vh"}}>
             <div className="map-top-center">
@@ -417,14 +470,43 @@ export class MapStreetView extends Component {
             </div>
             <div className="map-container">
               <Map
-                google={this.props.google} 
+                google={this.props.google}
                 initialCenter={start_location}
                 center={end_location}
                 zoom={14}
                 onClick={this.onMapClicked}
               >
+                {neighborhoodInfo.map(region => {
+                    const coords = region.geometry.coordinates[0][0]
+                    let coord_arr = []
+                    coords.map(coord => {
+                      // console.log({
+                      //   lat: coord[1], lng: coord[0]
+                      // })
+                      coord_arr.push({
+                        lat: coord[1], lng: coord[0]
+                      })
+                      // console.log(coord_arr)
+
+                    })
+
+                    var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+                    return (<Polygon
+                      ref = {React.createRef()}
+                      nbh_id = {region.properties.nbhid}
+                      paths={coord_arr}
+                      strokeColor={randomColor}
+                      strokeOpacity={0.8}
+                      strokeWeight={1.75}
+                      fillColor={randomColor}
+                      fillOpacity={0.5}
+                      onMouseover = {this.onPolygonMouseOver}
+                      onMouseout = {this.onPolygonMouseOut}
+                    />)
+
+            })}
                 <Marker
-                  label = {{text: 'start', 
+                  label = {{text: 'start',
                             fontFamily: "Arial",
                             fontSize: "12px",}}
                   onClick={this.onMarkerClick}
@@ -432,7 +514,7 @@ export class MapStreetView extends Component {
                   name={"Start Location"}
                 />
                 <Marker
-                  label = {{text: 'end', 
+                  label = {{text: 'end',
                   fontFamily: "Arial",
                   fontSize: "12px",}}
                   onClick={this.onMarkerClick}

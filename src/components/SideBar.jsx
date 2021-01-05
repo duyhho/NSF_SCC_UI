@@ -12,7 +12,27 @@ export default class SideBar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentView: 3
+      currentView: 0
+    }
+  }
+
+  componentDidMount() {
+    if (window.location.pathname === "/realImageDetect") {
+      this.setState({
+        currentView: 1
+      })
+    } else if (window.location.pathname === "/call311") {
+      this.setState({
+        currentView: 2
+      })
+    } else if (window.location.pathname === "/virtualTour") {
+      this.setState({
+        currentView: 3
+      })
+    } else { //Default to 0
+      this.setState({
+        currentView: 0
+      })
     }
   }
 
@@ -93,7 +113,7 @@ export default class SideBar extends React.Component {
               </Sidebar>
 
               <Switch>
-                <Route exact path="/" component={VirtualTour} />
+                <Route exact path="/" component={MapStreetView} />
                 <Route exact path="/streetViewDetect" component={MapStreetView} />
                 <Route exact path="/realImageDetect" component={File} />
                 <Route exact path="/call311" component={Map311} />

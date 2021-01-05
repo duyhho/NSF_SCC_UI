@@ -78,12 +78,32 @@ code {
   transform: translate(-50%, -50%);
   border: none
 }
+.map-top-center-2 select{
+  z-Index: 9999;
+  margin: 0;
+  position: absolute;
+  top: 8vh;
+  left: 20vw;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  border: none
+}
 .map-top-center button{
   z-Index: 9999;
   margin: 0;
   position: absolute;
   top: 4vh;
   left: 23vw;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  border: none
+}
+.map-top-center-2 button{
+  z-Index: 9999;
+  margin: 0;
+  position: absolute;
+  top: 4vh;
+  left: 20vw;
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   border: none
@@ -106,9 +126,20 @@ code {
   margin-Left: 10px;
   margin-Top: 140px
 }
+.neighborhood-select-2 {
+  position: absolute;
+  z-Index: 9999;
+  margin-Left: 10px;
+  margin-Top: 70px
+}
 .map-view-container {
   position: relative;
   height: 50vh
+}
+.map-view-container-2 {
+  position: relative;
+  height: 40vh;
+  padding-right: 0;
 }
 .map-container {
   position: relative;
@@ -117,7 +148,12 @@ code {
 }
 .pano-view-container {
   position: relative;
-  height: 90vh
+  height: 45vh
+}
+.pano-view-container-2 {
+  position: relative;
+  height: 95vh;
+  padding-left: 0;
 }
 
 .alert[data-notify="container"] {
@@ -142,7 +178,7 @@ code {
   width: 25vw;
 }
 .image-gallery-slide {
-  height: 45vh;
+  height: 35vh;
 }
 
 #vrview iframe{
@@ -164,11 +200,11 @@ code {
   background-image: url('../case_background.png');
   width: 100%;
   height: 55vh;
-  background-size: 83%;
+  background-size: 85%;
   background-repeat: no-repeat;
   background-position: center;
   padding-top: 15vh;
-  padding-left: 9vw;
+  padding-left: 9.5vw;
   padding-right: 5vw;
   font-size: 1.1vw;
 }
@@ -184,11 +220,14 @@ code {
   margin-left: 151px;
   height: 97vh
 }
+
 .desc1 {
   font-size: 1vw;
   padding-right: 0vw
 }
 .desc2 {
-  font-size: 0.9vw;
+  font-size: 1vw;
   padding-left: 0vw
 }
+.gm-style-iw + div {display: none;}
+.gm-style-iw {text-align:center;}

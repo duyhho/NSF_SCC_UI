@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { GoogleApiWrapper } from "google-maps-react"
+import { Map, Marker, GoogleApiWrapper } from "google-maps-react"
 import ImageGallery from 'react-image-gallery'
 import update from 'immutability-helper'
 
@@ -45,17 +45,51 @@ export class VirtualTour extends Component {
                             position: location,
                             pov: {
                                 heading: 50,
-                                pitch: 16,
+                                pitch: 0,
                             },
                             addressControl: false,
                             visible: true
                         }
-                     )
-                }, )
+                    )
+                }, function() {
+                    this.initPositionListener();
+                })
+                
+            } else {
+                self.setState({
+                    panorama: new window.google.maps.StreetViewPanorama(
+                        self.pano.current,
+                        {
+                            position: {lat: 39.0410436302915, lng: -94.5876739197085},
+                            pov: {
+                                heading: 50,
+                                pitch: 0,
+                            },
+                            addressControl: false,
+                            visible: true
+                        }
+                    )
+                })
             }
         })
+        
+        
     }
-
+    initPositionListener(){
+        if (this.state.panorama != null) 
+        {
+            this.state.panorama.addListener("position_changed", () => {
+                const location = this.state.panorama.getPosition()
+                const new_location = {lat: location.lat(), lng: location.lng()}
+                if (new_location !== this.state.currentPosition){
+                    this.setState({
+                        currentPosition: new_location
+                    })
+                }
+                
+            });   
+        }
+    }
     getcurrentLocation() {
         if (navigator && navigator.geolocation) {
             return new Promise((resolve, reject) => {
@@ -160,14 +194,56 @@ export class VirtualTour extends Component {
         }
     }
     
-    render() {
+    onMapClicked(mapProps, map, clickEvent) {
+        this.setState({
+            currentPosition: {lat: clickEvent.latLng.lat(), lng: clickEvent.latLng.lng()},
+            panorama: new window.google.maps.StreetViewPanorama(
+                this.pano.current,
+                {
+                    position: {lat: clickEvent.latLng.lat(), lng: clickEvent.latLng.lng()},
+                    pov: {
+                        heading: 50,
+                        pitch: 0,
+                    },
+                    addressControl: false,
+                    visible: true
+                }
+            )
+        }, function(){
+            this.initPositionListener()
+        })
 
+        map.panTo(clickEvent.latLng);
+    };
+
+    onMarkerDrag(coord, map) {
+        this.setState({
+            currentPosition: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
+            panorama: new window.google.maps.StreetViewPanorama(
+                this.pano.current,
+                {
+                    position: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
+                    pov: {
+                        heading: 50,
+                        pitch: 16,
+                    },
+                    addressControl: false,
+                    visible: true
+                }
+            )
+        }, function(){
+            this.initPositionListener()
+        })
+    }
+    
+    render() {
         const imageList = this.state.imageList;
         const firstImageReturned = this.state.firstImageReturned;
         const returnedPercent = this.state.returnedPercent;
         const serverError = this.state.serverError;
         const dataLoading = this.state.dataLoading;
         // const imageHasObjects = this.state.imageHasObjects;
+        const currentPosition = this.state.currentPosition;
         
         var predictButtonText = ""
         if (dataLoading === false) {
@@ -176,7 +252,7 @@ export class VirtualTour extends Component {
             predictButtonText = "Loading..."
         }
 
-        var helpText = 'No predictions. Select a location on the map and click "Predict" to start.'
+        var helpText = 'No predictions. Navigate around the map and click "Predict" to start.'
 
         if (!this.props.google) {
             return <div>Loading...</div>;
@@ -185,8 +261,8 @@ export class VirtualTour extends Component {
         return (
         <div className="page-container">
             <div className="row">
-                <div className="col-md-6 pano-view-container">
-                    <div className="map-top-center">
+                <div className="col-md-5 map-view-container-2">
+                    <div className="map-top-center-2">
                         <button onClick={this.predictImage.bind(this)} disabled={dataLoading} className="btn btn-primary">{predictButtonText}</button>
                         <select defaultValue="Utility Poles" onChange={this.handleOptionChange.bind(this)} disabled={dataLoading}>
                             <option value="Utility Poles">Utility Poles</option>
@@ -197,37 +273,56 @@ export class VirtualTour extends Component {
                         </select>
                     </div>
                     <div className="map-container">
-                        <div id="pano" ref={this.pano}></div>
+                        <Map
+                            google={this.props.google} 
+                            initialCenter={currentPosition}
+                            center={currentPosition}
+                            zoom={16}
+                            onClick={this.onMapClicked.bind(this)}
+                            streetViewControl={false}
+                        >
+                            <Marker
+                                position={currentPosition}
+                                icon={{
+                                    url: process.env.PUBLIC_URL + '/img/human_marker.png',
+                                    scaledSize: new window.google.maps.Size(40, 40)
+                                }}
+                                draggable={true}
+                                onDragend={(t, map, coord) => this.onMarkerDrag(coord, map)}
+                            />
+                        </Map>
                     </div>
-                </div>
-                <div className="col-md-5" align="center">
-                    {imageList.length > 0 ? (
-                    <div>
-                        <ImageGallery
-                            items={imageList}
-                            showPlayButton={false}
-                        />
-                        {/* {imageHasObjects === false && (
+                    <div align="center" style={{marginTop:"1vh"}}>
+                        {imageList.length > 0 ? (
                         <div>
-                            The returned image does not contain any objects for the selected category.
+                            <ImageGallery
+                                items={imageList}
+                                showPlayButton={false}
+                            />
+                            {/* {imageHasObjects === false && (
+                            <div>
+                                The returned image does not contain any objects for the selected category.
+                            </div>
+                            )} */}
                         </div>
-                        )} */}
-                    </div>
-                    ) : (
-                    <div>
-                        {firstImageReturned === false && (
+                        ) : (
                         <div>
-                            {helpText}
+                            {firstImageReturned === false && (
+                            <div>
+                                {helpText}
+                            </div>
+                            )}
+                        </div>
+                        )}
+                        {(firstImageReturned === true && serverError === false) && (
+                        <div>
+                            <ProgressBar bgcolor={"#00695c"} completed={returnedPercent} />
                         </div>
                         )}
                     </div>
-                    )}
-                    {(firstImageReturned === true && serverError === false) && (
-                    <div>
-                        <br />
-                        <ProgressBar bgcolor={"#00695c"} completed={returnedPercent} />
-                    </div>
-                    )}
+                </div>
+                <div className="col-md-7 pano-view-container-2" align="center">
+                    <div id="pano" ref={this.pano}></div>
                 </div>
             </div>
         </div>

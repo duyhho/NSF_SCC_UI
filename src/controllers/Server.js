@@ -1,13 +1,13 @@
 class Server {
     constructor() {
-        this.serverDomain = "http://a2361fd1c157.ngrok.io";
+        this.serverDomain = "http://e712822502bd.ngrok.io";
     }
 
     getServerDomain() {
-        var serverDomainEdit = "";
+        var serverDomainEdit = this.serverDomain;
 
         if (this.serverDomain.search('https') === -1){
-            serverDomainEdit = this.serverDomain.replace("http", 'https')
+            serverDomainEdit = serverDomainEdit.replace("http", 'https')
         }
         return serverDomainEdit
     }
