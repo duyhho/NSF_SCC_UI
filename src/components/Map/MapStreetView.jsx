@@ -93,8 +93,10 @@ export class MapStreetView extends Component {
         console.log(response.data);
         self.setState({
           neighborhoodInfo: response.data,
-
         })
+    })
+    .catch(function(error) {
+      modal.showInfo("Cannot load the neighborhood infos!", "danger", "top", "center");
     })
   }
   loadNeighborhoodList() {
@@ -109,12 +111,6 @@ export class MapStreetView extends Component {
     .catch(function(error) {
       modal.showInfo("Cannot load the neighborhood list!", "danger", "top", "center");
     })
-
-
-    .catch(function(error) {
-      modal.showInfo("Cannot load the neighborhood infos!", "danger", "top", "center");
-    })
-
   }
 
   onVrViewLoad() {
@@ -479,7 +475,7 @@ export class MapStreetView extends Component {
                 {neighborhoodInfo.map(region => {
                     const coords = region.geometry.coordinates[0][0]
                     let coord_arr = []
-                    coords.map(coord => {
+                    coords.forEach(coord => {
                       // console.log({
                       //   lat: coord[1], lng: coord[0]
                       // })
