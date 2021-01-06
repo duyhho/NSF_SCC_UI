@@ -1,15 +1,12 @@
 import React, { Component } from "react"
 import { Map, Marker, GoogleApiWrapper, InfoWindow, Polygon } from "google-maps-react"
-import ImageGallery from 'react-image-gallery'
 import update from 'immutability-helper'
 import axios from 'axios'
 import $ from 'jquery'
+import Slider from '@material-ui/core/Slider';
 
 import { server } from '../../controllers/Server.js'
 import { modal } from '../../utilities/modal.js'
-
-import ProgressBar from '../ProgressBar/ProgressBar.jsx'
-import { FastRewindTwoTone } from "@material-ui/icons"
 
 export class MapCluster extends Component {
     constructor(props) {
@@ -19,13 +16,12 @@ export class MapCluster extends Component {
         this.polygonInfoWindowRef = React.createRef();
         this.onPolygonMouseOver = this.onPolygonMouseOver.bind(this);
         this.onPolygonMouseOut = this.onPolygonMouseOut.bind(this);
+        this.onPolygonClick = this.onPolygonClick.bind(this);
         this.onInfoWindowClose = this.onInfoWindowClose.bind(this)
         this.state = {
             serverDomain: server.getServerDomain(),
             loadingData: false,
             initialMessage: "Loading the neighborhoods. Please wait...",
-            showingInfoWindow: false,
-            activeMarker: {},
             showingInfoWindowPolygon: false,
             activePolygonPosition: {},
             currentLocation:  {lat: 39.0410436302915, lng: -94.5876739197085},
@@ -33,6 +29,8 @@ export class MapCluster extends Component {
             rectangle_coords: [],
             allNeighborhoodsCoords: [],
             neighborhoodList:[],
+            sliderLabels: [],
+            currentCluster: [],
         };
     }
     
@@ -48,9 +46,23 @@ export class MapCluster extends Component {
     
         axios.get(this.state.serverDomain + "/api/neighborhoods/clusters/get")
         .then(function(response) {
+            for (var i = 2; i <= response.data.length; i ++) {
+                self.setState({
+                    sliderLabels: update(self.state.sliderLabels, {$push: [{
+                        value: i,
+                        label: i,
+                    }]
+                    }),
+                })
+            }
             response.data.forEach(function(item) {
-                console.log(item)
+                if (item.Cluster_Total === 2) {
+                    self.setState({
+                        currentCluster: item,
+                    })
+                }
             })
+
             self.setState({
                 neighborhoodList: response.data,
                 loadingData: false,
@@ -62,6 +74,16 @@ export class MapCluster extends Component {
             })
             modal.showInfo("Cannot load the neighborhoods!", "danger", "top", "center");
         })
+    }
+
+    onMapClicked(mapProps, map, clickEvent) {
+        if (this.state.dataLoading === false) {
+            if (this.state.showingInfoWindow) {
+                this.setState({
+                    showingInfoWindow: false,
+                })
+            }
+        }
     }
 
     setPolygonOptions = (options) => {
@@ -121,16 +143,56 @@ export class MapCluster extends Component {
         });
     }
 
+    onPolygonClick(props, polygon, e){
+        var self = this;
+        const neighborhoodInfo = this.state.neighborhoodInfo;
+        // console.log(self.polygonInfoWindowRef.current.infowindow.position.lat())
+        console.log(props.center_coord)
+        neighborhoodInfo.forEach(function(location) {
+            if (location.properties.nbhid === props.nbh_id) {
+                console.log(location.properties.nbhname)
+                self.polygonInfoWindowRef.current.infowindow.setOptions({
+                    content: location.properties.nbhname,
+                    visible: true,
+                    position:  props.center
+                })
+                console.log(self.polygonInfoWindowRef.current.infowindow.position.lat())
+                self.setState({
+                    // activePolygonPosition: {lat: location.geometry.coordinates[0][0][0][0], lng: location.geometry.coordinates[0][0][0][1]},
+                    showingInfoWindowPolygon: true,
+                    // infoWindowContentPolygon: (
+                    // <div>
+                    //     <h2>{location.properties.nbhname}</h2>
+                    // </div>
+                    // ),
+                });
+            }
+        })
+    }
+
     onInfoWindowClose(){
          this.setState({
-                    showingInfoWindowPolygon: false,
-                    activePolygonPosition: null,
+            showingInfoWindowPolygon: false,
+            activePolygonPosition: null,
+        })
+    }
+
+    onSliderLabelChange(event, value) {
+        var self = this;
+        this.state.neighborhoodList.forEach(function(item) {
+            if (item.Cluster_Total === value) {
+                self.setState({
+                    currentCluster: item,
+                })
+            }
         })
     }
 
     render() {
         const loadingData = this.state.loadingData;
-
+        const neighborhoodList = this.state.neighborhoodList;
+        const currentCluster = this.state.currentCluster;
+        
         if (!this.props.google) {
             return <div>Loading...</div>;
         }
@@ -144,60 +206,54 @@ export class MapCluster extends Component {
                         <Map
                             google={this.props.google}
                             initialCenter={this.state.currentLocation}
-                            center={this.state.currentLocation}
+                            onClick={this.onMapClicked.bind(this)}
                             zoom={14}
                         >
-                            {/* {neighborhoodInfo.map(region => {
-                                const coords = region.geometry.coordinates[0][0]
-                                let coord_arr = []
-                                coords.map(coord => {
-                                // console.log({
-                                //   lat: coord[1], lng: coord[0]
-                                // })
-                                coord_arr.push({
-                                    lat: coord[1], lng: coord[0]
-                                })
-                                // console.log(coord_arr)
-
-                                })
-
-                                var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
-                                return (<Polygon
-                                ref = {React.createRef()}
-                                nbh_id = {region.properties.nbhid}
-                                paths={coord_arr}
-                                strokeColor={randomColor}
-                                strokeOpacity={0.8}
-                                strokeWeight={1.75}
-                                fillColor={randomColor}
-                                fillOpacity={0.5}
-                                onMouseover = {this.onPolygonMouseOver}
-                                onMouseout = {this.onPolygonMouseOut}
-                                />)
+                            {Object.keys(currentCluster).forEach(function(neighborhood) {
+                                if (neighborhood == "Cluster_Total") {
+                                    //SKIP
+                                } else {
+                                    console.log(currentCluster[neighborhood])
+                                    const coords = currentCluster[neighborhood]["Polygon_Boundaries"]
+                                    var coordArr = []
+                                    coords.forEach(function(coord) {
+                                        coordArr.push({
+                                            lat: coord[1], lng: coord[0]
+                                        });
+                                    })
+                                    var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+                                    return (
+                                        <Polygon
+                                            ref = {React.createRef()}
+                                            nbhName = {currentCluster[neighborhood]["Neighborhood Name"]}
+                                            paths={coordArr}
+                                            strokeColor={randomColor}
+                                            strokeOpacity={0.8}
+                                            strokeWeight={1.75}
+                                            fillColor={randomColor}
+                                            fillOpacity={0.5}
+                                            // onMouseover = {this.onPolygonMouseOver}
+                                            // onMouseout = {this.onPolygonMouseOut}
+                                            // onClick = {this.onPolygonClick}
+                                        />
+                                    )
+                                }
                             })}
-
-                            <InfoWindow
-                                marker={this.state.activeMarker}
-                                visible={this.state.showingInfoWindow}
-                            >
-                                {this.state.infoWindowContent}
-                            </InfoWindow>
-
-                            <Polygon
-                                ref={this.polygonRef}
-                                onClick={this.handleClick}
-                                paths={rectangle}
-                                strokeColor="#0000FF"
-                                strokeOpacity={0.8}
-                                strokeWeight={2}
-                                fillColor="#0000FF"
-                                fillOpacity={0.35}
-                            /> */}
                         </Map>
                     </div>
                 </div>
-                <div className="col-md-3" align="center">
-                    Slide Bar HERE
+                <div className="col-md-3" align="center" style={{marginTop: "20px"}}>
+                    <span>Number of clusters:</span>
+                    <Slider
+                        defaultValue={1}
+                        aria-labelledby="discrete-slider-custom"
+                        step={null}
+                        marks={this.state.sliderLabels}
+                        valueLabelDisplay="auto"
+                        min={2}
+                        max={this.state.sliderLabels.length + 1}
+                        onChangeCommitted={this.onSliderLabelChange.bind(this)}
+                    />
                 </div>
             </div>
             ) : (
