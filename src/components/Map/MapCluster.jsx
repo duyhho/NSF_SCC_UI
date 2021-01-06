@@ -31,7 +31,8 @@ export class MapCluster extends Component {
             neighborhoodList:[],
             sliderLabels: [],
             currentCluster: [],
-            colorArray: [],
+            colorArray: ['#FFF100', '#FF8C00', '#E81123', '#ECC008C', '#68217A', '#00188F', '#00B294',
+                            '#00BCF2', '#00B294', '#BAD80A', '#009E49'],
         };
     }
     
@@ -58,14 +59,8 @@ export class MapCluster extends Component {
             }
             response.data.forEach(function(item) {
                 if (item.Cluster_Total === 2) {
-                    var colorArr = []
-                    for (var i = 0; i < 2; i++) {
-                        var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
-                        colorArr.push(randomColor)
-                    }
                     self.setState({
                         currentCluster: item,
-                        colorArray: colorArr,
                     })
                 }
             })
@@ -188,14 +183,8 @@ export class MapCluster extends Component {
         var self = this;
         this.state.neighborhoodList.forEach(function(item) {
             if (item.Cluster_Total === value) {
-                var colorArr = []
-                for (var i = 0; i < value; i++) {
-                    var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
-                    colorArr.push(randomColor)
-                }
                 self.setState({
                     currentCluster: item,
-                    colorArray: colorArr,
                 })
             }
         })
@@ -238,10 +227,10 @@ export class MapCluster extends Component {
                                             nbhName = {currentCluster[neighborhood]["Neighborhood Name"]}
                                             paths={coordArr}
                                             strokeColor={this.state.colorArray[currentCluster[neighborhood]["Neighborhood_Cluster"] - 1]}
-                                            strokeOpacity={0.8}
-                                            strokeWeight={1.75}
+                                            strokeOpacity={1}
+                                            strokeWeight={2}
                                             fillColor={this.state.colorArray[currentCluster[neighborhood]["Neighborhood_Cluster"] - 1]}
-                                            fillOpacity={0.5}
+                                            fillOpacity={0.8}
                                             // onMouseover = {this.onPolygonMouseOver}
                                             // onMouseout = {this.onPolygonMouseOut}
                                             // onClick = {this.onPolygonClick}
