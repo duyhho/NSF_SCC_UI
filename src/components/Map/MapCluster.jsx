@@ -31,6 +31,7 @@ export class MapCluster extends Component {
             neighborhoodList:[],
             sliderLabels: [],
             currentCluster: [],
+            colorArray: [],
         };
     }
     
@@ -57,8 +58,14 @@ export class MapCluster extends Component {
             }
             response.data.forEach(function(item) {
                 if (item.Cluster_Total === 2) {
+                    var colorArr = []
+                    for (var i = 0; i < 2; i++) {
+                        var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+                        colorArr.push(randomColor)
+                    }
                     self.setState({
                         currentCluster: item,
+                        colorArray: colorArr,
                     })
                 }
             })
@@ -181,8 +188,14 @@ export class MapCluster extends Component {
         var self = this;
         this.state.neighborhoodList.forEach(function(item) {
             if (item.Cluster_Total === value) {
+                var colorArr = []
+                for (var i = 0; i < value; i++) {
+                    var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+                    colorArr.push(randomColor)
+                }
                 self.setState({
                     currentCluster: item,
+                    colorArray: colorArr,
                 })
             }
         })
@@ -190,7 +203,6 @@ export class MapCluster extends Component {
 
     render() {
         const loadingData = this.state.loadingData;
-        const neighborhoodList = this.state.neighborhoodList;
         const currentCluster = this.state.currentCluster;
         
         if (!this.props.google) {
@@ -209,11 +221,10 @@ export class MapCluster extends Component {
                             onClick={this.onMapClicked.bind(this)}
                             zoom={14}
                         >
-                            {Object.keys(currentCluster).forEach(function(neighborhood) {
+                            {Object.keys(currentCluster).map(neighborhood => {
                                 if (neighborhood == "Cluster_Total") {
                                     //SKIP
                                 } else {
-                                    console.log(currentCluster[neighborhood])
                                     const coords = currentCluster[neighborhood]["Polygon_Boundaries"]
                                     var coordArr = []
                                     coords.forEach(function(coord) {
@@ -221,16 +232,15 @@ export class MapCluster extends Component {
                                             lat: coord[1], lng: coord[0]
                                         });
                                     })
-                                    var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
                                     return (
                                         <Polygon
                                             ref = {React.createRef()}
                                             nbhName = {currentCluster[neighborhood]["Neighborhood Name"]}
                                             paths={coordArr}
-                                            strokeColor={randomColor}
+                                            strokeColor={this.state.colorArray[currentCluster[neighborhood]["Neighborhood_Cluster"] - 1]}
                                             strokeOpacity={0.8}
                                             strokeWeight={1.75}
-                                            fillColor={randomColor}
+                                            fillColor={this.state.colorArray[currentCluster[neighborhood]["Neighborhood_Cluster"] - 1]}
                                             fillOpacity={0.5}
                                             // onMouseover = {this.onPolygonMouseOver}
                                             // onMouseout = {this.onPolygonMouseOut}
