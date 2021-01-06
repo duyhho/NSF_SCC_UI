@@ -31,8 +31,8 @@ export class MapCluster extends Component {
             neighborhoodList:[],
             sliderLabels: [],
             currentCluster: [],
-            colorArray: ['#FFF100', '#FF8C00', '#E81123', '#ECC008C', '#68217A', '#00188F', '#00B294',
-                            '#00BCF2', '#00B294', '#BAD80A', '#009E49'],
+            colorArray: ['#FF8C00', '#E81123', '#EC008C', '#68217A', '#00188F', '#00B294',
+                            '#00BCF2', '#00B294', '#BAD80A', '#009E49', '#FFF100'],
         };
     }
     
@@ -192,7 +192,10 @@ export class MapCluster extends Component {
 
     render() {
         const loadingData = this.state.loadingData;
-        const currentCluster = this.state.currentCluster;
+        var currentCluster = this.state.currentCluster;
+        // if (currentCluster.Cluster_Total != 4){
+        //     currentCluster = {}
+        // }
         
         if (!this.props.google) {
             return <div>Loading...</div>;
@@ -214,29 +217,30 @@ export class MapCluster extends Component {
                                 if (neighborhood == "Cluster_Total") {
                                     //SKIP
                                 } else {
-                                    const coords = currentCluster[neighborhood]["Polygon_Boundaries"]
-                                    var coordArr = []
-                                    coords.forEach(function(coord) {
-                                        coordArr.push({
-                                            lat: coord[1], lng: coord[0]
-                                        });
-                                    })
-                                    return (
-                                        <Polygon
-                                            ref = {React.createRef()}
-                                            nbhName = {currentCluster[neighborhood]["Neighborhood Name"]}
-                                            paths={coordArr}
-                                            strokeColor={this.state.colorArray[currentCluster[neighborhood]["Neighborhood_Cluster"] - 1]}
-                                            strokeOpacity={1}
-                                            strokeWeight={2}
-                                            fillColor={this.state.colorArray[currentCluster[neighborhood]["Neighborhood_Cluster"] - 1]}
-                                            fillOpacity={0.8}
-                                            // onMouseover = {this.onPolygonMouseOver}
-                                            // onMouseout = {this.onPolygonMouseOut}
-                                            // onClick = {this.onPolygonClick}
-                                        />
-                                    )
-                                }
+                                        const coords = currentCluster[neighborhood]["Polygon_Boundaries"]
+                                        var coordArr = []
+                                        coords.forEach(function(coord) {
+                                            coordArr.push({
+                                                lat: coord[1], lng: coord[0]
+                                            });
+                                        })
+                                        return (
+                                            <Polygon
+                                                ref = {React.createRef()}
+                                                nbhName = {currentCluster[neighborhood]["Neighborhood Name"]}
+                                                paths={coordArr}
+                                                strokeColor={this.state.colorArray[currentCluster[neighborhood]["Neighborhood_Cluster"] - 1]}
+                                                strokeOpacity={1}
+                                                strokeWeight={3}
+                                                fillColor={this.state.colorArray[currentCluster[neighborhood]["Neighborhood_Cluster"] - 1]}
+                                                fillOpacity={0.75}
+                                                // onMouseover = {this.onPolygonMouseOver}
+                                                // onMouseout = {this.onPolygonMouseOut}
+                                                // onClick = {this.onPolygonClick}
+                                            />
+                                        )
+                                    }
+                                    
                             })}
                         </Map>
                     </div>
