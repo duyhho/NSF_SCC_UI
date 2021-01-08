@@ -21,7 +21,7 @@ export class MapCluster extends Component {
         this.state = {
             serverDomain: server.getServerDomain(),
             loadingData: false,
-            initialMessage: "Loading the neighborhoods. Please wait...",
+            initialMessage: "Loading the block groups. Please wait...",
             showingInfoWindowPolygon: false,
             activePolygonPosition: {},
             currentLocation:  {lat: 39.0410436302915, lng: -94.5876739197085},
@@ -46,7 +46,7 @@ export class MapCluster extends Component {
     loadNeighborhoodList() {
         var self = this;
     
-        axios.get(this.state.serverDomain + "/api/neighborhoods/clusters/get")
+        axios.get(this.state.serverDomain + "/api/blockgroups/clusters/socioeconomic/get")
         .then(function(response) {
             for (var i = 2; i <= response.data.length; i ++) {
                 self.setState({
@@ -72,9 +72,9 @@ export class MapCluster extends Component {
         })
         .catch(function(e) {
             self.setState({
-                initialMessage: "Cannot load the neighborhoods!"
+                initialMessage: "Cannot load the block groups!"
             })
-            modal.showInfo("Cannot load the neighborhoods!", "danger", "top", "center");
+            modal.showInfo("Cannot load the block groups!", "danger", "top", "center");
         })
     }
 
@@ -213,11 +213,11 @@ export class MapCluster extends Component {
                             onClick={this.onMapClicked.bind(this)}
                             zoom={14}
                         >
-                            {Object.keys(currentCluster).map(neighborhood => {
-                                if (neighborhood == "Cluster_Total") {
+                            {Object.keys(currentCluster).map(bg => {
+                                if (bg == "Cluster_Total") {
                                     //SKIP
                                 } else {
-                                        const coords = currentCluster[neighborhood]["Polygon_Boundaries"]
+                                        const coords = currentCluster[bg]["Boundaries"]
                                         var coordArr = []
                                         coords.forEach(function(coord) {
                                             coordArr.push({
@@ -227,12 +227,12 @@ export class MapCluster extends Component {
                                         return (
                                             <Polygon
                                                 ref = {React.createRef()}
-                                                nbhName = {currentCluster[neighborhood]["Neighborhood Name"]}
+                                                nbhName = {currentCluster[bg]["BLOCKGROUP_ID"]}
                                                 paths={coordArr}
-                                                strokeColor={this.state.colorArray[currentCluster[neighborhood]["Neighborhood_Cluster"] - 1]}
+                                                strokeColor={this.state.colorArray[currentCluster[bg]["Cluster"] - 1]}
                                                 strokeOpacity={1}
                                                 strokeWeight={3}
-                                                fillColor={this.state.colorArray[currentCluster[neighborhood]["Neighborhood_Cluster"] - 1]}
+                                                fillColor={this.state.colorArray[currentCluster[bg]["Cluster"] - 1]}
                                                 fillOpacity={0.75}
                                                 // onMouseover = {this.onPolygonMouseOver}
                                                 // onMouseout = {this.onPolygonMouseOut}
