@@ -218,10 +218,12 @@ export class MapCluster extends Component {
                                     //SKIP
                                 } else {
                                         const coords = currentCluster[bg]["Boundaries"]
+                                        // console.log(coords[0])
+                                    
                                         var coordArr = []
                                         coords.forEach(function(coord) {
                                             coordArr.push({
-                                                lat: coord[1], lng: coord[0]
+                                                lat: coord[0], lng: coord[1]
                                             });
                                         })
                                         return (

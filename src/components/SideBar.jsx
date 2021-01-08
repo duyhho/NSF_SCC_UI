@@ -115,9 +115,9 @@ export default class SideBar extends React.Component {
                     Virtual Tour
                   </Menu.Item>
                 </Link>
-                <Link to="/neighborhoods">
+                <Link to="/blockgroups">
                   <Menu.Item
-                    name="Neighborhood Cluster"
+                    name="Block Group Cluster"
                     onClick={this.handleMenuSelect.bind(this, 4)}
                     active={currentView === 4}
                   >
@@ -133,7 +133,7 @@ export default class SideBar extends React.Component {
                 <Route exact path="/realImageDetect" component={File} />
                 <Route exact path="/call311" component={Map311} />
                 <Route exact path="/virtualTour" component={VirtualTour} />
-                <Route exact path="/neighborhoods" component={MapCluster} />
+                <Route exact path="/blockgroups" component={MapCluster} />
                 <Route component={NotFound} />
               </Switch>
 
