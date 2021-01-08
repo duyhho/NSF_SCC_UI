@@ -1,6 +1,6 @@
 class Server {
     constructor() {
-        this.serverDomain = "http://31e1b63fe4ba.ngrok.io/";
+        this.serverDomain = "http://a094efb00719.ngrok.io";
     }
 
     getServerDomain() {
