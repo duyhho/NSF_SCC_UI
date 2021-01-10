@@ -46,7 +46,7 @@ export class MapCluster extends Component {
     loadNeighborhoodList() {
         var self = this;
     
-        axios.get(this.state.serverDomain + "/api/blockgroups/clusters/socioeconomic/get")
+        axios.get(this.state.serverDomain + "/api/blockgroups/clusters/get")
         .then(function(response) {
             for (var i = 2; i <= response.data.length; i ++) {
                 self.setState({
@@ -231,10 +231,10 @@ export class MapCluster extends Component {
                                                 ref = {React.createRef()}
                                                 nbhName = {currentCluster[bg]["BLOCKGROUP_ID"]}
                                                 paths={coordArr}
-                                                strokeColor={this.state.colorArray[currentCluster[bg]["Cluster"] - 1]}
+                                                strokeColor={this.state.colorArray[currentCluster[bg]["Cluster by Call Category"] - 1]}
                                                 strokeOpacity={1}
                                                 strokeWeight={3}
-                                                fillColor={this.state.colorArray[currentCluster[bg]["Cluster"] - 1]}
+                                                fillColor={this.state.colorArray[currentCluster[bg]["Cluster by Call Category"] - 1]}
                                                 fillOpacity={0.75}
                                                 // onMouseover = {this.onPolygonMouseOver}
                                                 // onMouseout = {this.onPolygonMouseOut}
