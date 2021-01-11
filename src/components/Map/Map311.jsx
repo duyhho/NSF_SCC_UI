@@ -303,7 +303,7 @@ export class Map311 extends Component {
             if (location.properties.nbhid === props.nbh_id) {
                 // console.log(self.state.showingInfoWindowPolygon)
 
-                if (self.state.showingInfoWindowPolygon == false) {
+                if (self.state.showingInfoWindowPolygon === false) {
                     self.setState({
                         // activePolygonPosition: {lat: location.geometry.coordinates[0][0][0][0], lng: location.geometry.coordinates[0][0][0][1]},
                         showingInfoWindowPolygon: true,
