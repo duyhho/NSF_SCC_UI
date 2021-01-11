@@ -163,11 +163,24 @@ export class MapCluster extends Component {
                                 }
                             })}
                         </Map>
+                        <div className="legend" align="center">
+                            <h3>Legend</h3>
+                        {
+                        currentColorArray.map(function(color, index) {
+                            return (
+                                <div className="legend-item">
+                                    <div className="legend-color" style={{backgroundColor: color}}></div>
+                                    <div>Cluster {index + 1}</div>
+                                </div>
+                            )
+                        })
+                        }
+                        </div>
                     </div>
                 </div>
                 <div className="col-md-5" align="center" style={{marginTop: "20px"}}>
                     <div align="center">
-                        <span>Cluster By:</span>&nbsp;&nbsp;
+                        <span>Cluster By:&nbsp;&nbsp;</span>
                         <select defaultValue="Census Socioeconomic Metrics" onChange={this.handleCategoryChange.bind(this)}>
                         {
                         categoryList.map(function(item) {
@@ -189,13 +202,6 @@ export class MapCluster extends Component {
                             max={this.state.sliderLabels.length + 1}
                             onChangeCommitted={this.onSliderLabelChange.bind(this)}
                         />
-                        <div id="legend"><h3>Legend</h3>
-                        {
-                            currentColorArray.map(function(color, index) {
-                                return <div style={{display: "inline"}}><div className="square" style={{backgroundColor: color}}></div>Cluster {index + 1}</div>
-                            })
-                        }
-                        </div>
                     </div>
                 </div>
             </div>
