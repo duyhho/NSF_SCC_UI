@@ -319,10 +319,7 @@ export class Map311 extends Component {
                     visible: true,
                     position:  props.center_coord,
                 })
-                
-                // console.log(self.polygonInfoWindowRef.current.infowindow.visible)
-                // self.polygonInfoWindowRef.current.infowindow.setPosition(props.center_coord)
-                // console.log(self.polygonInfoWindowRef.current.infowindow)
+            
                 
             }
         })

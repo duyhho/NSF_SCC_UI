@@ -103,10 +103,7 @@ export class MapCluster extends Component {
             
         })
         
-        // currentCluster[keys[1]]['Boundaries'][0] += 0.0000000000000001
-        // currentCluster[keys[2]]['Boundaries'][0] += 0.0000000000000001
-
-        console.log(this.state.currentCluster[keys[0]]['Boundaries'][0][0])
+        // console.log(this.state.currentCluster[keys[0]]['Boundaries'][0][0])
         this.setState({
             currentCluster: currentCluster
         })
