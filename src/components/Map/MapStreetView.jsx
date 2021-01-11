@@ -472,7 +472,7 @@ export class MapStreetView extends Component {
                 zoom={14}
                 onClick={this.onMapClicked}
               >
-                {neighborhoodInfo.map(region => {
+                {neighborhoodInfo.forEach(region => {
                     const coords = region.geometry.coordinates[0][0]
                     let coord_arr = []
                     coords.forEach(coord => {
