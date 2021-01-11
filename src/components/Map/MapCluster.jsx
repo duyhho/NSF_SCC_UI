@@ -42,7 +42,8 @@ export class MapCluster extends Component {
     loadNeighborhoodList() {
         var self = this;
     
-        axios.get(this.state.serverDomain + "/api/blockgroups/clusters/get")
+        // axios.get(this.state.serverDomain + "/api/blockgroups/clusters/get")
+        axios.get('https://dl.dropboxusercontent.com/s/5dyq70p4l5ptkah/230BG-Clusters.json?dl=0')
         .then(function(response) {
             for (var i = 2; i <= response.data.length + 1; i++) {
                 self.setState({
