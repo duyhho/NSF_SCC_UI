@@ -231,3 +231,27 @@ code {
 }
 .gm-style-iw + div {display: none;}
 .gm-style-iw {text-align:center;}
+#legend {
+  font-family: Arial, sans-serif;
+  background: #fff;
+  padding: 10px;
+  margin: 10px;
+  border: 3px solid #000;
+}
+.square {
+  height: 30px;
+  width: 30px;
+  background-color: #555;
+  /* display:inline */
+}
+.circle {
+  height: 15px;
+  width: 15px;
+  background-color: #555;
+  border-radius: 50%;
+}
+.rectangle {
+  height: 50px;
+  width: 100px;
+  background-color: #555;
+}

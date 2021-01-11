@@ -196,7 +196,7 @@ export class MapCluster extends Component {
         // if (currentCluster.Cluster_Total != 4){
         //     currentCluster = {}
         // }
-        
+        const currentColorArray = this.state.colorArray.slice(0,currentCluster['Cluster_Total'])
         if (!this.props.google) {
             return <div>Loading...</div>;
         }
@@ -259,6 +259,13 @@ export class MapCluster extends Component {
                         max={this.state.sliderLabels.length + 1}
                         onChangeCommitted={this.onSliderLabelChange.bind(this)}
                     />
+                    <div id="legend"><h3>Legend</h3>
+                    {
+                        currentColorArray.map(function(color, index) {
+                        return <p><div class="square"></div> Cluster {index+1}</p>
+                        })
+                    }
+                    </div>
                 </div>
             </div>
             ) : (
