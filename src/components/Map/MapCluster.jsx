@@ -1,8 +1,7 @@
 import React, { Component } from "react"
-import { Map, Marker, GoogleApiWrapper, InfoWindow, Polygon } from "google-maps-react"
+import { Map, GoogleApiWrapper, Polygon } from "google-maps-react"
 import update from 'immutability-helper'
 import axios from 'axios'
-import $ from 'jquery'
 import Slider from '@material-ui/core/Slider';
 
 import { server } from '../../controllers/Server.js'
@@ -14,25 +13,22 @@ export class MapCluster extends Component {
         this.pano= React.createRef();
         this.polygonRef = React.createRef();
         this.polygonInfoWindowRef = React.createRef();
-        this.onPolygonMouseOver = this.onPolygonMouseOver.bind(this);
-        this.onPolygonMouseOut = this.onPolygonMouseOut.bind(this);
-        this.onPolygonClick = this.onPolygonClick.bind(this);
-        this.onInfoWindowClose = this.onInfoWindowClose.bind(this)
+        // this.onPolygonMouseOver = this.onPolygonMouseOver.bind(this);
+        // this.onPolygonMouseOut = this.onPolygonMouseOut.bind(this);
+        // this.onPolygonClick = this.onPolygonClick.bind(this);
+        // this.onInfoWindowClose = this.onInfoWindowClose.bind(this)
         this.state = {
             serverDomain: server.getServerDomain(),
             loadingData: false,
             initialMessage: "Loading the block groups. Please wait...",
-            showingInfoWindowPolygon: false,
-            activePolygonPosition: {},
-            currentLocation:  {lat: 39.0410436302915, lng: -94.5876739197085},
-            currentRectangle: [],
-            rectangle_coords: [],
-            allNeighborhoodsCoords: [],
+            currentLocation: {lat: 39.0410436302915, lng: -94.5876739197085},
             neighborhoodList:[],
             sliderLabels: [],
             currentCluster: [],
-            colorArray: ['#FF8C00', '#E81123', '#EC008C', '#68217A', '#00188F', '#00B294',
-                            '#00BCF2', '#00B294', '#BAD80A', '#009E49', '#FFF100'],
+            colorArray: ['#FF8C00', '#E81123', '#EC008C', '#68217A', '#00188F',
+                        '#00BCF2', '#00B294', '#BAD80A', '#009E49', '#FFF100'],
+            categoryList: [{cat: "311 Call Category"}, {cat: "311 Response Time"}, {cat: "311 Call Frequency"}, {cat: "Census Socioeconomic Metrics"}, {cat: "All Factors"}],
+            currentCategory: "Cluster by Socioeconomic Metrics"
         };
     }
     
@@ -48,7 +44,7 @@ export class MapCluster extends Component {
     
         axios.get(this.state.serverDomain + "/api/blockgroups/clusters/get")
         .then(function(response) {
-            for (var i = 2; i <= response.data.length; i ++) {
+            for (var i = 2; i <= response.data.length + 1; i++) {
                 self.setState({
                     sliderLabels: update(self.state.sliderLabels, {$push: [{
                         value: i,
@@ -78,106 +74,9 @@ export class MapCluster extends Component {
         })
     }
 
-    onMapClicked(mapProps, map, clickEvent) {
-        if (this.state.dataLoading === false) {
-            if (this.state.showingInfoWindow) {
-                this.setState({
-                    showingInfoWindow: false,
-                })
-            }
-        }
-    }
-
     setPolygonOptions = (options) => {
         this.polygonRef.current.polygon.setOptions(options);
     };
-
-    onPolygonMouseOver(props, polygon, e){
-        this.setPolygonOptions({
-            paths:props.paths
-        });
-        // console.log(props.center)
-        var self = this;
-        const neighborhoodInfo = this.state.neighborhoodInfo;
-
-        neighborhoodInfo.forEach(function(location) {
-            if (location.properties.nbhid === props.nbh_id) {
-                // console.log(self.state.showingInfoWindowPolygon)
-
-                if (self.state.showingInfoWindowPolygon == false) {
-                    self.setState({
-                        // activePolygonPosition: {lat: location.geometry.coordinates[0][0][0][0], lng: location.geometry.coordinates[0][0][0][1]},
-                        showingInfoWindowPolygon: true,
-                        // infoWindowContentPolygon: (
-                        // <div>
-                        //     <h2>{location.properties.nbhname}</h2>
-                        // </div>
-                        // ),
-                    });
-                }
-                self.polygonInfoWindowRef.current.infowindow.setOptions({
-                    content: location.properties.nbhname,
-                    visible: true,
-                    position:  props.center_coord,
-                })
-                
-                // console.log(self.polygonInfoWindowRef.current.infowindow.visible)
-                // self.polygonInfoWindowRef.current.infowindow.setPosition(props.center_coord)
-                // console.log(self.polygonInfoWindowRef.current.infowindow)
-                
-            }
-        })
-    }
-   
-    onPolygonMouseOver(props, polygon, e){
-        console.log('hovered')
-        // console.log(this.state.polygonIsHovered)
-        this.setPolygonOptions({
-            // fillColor: "green",
-            paths:props.paths
-        });
-    }
-
-    onPolygonMouseOut(props, polygon, e){
-        this.setPolygonOptions({
-            // fillColor: "green",
-            paths:[]
-        });
-    }
-
-    onPolygonClick(props, polygon, e){
-        var self = this;
-        const neighborhoodInfo = this.state.neighborhoodInfo;
-        // console.log(self.polygonInfoWindowRef.current.infowindow.position.lat())
-        console.log(props.center_coord)
-        neighborhoodInfo.forEach(function(location) {
-            if (location.properties.nbhid === props.nbh_id) {
-                console.log(location.properties.nbhname)
-                self.polygonInfoWindowRef.current.infowindow.setOptions({
-                    content: location.properties.nbhname,
-                    visible: true,
-                    position:  props.center
-                })
-                console.log(self.polygonInfoWindowRef.current.infowindow.position.lat())
-                self.setState({
-                    // activePolygonPosition: {lat: location.geometry.coordinates[0][0][0][0], lng: location.geometry.coordinates[0][0][0][1]},
-                    showingInfoWindowPolygon: true,
-                    // infoWindowContentPolygon: (
-                    // <div>
-                    //     <h2>{location.properties.nbhname}</h2>
-                    // </div>
-                    // ),
-                });
-            }
-        })
-    }
-
-    onInfoWindowClose(){
-         this.setState({
-            showingInfoWindowPolygon: false,
-            activePolygonPosition: null,
-        })
-    }
 
     onSliderLabelChange(event, value) {
         var self = this;
@@ -190,12 +89,36 @@ export class MapCluster extends Component {
         })
     }
 
+    handleCategoryChange(e) {
+        const selectedValue = e.target.value;
+
+        if (selectedValue === "311 Call Category") {
+            this.setState({
+                currentCategory: "Cluster by Call Category"
+            })
+        } else if (selectedValue === "311 Response Time") {
+            this.setState({
+                currentCategory: "Cluster by Response Time"
+            })
+        } else if (selectedValue === "311 Call Frequency") {
+            this.setState({
+                currentCategory: "Cluster by Call Frequency"
+            })
+        } else if (selectedValue === "Census Socioeconomic Metrics") {
+            this.setState({
+                currentCategory: "Cluster by Socioeconomic Metrics"
+            })
+        } else if (selectedValue === "All Factors") {
+            this.setState({
+                currentCategory: "Cluster by All Factors"
+            })
+        }
+    }
+
     render() {
         const loadingData = this.state.loadingData;
-        var currentCluster = this.state.currentCluster;
-        // if (currentCluster.Cluster_Total != 4){
-        //     currentCluster = {}
-        // }
+        const currentCluster = this.state.currentCluster;
+        const categoryList = this.state.categoryList;
         
         if (!this.props.google) {
             return <div>Loading...</div>;
@@ -203,62 +126,69 @@ export class MapCluster extends Component {
 
         return (
         <div className="page-container">
-            {loadingData == false ? (
+            {loadingData === false ? (
             <div className="row">
-                <div className="col-md-8 map-view-container" style = {{height: "95vh"}}>
+                <div className="col-md-6 map-view-container" style = {{height: "95vh"}}>
                     <div className="map-container">
                         <Map
                             google={this.props.google}
                             initialCenter={this.state.currentLocation}
-                            onClick={this.onMapClicked.bind(this)}
-                            zoom={14}
+                            zoom={11}
                         >
                             {Object.keys(currentCluster).map(bg => {
-                                if (bg == "Cluster_Total") {
-                                    //SKIP
+                                if (bg === "Cluster_Total") {
+                                    return <div></div>;
                                 } else {
-                                        const coords = currentCluster[bg]["Boundaries"]
-                                        // console.log(coords[0])
-                                    
-                                        var coordArr = []
-                                        coords.forEach(function(coord) {
-                                            coordArr.push({
-                                                lat: coord[0], lng: coord[1]
-                                            });
-                                        })
-                                        return (
-                                            <Polygon
-                                                ref = {React.createRef()}
-                                                nbhName = {currentCluster[bg]["BLOCKGROUP_ID"]}
-                                                paths={coordArr}
-                                                strokeColor={this.state.colorArray[currentCluster[bg]["Cluster by Call Category"] - 1]}
-                                                strokeOpacity={1}
-                                                strokeWeight={3}
-                                                fillColor={this.state.colorArray[currentCluster[bg]["Cluster by Call Category"] - 1]}
-                                                fillOpacity={0.75}
-                                                // onMouseover = {this.onPolygonMouseOver}
-                                                // onMouseout = {this.onPolygonMouseOut}
-                                                // onClick = {this.onPolygonClick}
-                                            />
-                                        )
-                                    }
-                                    
+                                    const coords = currentCluster[bg]["Boundaries"]
+                                    var coordArr = []
+                                    coords.forEach(function(coord) {
+                                        coordArr.push({
+                                            lat: coord[0], lng: coord[1]
+                                        });
+                                    })
+                            
+                                    return (
+                                        <Polygon
+                                            ref={this.polygonRef}
+                                            nbhId={currentCluster[bg]["BLOCKGROUP_ID"]}
+                                            paths={coordArr}
+                                            strokeColor={this.state.colorArray[currentCluster[bg][this.state.currentCategory] - 1]}
+                                            strokeOpacity={1}
+                                            strokeWeight={3}
+                                            fillColor={this.state.colorArray[currentCluster[bg][this.state.currentCategory] - 1]}
+                                            fillOpacity={0.75}
+                                        />
+                                    )
+                                }
                             })}
                         </Map>
                     </div>
                 </div>
-                <div className="col-md-3" align="center" style={{marginTop: "20px"}}>
-                    <span>Number of clusters:</span>
-                    <Slider
-                        defaultValue={1}
-                        aria-labelledby="discrete-slider-custom"
-                        step={null}
-                        marks={this.state.sliderLabels}
-                        valueLabelDisplay="auto"
-                        min={2}
-                        max={this.state.sliderLabels.length + 1}
-                        onChangeCommitted={this.onSliderLabelChange.bind(this)}
-                    />
+                <div className="col-md-5" align="center" style={{marginTop: "20px"}}>
+                    <div align="center">
+                        <span>Cluster By:</span>&nbsp;&nbsp;
+                        <select defaultValue="Census Socioeconomic Metrics" onChange={this.handleCategoryChange.bind(this)}>
+                        {
+                        categoryList.map(function(item) {
+                            return <option value={item.cat}>{item.cat}</option>
+                        })
+                        }
+                        </select>
+                    </div>
+                    <br />
+                    <div align="center">
+                        <span>Number of clusters:</span>
+                        <Slider
+                            defaultValue={2}
+                            aria-labelledby="discrete-slider-custom"
+                            step={null}
+                            marks={this.state.sliderLabels}
+                            valueLabelDisplay="auto"
+                            min={2}
+                            max={this.state.sliderLabels.length + 1}
+                            onChangeCommitted={this.onSliderLabelChange.bind(this)}
+                        />
+                    </div>
                 </div>
             </div>
             ) : (

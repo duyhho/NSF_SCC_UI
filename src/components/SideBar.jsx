@@ -30,7 +30,7 @@ export default class SideBar extends React.Component {
       this.setState({
         currentView: 3
       })
-    } else if (window.location.pathname === "/neighborhoods") {
+    } else if (window.location.pathname === "/blockgroups") {
       this.setState({
         currentView: 4
       })
@@ -122,7 +122,7 @@ export default class SideBar extends React.Component {
                     active={currentView === 4}
                   >
                     <Icon name="connectdevelop" />
-                    Neighborhoods
+                    Block Groups
                   </Menu.Item>
                 </Link>
               </Sidebar>
