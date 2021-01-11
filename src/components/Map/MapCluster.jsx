@@ -262,7 +262,7 @@ export class MapCluster extends Component {
                     <div id="legend"><h3>Legend</h3>
                     {
                         currentColorArray.map(function(color, index) {
-                        return <p><div class="square"></div> Cluster {index+1}</p>
+                        return <div style={{display: "inline"}}><div class="square" style = {{backgroundColor: color}}></div> Cluster {index+1}</div>
                         })
                     }
                     </div>
