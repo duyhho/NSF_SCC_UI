@@ -31,7 +31,7 @@ export class MapCluster extends Component {
             currentCategory: "Cluster by Socioeconomic Metrics"
         };
     }
-
+    
     componentDidMount() {
         this.setState({
             loadingData: true
@@ -41,7 +41,7 @@ export class MapCluster extends Component {
 
     loadNeighborhoodList() {
         var self = this;
-
+    
         axios.get(this.state.serverDomain + "/api/blockgroups/clusters/get")
         .then(function(response) {
             for (var i = 2; i <= response.data.length + 1; i++) {
@@ -117,12 +117,9 @@ export class MapCluster extends Component {
 
     render() {
         const loadingData = this.state.loadingData;
-        var currentCluster = this.state.currentCluster;
-        // if (currentCluster.Cluster_Total != 4){
-        //     currentCluster = {}
-        // }
+        const currentCluster = this.state.currentCluster;
         const categoryList = this.state.categoryList;
-        const currentColorArray = this.state.colorArray.slice(0,currentCluster['Cluster_Total'])
+        
         if (!this.props.google) {
             return <div>Loading...</div>;
         }
@@ -149,7 +146,7 @@ export class MapCluster extends Component {
                                             lat: coord[0], lng: coord[1]
                                         });
                                     })
-
+                            
                                     return (
                                         <Polygon
                                             ref={this.polygonRef}
@@ -191,12 +188,6 @@ export class MapCluster extends Component {
                             max={this.state.sliderLabels.length + 1}
                             onChangeCommitted={this.onSliderLabelChange.bind(this)}
                         />
-                        <div id="legend"><h3>Legend</h3>
-                        {
-                            currentColorArray.map(function(color, index) {
-                            return <div style={{display: "inline"}}><div class="square" style = {{backgroundColor: color}}></div> Cluster {index+1}</div>
-                            })
-                        }
                     </div>
                 </div>
             </div>
