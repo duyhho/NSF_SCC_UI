@@ -86,7 +86,6 @@ export class MapCluster extends Component {
                 self.setState({
                     currentCluster: item,
                 })
-                console.log(self.state.currentCluster)
             }
         })
     }
@@ -98,20 +97,16 @@ export class MapCluster extends Component {
         var keys = Object.keys(currentCluster)
         keys.forEach(function(key) {
             if (key !== 'Cluster_Total'){
-                // console.log(currentCluster[key])
                 currentCluster[key]['Boundaries'][0][0] += 0.00000000000001
             }
-            
         })
-        
-        // console.log(this.state.currentCluster[keys[0]]['Boundaries'][0][0])
+
         this.setState({
             currentCluster: currentCluster
         })
         this.setState({
             currentCluster: oldCluster
         })
-        console.log(this.state.currentCluster[keys[0]]['Boundaries'][0][0])
 
         if (selectedValue === "311 Call Category") {
             this.setState({
