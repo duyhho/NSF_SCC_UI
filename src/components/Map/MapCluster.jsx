@@ -11,11 +11,9 @@ export class MapCluster extends Component {
     constructor(props) {
         super(props);
         this.polygonRef = React.createRef();
-        this.polygonInfoWindowRef = React.createRef();
         this.onPolygonMouseOver = this.onPolygonMouseOver.bind(this);
         this.onPolygonMouseOut = this.onPolygonMouseOut.bind(this);
         this.onPolygonClick = this.onPolygonClick.bind(this);
-        this.onInfoWindowClose = this.onInfoWindowClose.bind(this)
         this.state = {
             serverDomain: server.getServerDomain(),
             loadingData: false,
@@ -29,6 +27,7 @@ export class MapCluster extends Component {
             categoryList: [{cat: "311 Call Category"}, {cat: "311 Response Time"}, {cat: "311 Call Frequency"}, {cat: "Census Socioeconomic Metrics"}, {cat: "All Factors"}],
             currentCategory: "Cluster by Socioeconomic Metrics",
             showingInfoWindow: false,
+            selectedNeighborhood: null,
         };
     }
     
@@ -139,12 +138,6 @@ export class MapCluster extends Component {
         })
     }
 
-    onMapClicked(mapProps, map, clickEvent) {
-        this.setState({
-            showingInfoWindow: false,
-        })
-    }
-
     onPolygonMouseOver(props, polygon, e){
         this.setPolygonOptions({
             paths: props.paths
@@ -157,12 +150,6 @@ export class MapCluster extends Component {
         });
     }
 
-    onInfoWindowClose(){
-        this.setState({
-            showingInfoWindow: false,
-        })
-    }
-    
     onPolygonClick(props, polygon, e){
         var self = this;
         const currentCluster = this.state.currentCluster;
@@ -172,23 +159,9 @@ export class MapCluster extends Component {
                 //SKIP
             } else {
                 if (currentCluster[bg]["BLOCKGROUP_ID"] === props.nbhId) {
-                    console.log(currentCluster[bg])
                     self.setState({
-                        showingInfoWindow: true,
+                        selectedNeighborhood: currentCluster[bg]
                     });
-
-                    var returnText = "ID: " + currentCluster[bg]["BLOCKGROUP_ID"].toString() + "\nHousehold Type: " + currentCluster[bg]["Household_Type"].toString()
-                    + "\nMedian Home Value: " + currentCluster[bg]["Median home value"].toString() + "\nMedian Income: " + currentCluster[bg]["Median income"].toString()
-                    + "\nTotal Renter Occupied: " + currentCluster[bg]["Total Renter Occupied"].toString() + "\nTotal Vacant: " + currentCluster[bg]["Total Vacant"].toString()
-                    + "\nTotal Population: " + currentCluster[bg]["Total population"].toString() + "\nTotal Population Age 25+ Years with a Bachelor's degree or higher: " + currentCluster[bg]["Total population age 25+ years with a bachelor's degree or higher"].toString()
-                    + "\nAsian Alone: " + currentCluster[bg]["Asian alone"].toString() + "\nBlack or African American Alone: " + currentCluster[bg]["Black or African American alone"].toString()
-                    + "\nHispanic or Latino Alone: " + currentCluster[bg]["Hispanic or Latino"].toString() + "\nWhite Alone: " + currentCluster[bg]["White alone"].toString()
-
-                    self.polygonInfoWindowRef.current.infowindow.setOptions({
-                        content: returnText,
-                        visible: true,
-                        position: props.centerCoord,
-                    })
                 }
             }
         })
@@ -198,7 +171,8 @@ export class MapCluster extends Component {
         const loadingData = this.state.loadingData;
         const currentCluster = this.state.currentCluster;
         const categoryList = this.state.categoryList;
-        const currentColorArray = this.state.colorArray.slice(0, currentCluster['Cluster_Total'])
+        const currentColorArray = this.state.colorArray.slice(0, currentCluster['Cluster_Total']);
+        const selectedNeighborhood = this.state.selectedNeighborhood;
         
         if (!this.props.google) {
             return <div>Loading...</div>;
@@ -213,18 +187,8 @@ export class MapCluster extends Component {
                         <Map
                             google={this.props.google}
                             initialCenter={this.state.currentLocation}
-                            onClick={this.onMapClicked.bind(this)}
                             zoom={11}
                         >
-                            <InfoWindow
-                                ref={this.polygonInfoWindowRef}
-                                position={ {lat: 39.0410436302915, lng: -94.5876739197085} }
-                                visible={this.state.showingInfoWindow}
-                                onClose={this.onInfoWindowClose}
-                            >
-                            
-                            </InfoWindow>
-
                             {Object.keys(currentCluster).map(bg => {
                                 if (bg === "Cluster_Total") {
                                     return <div></div>;
@@ -262,8 +226,8 @@ export class MapCluster extends Component {
                                             strokeWeight={3}
                                             fillColor={this.state.colorArray[currentCluster[bg][this.state.currentCategory] - 1]}
                                             fillOpacity={0.75}
-                                            onMouseover={this.onPolygonMouseOver}
-                                            onMouseout={this.onPolygonMouseOut}
+                                            // onMouseover={this.onPolygonMouseOver}
+                                            // onMouseout={this.onPolygonMouseOut}
                                             onClick = {this.onPolygonClick}
                                         />
                                     )
@@ -310,6 +274,108 @@ export class MapCluster extends Component {
                             onChangeCommitted={this.onSliderLabelChange.bind(this)}
                         />
                     </div>
+                    {selectedNeighborhood !== null && (
+                    <div className="col-md-12" align="left">
+                        <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE</div>
+                        <br />
+                        <div className="row">
+                            <div className="col-md-9">
+                                <b>ID:</b>
+                            </div>
+                            <div className="col-md-3">
+                                {selectedNeighborhood["BLOCKGROUP_ID"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9">
+                                <b>Household Type:</b>
+                            </div>
+                            <div className="col-md-3">
+                                {selectedNeighborhood["Household_Type"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9">
+                                <b>Median Home Value:</b>
+                            </div>
+                            <div className="col-md-3">
+                                {selectedNeighborhood["Median home value"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9">
+                                <b>Median Income:</b>
+                            </div>
+                            <div className="col-md-3">
+                                {selectedNeighborhood["Median income"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9">
+                                <b>Total Renter Occupied:</b>
+                            </div>
+                            <div className="col-md-3">
+                                {selectedNeighborhood["Total Renter Occupied"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9">
+                                <b>Total Vacant:</b>
+                            </div>
+                            <div className="col-md-3">
+                                {selectedNeighborhood["Total Vacant"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9">
+                                <b>Total Population:</b>
+                            </div>
+                            <div className="col-md-3">
+                                {selectedNeighborhood["Total population"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9">
+                                <b>Total Population Age 25+ Years with a Bachelor's degree or higher:</b>
+                            </div>
+                            <div className="col-md-3">
+                                {selectedNeighborhood["Total population age 25+ years with a bachelor's degree or higher"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9">
+                                <b>Asian Alone:</b>
+                            </div>
+                            <div className="col-md-3">
+                                {selectedNeighborhood["Asian alone"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9">
+                                <b>Black or African American Alone:</b>
+                            </div>
+                            <div className="col-md-3">
+                                {selectedNeighborhood["Black or African American alone"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9">
+                                <b>Hispanic or Latino Alone:</b>
+                            </div>
+                            <div className="col-md-3">
+                                {selectedNeighborhood["Hispanic or Latino"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9">
+                                <b>White Alone:</b>
+                            </div>
+                            <div className="col-md-3">
+                                {selectedNeighborhood["White alone"]}
+                            </div>
+                        </div>
+                    </div>                   
+                    )}
                 </div>
             </div>
             ) : (
