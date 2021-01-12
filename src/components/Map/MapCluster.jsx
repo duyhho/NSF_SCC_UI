@@ -275,12 +275,12 @@ export class MapCluster extends Component {
                         />
                     </div>
                     {selectedNeighborhood !== null && (
-                    <div className="col-md-12" align="left">
-                        <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE</div>
+                    <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
+                        <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE</div>
                         <br />
                         <div className="row">
-                            <div className="col-md-9">
-                                <b>ID:</b>
+                            <div className="col-md-9" >
+                                <b>Blockgroup ID:</b>
                             </div>
                             <div className="col-md-3">
                                 {selectedNeighborhood["BLOCKGROUP_ID"]}
@@ -288,7 +288,55 @@ export class MapCluster extends Component {
                         </div>
                         <div className="row">
                             <div className="col-md-9">
-                                <b>Household Type:</b>
+                                <b>Total Population:</b>
+                            </div>
+                            <div className="col-md-3" >
+                                {selectedNeighborhood["Total population"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9" style = {{fontSize: "90%"}}>
+                                <b>&emsp;White Alone:</b>
+                            </div>
+                            <div className="col-md-3" style = {{fontSize: "90%"}}>
+                                {selectedNeighborhood["White alone"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9" style = {{fontSize: "90%"}}>
+                                <b>&emsp;Black or African American Alone:</b>
+                            </div>
+                            <div className="col-md-3" style = {{fontSize: "90%"}}>
+                                {selectedNeighborhood["Black or African American alone"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9" style = {{fontSize: "90%"}}>
+                                <b>&emsp;Hispanic or Latino Alone:</b>
+                            </div>
+                            <div className="col-md-3" style = {{fontSize: "90%"}}>
+                                {selectedNeighborhood["Hispanic or Latino"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9" style = {{fontSize: "90%"}}>
+                                <b>&emsp;Asian Alone:</b>
+                            </div>
+                            <div className="col-md-3" style = {{fontSize: "90%"}}>
+                                {selectedNeighborhood["Asian alone"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9" style = {{fontSize: "90%"}}>
+                                <b>&emsp;Total population a Bachelor's degree or higher (age 25+):</b>
+                            </div>
+                            <div className="col-md-3" style = {{fontSize: "90%"}}>
+                                {selectedNeighborhood["Total population age 25+ years with a bachelor's degree or higher"]}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-9">
+                                <b>Number of Households:</b>
                             </div>
                             <div className="col-md-3">
                                 {selectedNeighborhood["Household_Type"]}
@@ -299,7 +347,7 @@ export class MapCluster extends Component {
                                 <b>Median Home Value:</b>
                             </div>
                             <div className="col-md-3">
-                                {selectedNeighborhood["Median home value"]}
+                                ${selectedNeighborhood["Median home value"].toLocaleString('en')}
                             </div>
                         </div>
                         <div className="row">
@@ -307,12 +355,12 @@ export class MapCluster extends Component {
                                 <b>Median Income:</b>
                             </div>
                             <div className="col-md-3">
-                                {selectedNeighborhood["Median income"]}
+                                ${selectedNeighborhood["Median income"].toLocaleString('en') }
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-md-9">
-                                <b>Total Renter Occupied:</b>
+                                <b>Number of Renters:</b>
                             </div>
                             <div className="col-md-3">
                                 {selectedNeighborhood["Total Renter Occupied"]}
@@ -320,60 +368,14 @@ export class MapCluster extends Component {
                         </div>
                         <div className="row">
                             <div className="col-md-9">
-                                <b>Total Vacant:</b>
+                                <b>Total Vacant Houses:</b>
                             </div>
                             <div className="col-md-3">
                                 {selectedNeighborhood["Total Vacant"]}
                             </div>
                         </div>
-                        <div className="row">
-                            <div className="col-md-9">
-                                <b>Total Population:</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["Total population"]}
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-9">
-                                <b>Total Population Age 25+ Years with a Bachelor's degree or higher:</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["Total population age 25+ years with a bachelor's degree or higher"]}
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-9">
-                                <b>Asian Alone:</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["Asian alone"]}
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-9">
-                                <b>Black or African American Alone:</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["Black or African American alone"]}
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-9">
-                                <b>Hispanic or Latino Alone:</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["Hispanic or Latino"]}
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-9">
-                                <b>White Alone:</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["White alone"]}
-                            </div>
-                        </div>
+                        
+                        
                     </div>                   
                     )}
                 </div>
