@@ -7,6 +7,7 @@ import File from "./UserUpload/File.js"
 import Map311 from "./Map/Map311.jsx"
 import VirtualTour from "./Virtual Tour/VirtualTour.jsx"
 import NotFound from "./NotFound/NotFound.jsx"
+import MapCluster from "./Map/MapCluster.jsx"
 
 export default class SideBar extends React.Component {
   constructor(props) {
@@ -28,6 +29,10 @@ export default class SideBar extends React.Component {
     } else if (window.location.pathname === "/virtualTour") {
       this.setState({
         currentView: 3
+      })
+    } else if (window.location.pathname === "/blockgroups") {
+      this.setState({
+        currentView: 4
       })
     } else { //Default to 0
       this.setState({
@@ -110,6 +115,16 @@ export default class SideBar extends React.Component {
                     Virtual Tour
                   </Menu.Item>
                 </Link>
+                <Link to="/blockgroups">
+                  <Menu.Item
+                    name="Block Group Cluster"
+                    onClick={this.handleMenuSelect.bind(this, 4)}
+                    active={currentView === 4}
+                  >
+                    <Icon name="connectdevelop" />
+                    Block Groups
+                  </Menu.Item>
+                </Link>
               </Sidebar>
 
               <Switch>
@@ -118,6 +133,7 @@ export default class SideBar extends React.Component {
                 <Route exact path="/realImageDetect" component={File} />
                 <Route exact path="/call311" component={Map311} />
                 <Route exact path="/virtualTour" component={VirtualTour} />
+                <Route exact path="/blockgroups" component={MapCluster} />
                 <Route component={NotFound} />
               </Switch>
 
