@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { Map, GoogleApiWrapper, Polygon, InfoWindow } from "google-maps-react"
+import { Map, GoogleApiWrapper, Polygon } from "google-maps-react"
 import update from 'immutability-helper'
 import axios from 'axios'
 import Slider from '@material-ui/core/Slider';
