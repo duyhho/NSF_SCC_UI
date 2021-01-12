@@ -136,7 +136,7 @@ export default class SideBar extends React.Component {
                     onClick={this.handleMenuSelect.bind(this, 5)}
                     active={currentView === 5}
                   >
-                    <Icon name="envelope" />
+                    <Icon name="chart bar" />
                     Visualization 311
                   </Menu.Item>
                 </Link>
