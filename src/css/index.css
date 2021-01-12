@@ -251,3 +251,7 @@ code {
   margin-right: 10px;
   margin-bottom: 3px;
 }
+
+div {
+  white-space: pre-wrap;
+}
