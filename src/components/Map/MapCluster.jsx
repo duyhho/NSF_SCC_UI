@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { Map, GoogleApiWrapper, Polygon } from "google-maps-react"
+import { Map, GoogleApiWrapper, Polygon, InfoWindow } from "google-maps-react"
 import update from 'immutability-helper'
 import axios from 'axios'
 import Slider from '@material-ui/core/Slider';
@@ -10,13 +10,12 @@ import { modal } from '../../utilities/modal.js'
 export class MapCluster extends Component {
     constructor(props) {
         super(props);
-        this.pano= React.createRef();
         this.polygonRef = React.createRef();
         this.polygonInfoWindowRef = React.createRef();
-        // this.onPolygonMouseOver = this.onPolygonMouseOver.bind(this);
-        // this.onPolygonMouseOut = this.onPolygonMouseOut.bind(this);
-        // this.onPolygonClick = this.onPolygonClick.bind(this);
-        // this.onInfoWindowClose = this.onInfoWindowClose.bind(this)
+        this.onPolygonMouseOver = this.onPolygonMouseOver.bind(this);
+        this.onPolygonMouseOut = this.onPolygonMouseOut.bind(this);
+        this.onPolygonClick = this.onPolygonClick.bind(this);
+        this.onInfoWindowClose = this.onInfoWindowClose.bind(this)
         this.state = {
             serverDomain: server.getServerDomain(),
             loadingData: false,
@@ -28,7 +27,8 @@ export class MapCluster extends Component {
             colorArray: ['#FF8C00', '#E81123', '#EC008C', '#68217A', '#00188F',
                         '#00BCF2', '#00B294', '#BAD80A', '#009E49', '#FFF100'],
             categoryList: [{cat: "311 Call Category"}, {cat: "311 Response Time"}, {cat: "311 Call Frequency"}, {cat: "Census Socioeconomic Metrics"}, {cat: "All Factors"}],
-            currentCategory: "Cluster by Socioeconomic Metrics"
+            currentCategory: "Cluster by Socioeconomic Metrics",
+            showingInfoWindow: false,
         };
     }
     
@@ -88,6 +88,10 @@ export class MapCluster extends Component {
                 })
             }
         })
+
+        this.setState({
+            showingInfoWindow: false,
+        })
     }
 
     handleCategoryChange(e) {
@@ -129,6 +133,65 @@ export class MapCluster extends Component {
                 currentCategory: "Cluster by All Factors"
             })
         }
+
+        this.setState({
+            showingInfoWindow: false,
+        })
+    }
+
+    onMapClicked(mapProps, map, clickEvent) {
+        this.setState({
+            showingInfoWindow: false,
+        })
+    }
+
+    onPolygonMouseOver(props, polygon, e){
+        this.setPolygonOptions({
+            paths: props.paths
+        });
+    }
+
+    onPolygonMouseOut(props, polygon, e){
+        this.setPolygonOptions({
+            paths: []
+        });
+    }
+
+    onInfoWindowClose(){
+        this.setState({
+            showingInfoWindow: false,
+        })
+    }
+    
+    onPolygonClick(props, polygon, e){
+        var self = this;
+        const currentCluster = this.state.currentCluster;
+
+        Object.keys(currentCluster).forEach(bg => {
+            if (bg === "Cluster_Total") {
+                //SKIP
+            } else {
+                if (currentCluster[bg]["BLOCKGROUP_ID"] === props.nbhId) {
+                    console.log(currentCluster[bg])
+                    self.setState({
+                        showingInfoWindow: true,
+                    });
+
+                    var returnText = "ID: " + currentCluster[bg]["BLOCKGROUP_ID"].toString() + "\nHousehold Type: " + currentCluster[bg]["Household_Type"].toString()
+                    + "\nMedian Home Value: " + currentCluster[bg]["Median home value"].toString() + "\nMedian Income: " + currentCluster[bg]["Median income"].toString()
+                    + "\nTotal Renter Occupied: " + currentCluster[bg]["Total Renter Occupied"].toString() + "\nTotal Vacant: " + currentCluster[bg]["Total Vacant"].toString()
+                    + "\nTotal Population: " + currentCluster[bg]["Total population"].toString() + "\nTotal Population Age 25+ Years with a Bachelor's degree or higher: " + currentCluster[bg]["Total population age 25+ years with a bachelor's degree or higher"].toString()
+                    + "\nAsian Alone: " + currentCluster[bg]["Asian alone"].toString() + "\nBlack or African American Alone: " + currentCluster[bg]["Black or African American alone"].toString()
+                    + "\nHispanic or Latino Alone: " + currentCluster[bg]["Hispanic or Latino"].toString() + "\nWhite Alone: " + currentCluster[bg]["White alone"].toString()
+
+                    self.polygonInfoWindowRef.current.infowindow.setOptions({
+                        content: returnText,
+                        visible: true,
+                        position: props.centerCoord,
+                    })
+                }
+            }
+        })
     }
 
     render() {
@@ -150,30 +213,58 @@ export class MapCluster extends Component {
                         <Map
                             google={this.props.google}
                             initialCenter={this.state.currentLocation}
+                            onClick={this.onMapClicked.bind(this)}
                             zoom={11}
                         >
+                            <InfoWindow
+                                ref={this.polygonInfoWindowRef}
+                                position={ {lat: 39.0410436302915, lng: -94.5876739197085} }
+                                visible={this.state.showingInfoWindow}
+                                onClose={this.onInfoWindowClose}
+                            >
+                            
+                            </InfoWindow>
+
                             {Object.keys(currentCluster).map(bg => {
                                 if (bg === "Cluster_Total") {
                                     return <div></div>;
                                 } else {
                                     const coords = currentCluster[bg]["Boundaries"]
                                     var coordArr = []
+                                    var x_coords = []
+                                    var y_coords = []
+
                                     coords.forEach(function(coord) {
                                         coordArr.push({
                                             lat: coord[0], lng: coord[1]
                                         });
+                                        x_coords.push(coord[1]);
+                                        y_coords.push(coord[0]);
                                     })
+
+                                    const x_min = Math.min(...x_coords);
+                                    const y_min = Math.min(...y_coords);
+                                    const x_max = Math.max(...x_coords);
+                                    const y_max = Math.max(...y_coords);
+                                    const center = {
+                                        lat: y_min + ((y_max - y_min) / 2),
+                                        lng: x_min + ((x_max - x_min) / 2),
+                                    }
                             
                                     return (
                                         <Polygon
                                             ref={this.polygonRef}
                                             nbhId={currentCluster[bg]["BLOCKGROUP_ID"]}
+                                            centerCoord={center}
                                             paths={coordArr}
                                             strokeColor={this.state.colorArray[currentCluster[bg][this.state.currentCategory] - 1]}
                                             strokeOpacity={1}
                                             strokeWeight={3}
                                             fillColor={this.state.colorArray[currentCluster[bg][this.state.currentCategory] - 1]}
                                             fillOpacity={0.75}
+                                            onMouseover={this.onPolygonMouseOver}
+                                            onMouseout={this.onPolygonMouseOut}
+                                            onClick = {this.onPolygonClick}
                                         />
                                     )
                                 }
