@@ -256,5 +256,17 @@ div {
   white-space: pre-wrap;
 }
 .bgrow {
+  /* font-family: 'Arvo', serif !important; */
   margin-bottom: 4px;
+}
+/* body {
+  font-family: 'Arvo', serif !important;
+} */
+select {
+  border-radius: 5px;
+  padding: 5px;
+  font-family: 'Arvo', serif !important;
+}
+.select-bg {
+  font-size:130%;
 }

@@ -250,7 +250,7 @@ export class MapCluster extends Component {
                     </div>
                 </div>
                 <div className="col-md-5" align="center" style={{marginTop: "20px"}}>
-                    <div align="center">
+                    <div align="center" className = "select-bg">
                         <span>Cluster By:&nbsp;&nbsp;</span>
                         <select defaultValue="Census Socioeconomic Metrics" onChange={this.handleCategoryChange.bind(this)}>
                         {
