@@ -255,3 +255,6 @@ code {
 div {
   white-space: pre-wrap;
 }
+.bgrow {
+  margin-bottom: 4px;
+}

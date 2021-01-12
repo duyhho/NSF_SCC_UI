@@ -278,7 +278,7 @@ export class MapCluster extends Component {
                     <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
                         <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE</div>
                         <br />
-                        <div className="row">
+                        <div className="row bgrow">
                             <div className="col-md-9" >
                                 <b>Blockgroup ID:</b>
                             </div>
@@ -286,15 +286,15 @@ export class MapCluster extends Component {
                                 {selectedNeighborhood["BLOCKGROUP_ID"]}
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row bgrow">
                             <div className="col-md-9">
                                 <b>Total Population:</b>
                             </div>
-                            <div className="col-md-3" >
+                            <div className="col-md-3"  >
                                 {selectedNeighborhood["Total population"]}
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row bgrow">
                             <div className="col-md-9" style = {{fontSize: "90%"}}>
                                 <b>&emsp;White Alone:</b>
                             </div>
@@ -302,7 +302,7 @@ export class MapCluster extends Component {
                                 {selectedNeighborhood["White alone"]}
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row bgrow">
                             <div className="col-md-9" style = {{fontSize: "90%"}}>
                                 <b>&emsp;Black or African American Alone:</b>
                             </div>
@@ -310,7 +310,7 @@ export class MapCluster extends Component {
                                 {selectedNeighborhood["Black or African American alone"]}
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row bgrow">
                             <div className="col-md-9" style = {{fontSize: "90%"}}>
                                 <b>&emsp;Hispanic or Latino Alone:</b>
                             </div>
@@ -318,7 +318,7 @@ export class MapCluster extends Component {
                                 {selectedNeighborhood["Hispanic or Latino"]}
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row bgrow">
                             <div className="col-md-9" style = {{fontSize: "90%"}}>
                                 <b>&emsp;Asian Alone:</b>
                             </div>
@@ -326,7 +326,7 @@ export class MapCluster extends Component {
                                 {selectedNeighborhood["Asian alone"]}
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row bgrow">
                             <div className="col-md-9" style = {{fontSize: "90%"}}>
                                 <b>&emsp;Total population a Bachelor's degree or higher (age 25+):</b>
                             </div>
@@ -334,7 +334,7 @@ export class MapCluster extends Component {
                                 {selectedNeighborhood["Total population age 25+ years with a bachelor's degree or higher"]}
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row bgrow">
                             <div className="col-md-9">
                                 <b>Number of Households:</b>
                             </div>
@@ -342,7 +342,7 @@ export class MapCluster extends Component {
                                 {selectedNeighborhood["Household_Type"]}
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row bgrow">
                             <div className="col-md-9">
                                 <b>Median Home Value:</b>
                             </div>
@@ -350,7 +350,7 @@ export class MapCluster extends Component {
                                 ${selectedNeighborhood["Median home value"].toLocaleString('en')}
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row bgrow">
                             <div className="col-md-9">
                                 <b>Median Income:</b>
                             </div>
@@ -358,7 +358,7 @@ export class MapCluster extends Component {
                                 ${selectedNeighborhood["Median income"].toLocaleString('en') }
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row bgrow">
                             <div className="col-md-9">
                                 <b>Number of Renters:</b>
                             </div>
@@ -366,7 +366,7 @@ export class MapCluster extends Component {
                                 {selectedNeighborhood["Total Renter Occupied"]}
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row bgrow">
                             <div className="col-md-9">
                                 <b>Total Vacant Houses:</b>
                             </div>
