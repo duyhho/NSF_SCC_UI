@@ -42,7 +42,9 @@ export class MapCluster extends Component {
         var self = this;
     
         // axios.get(this.state.serverDomain + "/api/blockgroups/clusters/get")
-        axios.get('https://dl.dropboxusercontent.com/s/5dyq70p4l5ptkah/230BG-Clusters.json?dl=0')
+        // axios.get('https://dl.dropboxusercontent.com/s/5dyq70p4l5ptkah/230BG-Clusters.json?dl=0')
+
+        axios.get('https://dl.dropboxusercontent.com/s/ujgnx6ynq4cubo4/465BG-Clusters.json?dl=0')
         .then(function(response) {
             for (var i = 2; i <= response.data.length + 1; i++) {
                 self.setState({
@@ -99,7 +101,7 @@ export class MapCluster extends Component {
         const oldCluster = this.state.currentCluster
         var keys = Object.keys(currentCluster)
         keys.forEach(function(key) {
-            if (key !== 'Cluster_Total'){
+            if (key !== 'Cluster_Total' && key !== 'Cluster_Profiles'){
                 currentCluster[key]['Boundaries'][0][0] += 0.00000000000001
             }
         })
@@ -155,7 +157,7 @@ export class MapCluster extends Component {
         const currentCluster = this.state.currentCluster;
 
         Object.keys(currentCluster).forEach(bg => {
-            if (bg === "Cluster_Total") {
+            if (bg === "Cluster_Total" || bg === 'Cluster_Info') {
                 //SKIP
             } else {
                 if (currentCluster[bg]["BLOCKGROUP_ID"] === props.nbhId) {
@@ -190,14 +192,14 @@ export class MapCluster extends Component {
                             zoom={11}
                         >
                             {Object.keys(currentCluster).map(bg => {
-                                if (bg === "Cluster_Total") {
+                                if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
                                     return <div></div>;
                                 } else {
                                     const coords = currentCluster[bg]["Boundaries"]
                                     var coordArr = []
                                     var x_coords = []
                                     var y_coords = []
-
+                                    // console.log(bg)
                                     coords.forEach(function(coord) {
                                         coordArr.push({
                                             lat: coord[0], lng: coord[1]
@@ -328,7 +330,7 @@ export class MapCluster extends Component {
                         </div>
                         <div className="row bgrow">
                             <div className="col-md-9" style = {{fontSize: "90%"}}>
-                                <b>&emsp;Total population a Bachelor's degree or higher (age 25+):</b>
+                                <b>&emsp;Total population with a Bachelor's degree or higher (age 25+):</b>
                             </div>
                             <div className="col-md-3" style = {{fontSize: "90%"}}>
                                 {selectedNeighborhood["Total population age 25+ years with a bachelor's degree or higher"]}
