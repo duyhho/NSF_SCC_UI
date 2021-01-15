@@ -223,8 +223,6 @@ export class MapCluster extends Component {
                 })
                 // console.log(catFreqs)
                 const sortedCatFreqs = JSON.stringify(this.sort_object(catFreqs))
-                // console.log(sortedCatFreqs)
-                // Create a new array with only the first 5 items
                 bgProfileContent = 
                 <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (CATEGORY)</div>
@@ -245,11 +243,11 @@ export class MapCluster extends Component {
             else if (currentCategory.includes('Department')){
                 const allDepts = clusterMetadata['Departments']
                 var deptFreqs = {};
-                // console.log(allCats)
+
                 allDepts.forEach(function(item){
                     deptFreqs[item] = selectedNeighborhood[item]
                 })
-                // console.log(catFreqs)
+
                 const sortedDeptFreqs = JSON.stringify(this.sort_object(deptFreqs))
                 console.log(sortedDeptFreqs)
                 // Create a new array with only the first 5 items
