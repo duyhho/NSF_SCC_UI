@@ -2,7 +2,8 @@ import React, { Component } from "react"
 import { Map, GoogleApiWrapper, Polygon } from "google-maps-react"
 import update from 'immutability-helper'
 import axios from 'axios'
-import Slider from '@material-ui/core/Slider';
+import Slider from '@material-ui/core/Slider'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
 
 import { server } from '../../controllers/Server.js'
 import { modal } from '../../utilities/modal.js'
@@ -28,6 +29,8 @@ export class MapCluster extends Component {
             currentCategory: "Cluster by Socioeconomic Metrics",
             showingInfoWindow: false,
             selectedNeighborhood: null,
+            chartFilterList: [{cat: "Median Income"}, {cat: "Median Home Value"}, {cat: "Total Population"}],
+            currentChartCategory: "Median Income"
         };
     }
     
@@ -117,26 +120,56 @@ export class MapCluster extends Component {
             this.setState({
                 currentCategory: "Cluster by Call Category"
             })
+            this.renderChartList("Cluster by Call Category")
         } else if (selectedValue === "311 Response Time") {
             this.setState({
                 currentCategory: "Cluster by Response Time"
             })
+            this.renderChartList("Cluster by Response Time")
         } else if (selectedValue === "311 Call Frequency") {
             this.setState({
                 currentCategory: "Cluster by Call Frequency"
             })
+            this.renderChartList("Cluster by Call Frequency")
         } else if (selectedValue === "Census Socioeconomic Metrics") {
             this.setState({
                 currentCategory: "Cluster by Socioeconomic Metrics"
             })
+            this.renderChartList("Cluster by Socioeconomic Metrics")
         } else if (selectedValue === "All Factors") {
             this.setState({
                 currentCategory: "Cluster by All Factors"
             })
+            this.renderChartList("Cluster by All Factors")
         }
 
         this.setState({
             showingInfoWindow: false,
+        })
+    }
+
+    handleChartCategoryChange(e) {
+
+    }
+
+    renderChartList(category) {
+        var chartFilterList = [];
+        if (category === "Cluster by Socioeconomic Metrics") {
+            chartFilterList.push({cat: "Median Income"})
+            chartFilterList.push({cat: "Median Home Value"})
+            chartFilterList.push({cat: "Total Population"})
+        } else if (category === "Cluster by Response Time") {
+            
+        } else if (category === "Cluster by Call Category") {
+            
+        } else if (category === "Cluster by Call Frequency") {
+            
+        } else if (category === "Cluster by All Factors") {
+            
+        }
+
+        this.setState({
+            chartFilterList: chartFilterList
         })
     }
 
@@ -155,15 +188,51 @@ export class MapCluster extends Component {
     onPolygonClick(props, polygon, e){
         var self = this;
         const currentCluster = this.state.currentCluster;
+        const currentCategory = this.state.currentCategory;
 
         Object.keys(currentCluster).forEach(bg => {
-            if (bg === "Cluster_Total" || bg === 'Cluster_Info') {
+            if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
                 //SKIP
             } else {
                 if (currentCluster[bg]["BLOCKGROUP_ID"] === props.nbhId) {
                     self.setState({
                         selectedNeighborhood: currentCluster[bg]
                     });
+
+                    const clusterProfiles = currentCluster["Cluster_Profiles"];
+                    console.log(clusterProfiles)
+                    if (currentCategory === "Cluster by Socioeconomic Metrics") {
+                        var medianIncomeData = [];
+                        var medianHomeValueData = [];
+                        var totalPopulationData = [];
+                        for (var i = 0; i < clusterProfiles[currentCategory].length; i++) {
+                            medianIncomeData.push({
+                                name: "Cluster " + clusterProfiles[currentCategory][i]["Cluster_ID"],
+                                value: "Cluster " + clusterProfiles[currentCategory][i]["Median income"].mean
+                            })
+                            medianHomeValueData.push({
+                                name: clusterProfiles[currentCategory][i]["Cluster_ID"],
+                                value: clusterProfiles[currentCategory][i]["Median home value"].mean
+                            })
+                            totalPopulationData.push({
+                                name: clusterProfiles[currentCategory][i]["Cluster_ID"],
+                                value: clusterProfiles[currentCategory][i]["Total population"].mean
+                            })
+                        }
+                        self.setState({
+                            medianIncomeData: medianIncomeData,
+                            medianHomeValueData: medianHomeValueData,
+                            totalPopulationData: totalPopulationData
+                        })
+                    } else if (currentCategory === "Cluster by Response Time") {
+                        
+                    } else if (currentCategory === "Cluster by Call Category") {
+                        
+                    } else if (currentCategory === "Cluster by Call Frequency") {
+                        
+                    } else if (currentCategory === "Cluster by All Factors") {
+                        
+                    }
                 }
             }
         })
@@ -175,6 +244,16 @@ export class MapCluster extends Component {
         const categoryList = this.state.categoryList;
         const currentColorArray = this.state.colorArray.slice(0, currentCluster['Cluster_Total']);
         const selectedNeighborhood = this.state.selectedNeighborhood;
+        
+        var currentChartData = [];
+        if (selectedNeighborhood !== null) {
+            switch (this.state.currentChartCategory) {
+                case "Median Income": currentChartData = this.state.medianIncomeData;
+                case "Median Home Value": currentChartData = this.state.medianHomeValueData;
+                case "Total Population": currentChartData = this.state.totalPopulationData;
+                default: currentChartData = this.state.medianIncomeData;
+            }
+        }
         
         if (!this.props.google) {
             return <div>Loading...</div>;
@@ -256,7 +335,7 @@ export class MapCluster extends Component {
                         <select defaultValue="Census Socioeconomic Metrics" onChange={this.handleCategoryChange.bind(this)}>
                         {
                         categoryList.map(function(item) {
-                            return <option value={item.cat}>{item.cat}</option>
+                            return <option key={item.cat} value={item.cat}>{item.cat}</option>
                         })
                         }
                         </select>
@@ -277,6 +356,7 @@ export class MapCluster extends Component {
                     </div>
                     {selectedNeighborhood !== null && (
                     <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
+                        <hr />
                         <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE</div>
                         <br />
                         <div className="row bgrow">
@@ -375,9 +455,36 @@ export class MapCluster extends Component {
                                 {selectedNeighborhood["Total Vacant"]}
                             </div>
                         </div>
-                    </div>                   
+                    </div>
                     )}
-                    <hr />
+                    {selectedNeighborhood !== null && (
+                    <div className="col-md-12">
+                        <hr />
+                        <div align="center" className = "select-bg">
+                            <span>View Chart By:&nbsp;&nbsp;</span>
+                            <select onChange={this.handleChartCategoryChange.bind(this)}>
+                            {
+                            this.state.chartFilterList.map(function(item) {
+                                return <option key={item.cat} value={item.cat}>{item.cat}</option>
+                            })
+                            }
+                            </select>
+                        </div>
+                        <BarChart 
+                            width={500}
+                            height={300}
+                            data={currentChartData}
+                            margin={{top: 5, right: 30, left: 20, bottom: 5}}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="value" fill="#8884D8" />
+                        </BarChart>
+                    </div>
+                    )}
                 </div>
             </div>
             ) : (
