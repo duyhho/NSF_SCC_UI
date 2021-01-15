@@ -25,11 +25,17 @@ export class MapCluster extends Component {
             currentCluster: [],
             colorArray: ['#FF8C00', '#E81123', '#EC008C', '#68217A', '#00188F',
                         '#00BCF2', '#00B294', '#BAD80A', '#009E49', '#FFF100'],
-            categoryList: [{cat: "311 Call Category"}, {cat: "311 Response Time"}, {cat: "311 Call Frequency"}, {cat: "Census Socioeconomic Metrics"}, {cat: "All Factors"}],
+            categoryList: [{cat: "311 Call Category"}, 
+                        {cat: "311 Assigned Department"}, 
+                        {cat: "311 Response Time"}, 
+                        {cat: "311 Call Frequency"}, 
+                        {cat: "Census Socioeconomic Metrics"}, 
+                        {cat: "All Factors"}],
             currentCategory: "Cluster by Socioeconomic Metrics",
             selectedNeighborhood: null,
             chartFilterList: [{cat: "Median Income"}, {cat: "Median Home Value"}, {cat: "Total Population"}],
-            currentChartCategory: "Median Income"
+            currentChartCategory: "Median Income",
+            clusterMetadata: null,
         };
     }
     
@@ -57,16 +63,22 @@ export class MapCluster extends Component {
                     }),
                 })
             }
-            response.data.forEach(function(item) {
+            self.setState({
+                clusterMetadata: response.data[0]
+            })
+            const bgClusterLists = response.data.slice(1,response.data.length)
+            bgClusterLists.forEach(function(item) {
                 if (item.Cluster_Total === 2) {
                     self.setState({
                         currentCluster: item,
                     })
                 }
             })
-
+            console.log(self.state.clusterMetadata)
+            console.log(bgClusterLists)
+            
             self.setState({
-                neighborhoodList: response.data,
+                neighborhoodList: bgClusterLists,
                 loadingData: false,
             })
         })
@@ -117,6 +129,11 @@ export class MapCluster extends Component {
                 currentCategory: "Cluster by Call Category"
             })
             this.renderChartList("Cluster by Call Category")
+        } else if (selectedValue === "311 Assigned Department") {
+            this.setState({
+                currentCategory: "Cluster by Department"
+            })
+            this.renderChartList("Cluster by Department")
         } else if (selectedValue === "311 Response Time") {
             this.setState({
                 currentCategory: "Cluster by Response Time"
@@ -231,7 +248,26 @@ export class MapCluster extends Component {
             }
         })
     }
+    sort_object(obj) {
+        var items = Object.keys(obj).map(function(key) {
+            return [key, obj[key]];
+        });
+        // console.log(items)
+        items.sort(function(first, second) {
+            return second[1] - first[1];
+        });
+        const top10items = items.slice(0,10);
+        var finalList = []
+        top10items.forEach(function(item) {
+            finalList.push({
+                name: item[0],
+                value: item[1]
+            })
+        })
+        console.log(finalList)
 
+        return(finalList)
+    } 
     render() {
         const loadingData = this.state.loadingData;
         const currentCluster = this.state.currentCluster;
@@ -248,6 +284,224 @@ export class MapCluster extends Component {
                 default: currentChartData = this.state.medianIncomeData;
             }
         }
+
+        const currentCategory = this.state.currentCategory;
+        const clusterMetadata = this.state.clusterMetadata
+        var bgProfileContent = '';
+        if (selectedNeighborhood != null ){
+            if (currentCategory.includes('Category')){
+                const allCats = clusterMetadata['Categories']
+                var catFreqs = {};
+                allCats.forEach(function(cat){
+                    catFreqs[cat] = selectedNeighborhood[cat]
+                })
+                const sortedCatFreqs = JSON.stringify(this.sort_object(catFreqs))
+                bgProfileContent = 
+                <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
+                    <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (CATEGORY)</div>
+                    <br />
+                    <div className="row bgrow">
+                        <div className="col-md-9" >
+                            <b>Blockgroup ID:</b>
+                        </div>
+                        <div className="col-md-3">
+                            {selectedNeighborhood["BLOCKGROUP_ID"]}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <div>{sortedCatFreqs}</div>
+                    </div>              
+                </div>            
+            }
+            else if (currentCategory.includes('Department')){
+                const allDepts = clusterMetadata['Departments']
+                var deptFreqs = {};
+
+                allDepts.forEach(function(item){
+                    deptFreqs[item] = selectedNeighborhood[item]
+                })
+
+                const sortedDeptFreqs = JSON.stringify(this.sort_object(deptFreqs))
+                console.log(sortedDeptFreqs)
+                // Create a new array with only the first 5 items
+                bgProfileContent = 
+                <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
+                    <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (DEPARTMENT)</div>
+                    <br />
+                    <div className="row bgrow">
+                        <div className="col-md-9" >
+                            <b>Blockgroup ID:</b>
+                        </div>
+                        <div className="col-md-3">
+                            {selectedNeighborhood["BLOCKGROUP_ID"]}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <div>{sortedDeptFreqs}</div>
+                    </div>              
+                </div>
+            }
+            else if (currentCategory.includes('Response')){
+                const allResponseTimes = clusterMetadata['Response Times']
+                var repFreqs = {};
+                // console.log(allCats)
+                var responseList = []
+                allResponseTimes.forEach(function(item){
+                    responseList.push({
+                        name: item,
+                        value: selectedNeighborhood[item]
+                    })
+                })
+                responseList = JSON.stringify(responseList)
+                bgProfileContent = 
+                <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
+                    <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (RESPONSE TIME)</div>
+                    <br />
+                    <div className="row bgrow">
+                        <div className="col-md-9" >
+                            <b>Blockgroup ID:</b>
+                        </div>
+                        <div className="col-md-3">
+                            {selectedNeighborhood["BLOCKGROUP_ID"]}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <div>{responseList}</div>
+                    </div>              
+                </div>
+            }
+            else if (currentCategory.includes('Frequency')){
+                const freq = JSON.stringify({
+                    name: 'Frequency',
+                    value: selectedNeighborhood['Frequency']
+                })
+                bgProfileContent = 
+                <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
+                    <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (FREQUENCY)</div>
+                    <br />
+                    <div className="row bgrow">
+                        <div className="col-md-9" >
+                            <b>Blockgroup ID:</b>
+                        </div>
+                        <div className="col-md-3">
+                            {selectedNeighborhood["BLOCKGROUP_ID"]}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <div>Blockgroup's 311 call frequency (Number of Calls/Population x 100): {freq}</div>
+                    </div>              
+                </div>
+            }
+            else if (currentCategory.includes('Socioeconomic')){
+                bgProfileContent = <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
+                <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (SOCIOECONOMIC)</div>
+                <br />
+                <div className="row bgrow">
+                    <div className="col-md-9" >
+                        <b>Blockgroup ID:</b>
+                    </div>
+                    <div className="col-md-3">
+                        {selectedNeighborhood["BLOCKGROUP_ID"]}
+                    </div>
+                </div>
+                <div className="row bgrow">
+                    <div className="col-md-9">
+                        <b>Total Population:</b>
+                    </div>
+                    <div className="col-md-3"  >
+                        {selectedNeighborhood["Total population"]}
+                    </div>
+                </div>
+                <div className="row bgrow">
+                    <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <b>&emsp;White Alone:</b>
+                    </div>
+                    <div className="col-md-3" style = {{fontSize: "90%"}}>
+                        {selectedNeighborhood["White alone"]}
+                    </div>
+                </div>
+                <div className="row bgrow">
+                    <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <b>&emsp;Black or African American Alone:</b>
+                    </div>
+                    <div className="col-md-3" style = {{fontSize: "90%"}}>
+                        {selectedNeighborhood["Black or African American alone"]}
+                    </div>
+                </div>
+                <div className="row bgrow">
+                    <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <b>&emsp;Hispanic or Latino Alone:</b>
+                    </div>
+                    <div className="col-md-3" style = {{fontSize: "90%"}}>
+                        {selectedNeighborhood["Hispanic or Latino"]}
+                    </div>
+                </div>
+                <div className="row bgrow">
+                    <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <b>&emsp;Asian Alone:</b>
+                    </div>
+                    <div className="col-md-3" style = {{fontSize: "90%"}}>
+                        {selectedNeighborhood["Asian alone"]}
+                    </div>
+                </div>
+                <div className="row bgrow">
+                    <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <b>&emsp;Total population with a Bachelor's degree or higher (age 25+):</b>
+                    </div>
+                    <div className="col-md-3" style = {{fontSize: "90%"}}>
+                        {selectedNeighborhood["Total population age 25+ years with a bachelor's degree or higher"]}
+                    </div>
+                </div>
+                <div className="row bgrow">
+                    <div className="col-md-9">
+                        <b>Number of Households:</b>
+                    </div>
+                    <div className="col-md-3">
+                        {selectedNeighborhood["Household_Type"]}
+                    </div>
+                </div>
+                <div className="row bgrow">
+                    <div className="col-md-9">
+                        <b>Median Home Value:</b>
+                    </div>
+                    <div className="col-md-3">
+                        ${selectedNeighborhood["Median home value"].toLocaleString('en')}
+                    </div>
+                </div>
+                <div className="row bgrow">
+                    <div className="col-md-9">
+                        <b>Median Income:</b>
+                    </div>
+                    <div className="col-md-3">
+                        ${selectedNeighborhood["Median income"].toLocaleString('en') }
+                    </div>
+                </div>
+                <div className="row bgrow">
+                    <div className="col-md-9">
+                        <b>Number of Renters:</b>
+                    </div>
+                    <div className="col-md-3">
+                        {selectedNeighborhood["Total Renter Occupied"]}
+                    </div>
+                </div>
+                <div className="row bgrow">
+                    <div className="col-md-9">
+                        <b>Total Vacant Houses:</b>
+                    </div>
+                    <div className="col-md-3">
+                        {selectedNeighborhood["Total Vacant"]}
+                    </div>
+                </div>
+                
+                
+            </div>            
+            }
+            else if (currentCategory.includes('All')){
+                bgProfileContent = <div>All Factors</div>
+            }
+        }
+        // console.log(bgProfileContent)
+        
         
         if (!this.props.google) {
             return <div>Loading...</div>;
@@ -372,7 +626,7 @@ export class MapCluster extends Component {
                                 {selectedNeighborhood["Total population"]}
                             </div>
                         </div>
-                        {/* <div className="row bgrow sub-point">
+                        <div className="row bgrow sub-point">
                             <div className="col-md-9">
                                 <b>&emsp;White Alone:</b>
                             </div>
@@ -411,7 +665,7 @@ export class MapCluster extends Component {
                             <div className="col-md-3">
                                 {selectedNeighborhood["Total population age 25+ years with a bachelor's degree or higher"]}
                             </div>
-                        </div> */}
+                        </div>
                         <div className="row bgrow">
                             <div className="col-md-6">
                                 <b>Number of Households:</b>
@@ -488,6 +742,7 @@ export class MapCluster extends Component {
                         </BarChart>
                     </div>
                     )}
+                    {bgProfileContent}
                 </div>
             </div>
             ) : (
