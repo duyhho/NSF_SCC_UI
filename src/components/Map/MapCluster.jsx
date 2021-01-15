@@ -3,7 +3,7 @@ import { Map, GoogleApiWrapper, Polygon } from "google-maps-react"
 import update from 'immutability-helper'
 import axios from 'axios'
 import Slider from '@material-ui/core/Slider'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 
 import { server } from '../../controllers/Server.js'
 import { modal } from '../../utilities/modal.js'
@@ -27,7 +27,6 @@ export class MapCluster extends Component {
                         '#00BCF2', '#00B294', '#BAD80A', '#009E49', '#FFF100'],
             categoryList: [{cat: "311 Call Category"}, {cat: "311 Response Time"}, {cat: "311 Call Frequency"}, {cat: "Census Socioeconomic Metrics"}, {cat: "All Factors"}],
             currentCategory: "Cluster by Socioeconomic Metrics",
-            showingInfoWindow: false,
             selectedNeighborhood: null,
             chartFilterList: [{cat: "Median Income"}, {cat: "Median Home Value"}, {cat: "Total Population"}],
             currentChartCategory: "Median Income"
@@ -49,7 +48,7 @@ export class MapCluster extends Component {
 
         axios.get('https://dl.dropboxusercontent.com/s/ujgnx6ynq4cubo4/465BG-Clusters.json?dl=0')
         .then(function(response) {
-            for (var i = 2; i <= response.data.length + 1; i++) {
+            for (var i = 2; i <= response.data.length; i++) {
                 self.setState({
                     sliderLabels: update(self.state.sliderLabels, {$push: [{
                         value: i,
@@ -89,12 +88,9 @@ export class MapCluster extends Component {
             if (item.Cluster_Total === value) {
                 self.setState({
                     currentCluster: item,
+                    selectedNeighborhood: null,
                 })
             }
-        })
-
-        this.setState({
-            showingInfoWindow: false,
         })
     }
 
@@ -142,14 +138,12 @@ export class MapCluster extends Component {
             })
             this.renderChartList("Cluster by All Factors")
         }
-
-        this.setState({
-            showingInfoWindow: false,
-        })
     }
 
     handleChartCategoryChange(e) {
-
+        this.setState({
+            currentChartCategory: e.target.value
+        })
     }
 
     renderChartList(category) {
@@ -200,29 +194,29 @@ export class MapCluster extends Component {
                     });
 
                     const clusterProfiles = currentCluster["Cluster_Profiles"];
-                    console.log(clusterProfiles)
                     if (currentCategory === "Cluster by Socioeconomic Metrics") {
                         var medianIncomeData = [];
                         var medianHomeValueData = [];
                         var totalPopulationData = [];
                         for (var i = 0; i < clusterProfiles[currentCategory].length; i++) {
                             medianIncomeData.push({
-                                name: "Cluster " + clusterProfiles[currentCategory][i]["Cluster_ID"],
-                                value: "Cluster " + clusterProfiles[currentCategory][i]["Median income"].mean
+                                name: clusterProfiles[currentCategory][i]["Cluster_ID"],
+                                Mean: clusterProfiles[currentCategory][i]["Median income"].mean,
                             })
                             medianHomeValueData.push({
                                 name: clusterProfiles[currentCategory][i]["Cluster_ID"],
-                                value: clusterProfiles[currentCategory][i]["Median home value"].mean
+                                Mean: clusterProfiles[currentCategory][i]["Median home value"].mean,
                             })
                             totalPopulationData.push({
                                 name: clusterProfiles[currentCategory][i]["Cluster_ID"],
-                                value: clusterProfiles[currentCategory][i]["Total population"].mean
+                                Mean: clusterProfiles[currentCategory][i]["Total population"].mean,
                             })
                         }
                         self.setState({
                             medianIncomeData: medianIncomeData,
                             medianHomeValueData: medianHomeValueData,
-                            totalPopulationData: totalPopulationData
+                            totalPopulationData: totalPopulationData,
+                            legendName: "Mean"
                         })
                     } else if (currentCategory === "Cluster by Response Time") {
                         
@@ -244,13 +238,13 @@ export class MapCluster extends Component {
         const categoryList = this.state.categoryList;
         const currentColorArray = this.state.colorArray.slice(0, currentCluster['Cluster_Total']);
         const selectedNeighborhood = this.state.selectedNeighborhood;
-        
+
         var currentChartData = [];
         if (selectedNeighborhood !== null) {
             switch (this.state.currentChartCategory) {
-                case "Median Income": currentChartData = this.state.medianIncomeData;
-                case "Median Home Value": currentChartData = this.state.medianHomeValueData;
-                case "Total Population": currentChartData = this.state.totalPopulationData;
+                case "Median Income": currentChartData = this.state.medianIncomeData; break;
+                case "Median Home Value": currentChartData = this.state.medianHomeValueData; break;
+                case "Total Population": currentChartData = this.state.totalPopulationData; break;
                 default: currentChartData = this.state.medianIncomeData;
             }
         }
@@ -354,6 +348,9 @@ export class MapCluster extends Component {
                             onChangeCommitted={this.onSliderLabelChange.bind(this)}
                         />
                     </div>
+                    {selectedNeighborhood === null && (
+                    <div>Click on a neighborhood on the map to view more information!</div>
+                    )}
                     {selectedNeighborhood !== null && (
                     <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
                         <hr />
@@ -470,18 +467,24 @@ export class MapCluster extends Component {
                             }
                             </select>
                         </div>
+                        <br />
                         <BarChart 
-                            width={500}
+                            width={600}
                             height={300}
                             data={currentChartData}
                             margin={{top: 5, right: 30, left: 20, bottom: 5}}
+                            maxBarSize={70}
                         >
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
+                            <XAxis
+                                dataKey="name"
+                                label={{value: "Cluster", position: "insideBottom", offset: -5}}
+                            />
+                            <YAxis
+                                label={{value: this.state.legendName, angle: -90, position: "insideLeft", offset: -10}}
+                            />
                             <Tooltip />
-                            <Legend />
-                            <Bar dataKey="value" fill="#8884D8" />
+                            <Bar dataKey={this.state.legendName} fill="#8884D8" />
                         </BarChart>
                     </div>
                     )}
