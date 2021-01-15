@@ -194,15 +194,17 @@ export class MapCluster extends Component {
         items.sort(function(first, second) {
             return second[1] - first[1];
         });
-        var sorted_obj={}
         const top10items = items.slice(0,10);
-        // console.log(top10items)
+        var finalList = []
         top10items.forEach(function(item) {
-            const key = item[0]
-            const value = item[1]
-            sorted_obj[key] = value
+            finalList.push({
+                name: item[0],
+                value: item[1]
+            })
         })
-        return(sorted_obj)
+        console.log(finalList)
+
+        return(finalList)
     } 
     render() {
         const loadingData = this.state.loadingData;
@@ -272,10 +274,14 @@ export class MapCluster extends Component {
                 const allResponseTimes = clusterMetadata['Response Times']
                 var repFreqs = {};
                 // console.log(allCats)
+                var responseList = []
                 allResponseTimes.forEach(function(item){
-                    repFreqs[item] = selectedNeighborhood[item]
+                    responseList.push({
+                        name: item,
+                        value: selectedNeighborhood[item]
+                    })
                 })
-                repFreqs = JSON.stringify(repFreqs)
+                responseList = JSON.stringify(responseList)
                 bgProfileContent = 
                 <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (RESPONSE TIME)</div>
@@ -289,12 +295,15 @@ export class MapCluster extends Component {
                         </div>
                     </div>
                     <div className="row bgrow">
-                        <div>{repFreqs}</div>
+                        <div>{responseList}</div>
                     </div>              
                 </div>
             }
             else if (currentCategory.includes('Frequency')){
-                const freq = selectedNeighborhood['Frequency']
+                const freq = JSON.stringify({
+                    name: 'Frequency',
+                    value: selectedNeighborhood['Frequency']
+                })
                 bgProfileContent = 
                 <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (FREQUENCY)</div>
