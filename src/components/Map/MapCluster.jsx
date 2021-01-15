@@ -175,7 +175,6 @@ export class MapCluster extends Component {
         const categoryList = this.state.categoryList;
         const currentColorArray = this.state.colorArray.slice(0, currentCluster['Cluster_Total']);
         const selectedNeighborhood = this.state.selectedNeighborhood;
-        console.log(selectedNeighborhood)
         
         if (!this.props.google) {
             return <div>Loading...</div>;
@@ -281,7 +280,7 @@ export class MapCluster extends Component {
                         <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE</div>
                         <br />
                         <div className="row bgrow">
-                            <div className="col-md-9" >
+                            <div className="col-md-6" >
                                 <b>Blockgroup ID:</b>
                             </div>
                             <div className="col-md-3">
@@ -289,7 +288,7 @@ export class MapCluster extends Component {
                             </div>
                         </div>
                         <div className="row bgrow">
-                            <div className="col-md-9">
+                            <div className="col-md-6">
                                 <b>Total Population:</b>
                             </div>
                             <div className="col-md-3"  >
@@ -337,7 +336,7 @@ export class MapCluster extends Component {
                             </div>
                         </div> */}
                         <div className="row bgrow">
-                            <div className="col-md-9">
+                            <div className="col-md-6">
                                 <b>Number of Households:</b>
                             </div>
                             <div className="col-md-3">
@@ -345,7 +344,7 @@ export class MapCluster extends Component {
                             </div>
                         </div>
                         <div className="row bgrow">
-                            <div className="col-md-9">
+                            <div className="col-md-6">
                                 <b>Median Home Value:</b>
                             </div>
                             <div className="col-md-3">
@@ -353,7 +352,7 @@ export class MapCluster extends Component {
                             </div>
                         </div>
                         <div className="row bgrow">
-                            <div className="col-md-9">
+                            <div className="col-md-6">
                                 <b>Median Income:</b>
                             </div>
                             <div className="col-md-3">
@@ -361,7 +360,7 @@ export class MapCluster extends Component {
                             </div>
                         </div>
                         <div className="row bgrow">
-                            <div className="col-md-9">
+                            <div className="col-md-6">
                                 <b>Number of Renters:</b>
                             </div>
                             <div className="col-md-3">
@@ -369,17 +368,16 @@ export class MapCluster extends Component {
                             </div>
                         </div>
                         <div className="row bgrow">
-                            <div className="col-md-9">
+                            <div className="col-md-6">
                                 <b>Total Vacant Houses:</b>
                             </div>
                             <div className="col-md-3">
                                 {selectedNeighborhood["Total Vacant"]}
                             </div>
                         </div>
-                        
-                        
                     </div>                   
                     )}
+                    <hr />
                 </div>
             </div>
             ) : (
