@@ -175,6 +175,7 @@ export class MapCluster extends Component {
         const categoryList = this.state.categoryList;
         const currentColorArray = this.state.colorArray.slice(0, currentCluster['Cluster_Total']);
         const selectedNeighborhood = this.state.selectedNeighborhood;
+        console.log(selectedNeighborhood)
         
         if (!this.props.google) {
             return <div>Loading...</div>;
@@ -199,7 +200,6 @@ export class MapCluster extends Component {
                                     var coordArr = []
                                     var x_coords = []
                                     var y_coords = []
-                                    // console.log(bg)
                                     coords.forEach(function(coord) {
                                         coordArr.push({
                                             lat: coord[0], lng: coord[1]
@@ -296,43 +296,43 @@ export class MapCluster extends Component {
                                 {selectedNeighborhood["Total population"]}
                             </div>
                         </div>
-                        <div className="row bgrow">
-                            <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <div className="row bgrow sub-point">
+                            <div className="col-md-9">
                                 <b>&emsp;White Alone:</b>
                             </div>
-                            <div className="col-md-3" style = {{fontSize: "90%"}}>
+                            <div className="col-md-3">
                                 {selectedNeighborhood["White alone"]}
                             </div>
                         </div>
-                        <div className="row bgrow">
-                            <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <div className="row bgrow sub-point">
+                            <div className="col-md-9">
                                 <b>&emsp;Black or African American Alone:</b>
                             </div>
-                            <div className="col-md-3" style = {{fontSize: "90%"}}>
+                            <div className="col-md-3">
                                 {selectedNeighborhood["Black or African American alone"]}
                             </div>
                         </div>
-                        <div className="row bgrow">
-                            <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <div className="row bgrow sub-point">
+                            <div className="col-md-9">
                                 <b>&emsp;Hispanic or Latino Alone:</b>
                             </div>
-                            <div className="col-md-3" style = {{fontSize: "90%"}}>
+                            <div className="col-md-3">
                                 {selectedNeighborhood["Hispanic or Latino"]}
                             </div>
                         </div>
-                        <div className="row bgrow">
-                            <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <div className="row bgrow sub-point">
+                            <div className="col-md-9">
                                 <b>&emsp;Asian Alone:</b>
                             </div>
-                            <div className="col-md-3" style = {{fontSize: "90%"}}>
+                            <div className="col-md-3">
                                 {selectedNeighborhood["Asian alone"]}
                             </div>
                         </div>
-                        <div className="row bgrow">
-                            <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <div className="row bgrow sub-point">
+                            <div className="col-md-9">
                                 <b>&emsp;Total population with a Bachelor's degree or higher (age 25+):</b>
                             </div>
-                            <div className="col-md-3" style = {{fontSize: "90%"}}>
+                            <div className="col-md-3">
                                 {selectedNeighborhood["Total population age 25+ years with a bachelor's degree or higher"]}
                             </div>
                         </div>
@@ -341,7 +341,7 @@ export class MapCluster extends Component {
                                 <b>Number of Households:</b>
                             </div>
                             <div className="col-md-3">
-                                {selectedNeighborhood["Household_Type"]}
+                                {selectedNeighborhood["Number of Households"]}
                             </div>
                         </div>
                         <div className="row bgrow">
