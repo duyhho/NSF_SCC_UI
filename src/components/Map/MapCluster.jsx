@@ -296,7 +296,7 @@ export class MapCluster extends Component {
                                 {selectedNeighborhood["Total population"]}
                             </div>
                         </div>
-                        <div className="row bgrow sub-point">
+                        {/* <div className="row bgrow sub-point">
                             <div className="col-md-9">
                                 <b>&emsp;White Alone:</b>
                             </div>
@@ -335,7 +335,7 @@ export class MapCluster extends Component {
                             <div className="col-md-3">
                                 {selectedNeighborhood["Total population age 25+ years with a bachelor's degree or higher"]}
                             </div>
-                        </div>
+                        </div> */}
                         <div className="row bgrow">
                             <div className="col-md-9">
                                 <b>Number of Households:</b>
