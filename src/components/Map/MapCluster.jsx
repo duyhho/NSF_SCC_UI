@@ -3,7 +3,7 @@ import { Map, GoogleApiWrapper, Polygon } from "google-maps-react"
 import update from 'immutability-helper'
 import axios from 'axios'
 import Slider from '@material-ui/core/Slider'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 
 import { server } from '../../controllers/Server.js'
 import { modal } from '../../utilities/modal.js'
@@ -25,12 +25,14 @@ export class MapCluster extends Component {
             currentCluster: [],
             colorArray: ['#FF8C00', '#E81123', '#EC008C', '#68217A', '#00188F',
                         '#00BCF2', '#00B294', '#BAD80A', '#009E49', '#FFF100'],
-            categoryList: [{cat: "311 Call Category"}, 
-                        {cat: "311 Assigned Department"}, 
-                        {cat: "311 Response Time"}, 
-                        {cat: "311 Call Frequency"}, 
-                        {cat: "Census Socioeconomic Metrics"}, 
-                        {cat: "All Factors"}],
+            categoryList: [
+                {cat: "311 Call Category"},
+                {cat: "311 Assigned Department"},
+                {cat: "311 Response Time"},
+                {cat: "311 Call Frequency"},
+                {cat: "Census Socioeconomic Metrics"},
+                {cat: "All Factors"}
+            ],
             currentCategory: "Cluster by Socioeconomic Metrics",
             selectedNeighborhood: null,
             chartFilterList: [{cat: "Median Income"}, {cat: "Median Home Value"}, {cat: "Total Population"}],
@@ -74,8 +76,6 @@ export class MapCluster extends Component {
                     })
                 }
             })
-            console.log(self.state.clusterMetadata)
-            console.log(bgClusterLists)
             
             self.setState({
                 neighborhoodList: bgClusterLists,
@@ -155,6 +155,10 @@ export class MapCluster extends Component {
             })
             this.renderChartList("Cluster by All Factors")
         }
+
+        this.setState({
+            selectedNeighborhood: null
+        })
     }
 
     handleChartCategoryChange(e) {
@@ -248,11 +252,10 @@ export class MapCluster extends Component {
             }
         })
     }
-    sort_object(obj) {
+    sortObject(obj) {
         var items = Object.keys(obj).map(function(key) {
             return [key, obj[key]];
         });
-        // console.log(items)
         items.sort(function(first, second) {
             return second[1] - first[1];
         });
@@ -264,7 +267,6 @@ export class MapCluster extends Component {
                 value: item[1]
             })
         })
-        console.log(finalList)
 
         return(finalList)
     } 
@@ -295,8 +297,8 @@ export class MapCluster extends Component {
                 allCats.forEach(function(cat){
                     catFreqs[cat] = selectedNeighborhood[cat]
                 })
-                const sortedCatFreqs = JSON.stringify(this.sort_object(catFreqs))
-                bgProfileContent = 
+                const sortedCatFreqs = JSON.stringify(this.sortObject(catFreqs))
+                bgProfileContent = (
                 <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (CATEGORY)</div>
                     <br />
@@ -310,8 +312,9 @@ export class MapCluster extends Component {
                     </div>
                     <div className="row bgrow">
                         <div>{sortedCatFreqs}</div>
-                    </div>              
-                </div>            
+                    </div>
+                </div>
+                )
             }
             else if (currentCategory.includes('Department')){
                 const allDepts = clusterMetadata['Departments']
@@ -321,10 +324,9 @@ export class MapCluster extends Component {
                     deptFreqs[item] = selectedNeighborhood[item]
                 })
 
-                const sortedDeptFreqs = JSON.stringify(this.sort_object(deptFreqs))
-                console.log(sortedDeptFreqs)
+                const sortedDeptFreqs = JSON.stringify(this.sortObject(deptFreqs))
                 // Create a new array with only the first 5 items
-                bgProfileContent = 
+                bgProfileContent = (
                 <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (DEPARTMENT)</div>
                     <br />
@@ -340,11 +342,10 @@ export class MapCluster extends Component {
                         <div>{sortedDeptFreqs}</div>
                     </div>              
                 </div>
+                )
             }
             else if (currentCategory.includes('Response')){
                 const allResponseTimes = clusterMetadata['Response Times']
-                var repFreqs = {};
-                // console.log(allCats)
                 var responseList = []
                 allResponseTimes.forEach(function(item){
                     responseList.push({
@@ -353,7 +354,7 @@ export class MapCluster extends Component {
                     })
                 })
                 responseList = JSON.stringify(responseList)
-                bgProfileContent = 
+                bgProfileContent = (
                 <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (RESPONSE TIME)</div>
                     <br />
@@ -369,13 +370,14 @@ export class MapCluster extends Component {
                         <div>{responseList}</div>
                     </div>              
                 </div>
+                )
             }
             else if (currentCategory.includes('Frequency')){
                 const freq = JSON.stringify({
                     name: 'Frequency',
                     value: selectedNeighborhood['Frequency']
                 })
-                bgProfileContent = 
+                bgProfileContent = (
                 <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (FREQUENCY)</div>
                     <br />
@@ -391,117 +393,116 @@ export class MapCluster extends Component {
                         <div>Blockgroup's 311 call frequency (Number of Calls/Population x 100): {freq}</div>
                     </div>              
                 </div>
+                )
             }
             else if (currentCategory.includes('Socioeconomic')){
-                bgProfileContent = <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
-                <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (SOCIOECONOMIC)</div>
-                <br />
-                <div className="row bgrow">
-                    <div className="col-md-9" >
-                        <b>Blockgroup ID:</b>
+                bgProfileContent = (
+                <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
+                    <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (SOCIOECONOMIC)</div>
+                    <br />
+                    <div className="row bgrow">
+                        <div className="col-md-9" >
+                            <b>Blockgroup ID:</b>
+                        </div>
+                        <div className="col-md-3">
+                            {selectedNeighborhood["BLOCKGROUP_ID"]}
+                        </div>
                     </div>
-                    <div className="col-md-3">
-                        {selectedNeighborhood["BLOCKGROUP_ID"]}
+                    <div className="row bgrow">
+                        <div className="col-md-9">
+                            <b>Total Population:</b>
+                        </div>
+                        <div className="col-md-3"  >
+                            {selectedNeighborhood["Total population"]}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <div className="col-md-9" style = {{fontSize: "90%"}}>
+                            <b>&emsp;White Alone:</b>
+                        </div>
+                        <div className="col-md-3" style = {{fontSize: "90%"}}>
+                            {selectedNeighborhood["White alone"]}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <div className="col-md-9" style = {{fontSize: "90%"}}>
+                            <b>&emsp;Black or African American Alone:</b>
+                        </div>
+                        <div className="col-md-3" style = {{fontSize: "90%"}}>
+                            {selectedNeighborhood["Black or African American alone"]}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <div className="col-md-9" style = {{fontSize: "90%"}}>
+                            <b>&emsp;Hispanic or Latino Alone:</b>
+                        </div>
+                        <div className="col-md-3" style = {{fontSize: "90%"}}>
+                            {selectedNeighborhood["Hispanic or Latino"]}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <div className="col-md-9" style = {{fontSize: "90%"}}>
+                            <b>&emsp;Asian Alone:</b>
+                        </div>
+                        <div className="col-md-3" style = {{fontSize: "90%"}}>
+                            {selectedNeighborhood["Asian alone"]}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <div className="col-md-9" style = {{fontSize: "90%"}}>
+                            <b>&emsp;Total population with a Bachelor's degree or higher (age 25+):</b>
+                        </div>
+                        <div className="col-md-3" style = {{fontSize: "90%"}}>
+                            {selectedNeighborhood["Total population age 25+ years with a bachelor's degree or higher"]}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <div className="col-md-9">
+                            <b>Number of Households:</b>
+                        </div>
+                        <div className="col-md-3">
+                            {selectedNeighborhood["Household_Type"]}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <div className="col-md-9">
+                            <b>Median Home Value:</b>
+                        </div>
+                        <div className="col-md-3">
+                            ${selectedNeighborhood["Median home value"].toLocaleString('en')}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <div className="col-md-9">
+                            <b>Median Income:</b>
+                        </div>
+                        <div className="col-md-3">
+                            ${selectedNeighborhood["Median income"].toLocaleString('en') }
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <div className="col-md-9">
+                            <b>Number of Renters:</b>
+                        </div>
+                        <div className="col-md-3">
+                            {selectedNeighborhood["Total Renter Occupied"]}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <div className="col-md-9">
+                            <b>Total Vacant Houses:</b>
+                        </div>
+                        <div className="col-md-3">
+                            {selectedNeighborhood["Total Vacant"]}
+                        </div>
                     </div>
                 </div>
-                <div className="row bgrow">
-                    <div className="col-md-9">
-                        <b>Total Population:</b>
-                    </div>
-                    <div className="col-md-3"  >
-                        {selectedNeighborhood["Total population"]}
-                    </div>
-                </div>
-                <div className="row bgrow">
-                    <div className="col-md-9" style = {{fontSize: "90%"}}>
-                        <b>&emsp;White Alone:</b>
-                    </div>
-                    <div className="col-md-3" style = {{fontSize: "90%"}}>
-                        {selectedNeighborhood["White alone"]}
-                    </div>
-                </div>
-                <div className="row bgrow">
-                    <div className="col-md-9" style = {{fontSize: "90%"}}>
-                        <b>&emsp;Black or African American Alone:</b>
-                    </div>
-                    <div className="col-md-3" style = {{fontSize: "90%"}}>
-                        {selectedNeighborhood["Black or African American alone"]}
-                    </div>
-                </div>
-                <div className="row bgrow">
-                    <div className="col-md-9" style = {{fontSize: "90%"}}>
-                        <b>&emsp;Hispanic or Latino Alone:</b>
-                    </div>
-                    <div className="col-md-3" style = {{fontSize: "90%"}}>
-                        {selectedNeighborhood["Hispanic or Latino"]}
-                    </div>
-                </div>
-                <div className="row bgrow">
-                    <div className="col-md-9" style = {{fontSize: "90%"}}>
-                        <b>&emsp;Asian Alone:</b>
-                    </div>
-                    <div className="col-md-3" style = {{fontSize: "90%"}}>
-                        {selectedNeighborhood["Asian alone"]}
-                    </div>
-                </div>
-                <div className="row bgrow">
-                    <div className="col-md-9" style = {{fontSize: "90%"}}>
-                        <b>&emsp;Total population with a Bachelor's degree or higher (age 25+):</b>
-                    </div>
-                    <div className="col-md-3" style = {{fontSize: "90%"}}>
-                        {selectedNeighborhood["Total population age 25+ years with a bachelor's degree or higher"]}
-                    </div>
-                </div>
-                <div className="row bgrow">
-                    <div className="col-md-9">
-                        <b>Number of Households:</b>
-                    </div>
-                    <div className="col-md-3">
-                        {selectedNeighborhood["Household_Type"]}
-                    </div>
-                </div>
-                <div className="row bgrow">
-                    <div className="col-md-9">
-                        <b>Median Home Value:</b>
-                    </div>
-                    <div className="col-md-3">
-                        ${selectedNeighborhood["Median home value"].toLocaleString('en')}
-                    </div>
-                </div>
-                <div className="row bgrow">
-                    <div className="col-md-9">
-                        <b>Median Income:</b>
-                    </div>
-                    <div className="col-md-3">
-                        ${selectedNeighborhood["Median income"].toLocaleString('en') }
-                    </div>
-                </div>
-                <div className="row bgrow">
-                    <div className="col-md-9">
-                        <b>Number of Renters:</b>
-                    </div>
-                    <div className="col-md-3">
-                        {selectedNeighborhood["Total Renter Occupied"]}
-                    </div>
-                </div>
-                <div className="row bgrow">
-                    <div className="col-md-9">
-                        <b>Total Vacant Houses:</b>
-                    </div>
-                    <div className="col-md-3">
-                        {selectedNeighborhood["Total Vacant"]}
-                    </div>
-                </div>
-                
-                
-            </div>            
+                )
             }
             else if (currentCategory.includes('All')){
-                bgProfileContent = <div>All Factors</div>
+                bgProfileContent = (<div>All Factors</div>)
             }
         }
-        // console.log(bgProfileContent)
-        
         
         if (!this.props.google) {
             return <div>Loading...</div>;
@@ -606,106 +607,8 @@ export class MapCluster extends Component {
                     <div>Click on a neighborhood on the map to view more information!</div>
                     )}
                     {selectedNeighborhood !== null && (
-                    <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
-                        <hr />
-                        <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE</div>
-                        <br />
-                        <div className="row bgrow">
-                            <div className="col-md-6" >
-                                <b>Blockgroup ID:</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["BLOCKGROUP_ID"]}
-                            </div>
-                        </div>
-                        <div className="row bgrow">
-                            <div className="col-md-6">
-                                <b>Total Population:</b>
-                            </div>
-                            <div className="col-md-3"  >
-                                {selectedNeighborhood["Total population"]}
-                            </div>
-                        </div>
-                        <div className="row bgrow sub-point">
-                            <div className="col-md-9">
-                                <b>&emsp;White Alone:</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["White alone"]}
-                            </div>
-                        </div>
-                        <div className="row bgrow sub-point">
-                            <div className="col-md-9">
-                                <b>&emsp;Black or African American Alone:</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["Black or African American alone"]}
-                            </div>
-                        </div>
-                        <div className="row bgrow sub-point">
-                            <div className="col-md-9">
-                                <b>&emsp;Hispanic or Latino Alone:</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["Hispanic or Latino"]}
-                            </div>
-                        </div>
-                        <div className="row bgrow sub-point">
-                            <div className="col-md-9">
-                                <b>&emsp;Asian Alone:</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["Asian alone"]}
-                            </div>
-                        </div>
-                        <div className="row bgrow sub-point">
-                            <div className="col-md-9">
-                                <b>&emsp;Total population with a Bachelor's degree or higher (age 25+):</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["Total population age 25+ years with a bachelor's degree or higher"]}
-                            </div>
-                        </div>
-                        <div className="row bgrow">
-                            <div className="col-md-6">
-                                <b>Number of Households:</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["Number of Households"]}
-                            </div>
-                        </div>
-                        <div className="row bgrow">
-                            <div className="col-md-6">
-                                <b>Median Home Value:</b>
-                            </div>
-                            <div className="col-md-3">
-                                ${selectedNeighborhood["Median home value"].toLocaleString('en')}
-                            </div>
-                        </div>
-                        <div className="row bgrow">
-                            <div className="col-md-6">
-                                <b>Median Income:</b>
-                            </div>
-                            <div className="col-md-3">
-                                ${selectedNeighborhood["Median income"].toLocaleString('en') }
-                            </div>
-                        </div>
-                        <div className="row bgrow">
-                            <div className="col-md-6">
-                                <b>Number of Renters:</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["Total Renter Occupied"]}
-                            </div>
-                        </div>
-                        <div className="row bgrow">
-                            <div className="col-md-6">
-                                <b>Total Vacant Houses:</b>
-                            </div>
-                            <div className="col-md-3">
-                                {selectedNeighborhood["Total Vacant"]}
-                            </div>
-                        </div>
+                    <div>
+                        {bgProfileContent}
                     </div>
                     )}
                     {selectedNeighborhood !== null && (
@@ -737,12 +640,10 @@ export class MapCluster extends Component {
                             <YAxis
                                 label={{value: this.state.legendName, angle: -90, position: "insideLeft", offset: -10}}
                             />
-                            <Tooltip />
                             <Bar dataKey={this.state.legendName} fill="#8884D8" />
                         </BarChart>
                     </div>
                     )}
-                    {bgProfileContent}
                 </div>
             </div>
             ) : (
