@@ -353,6 +353,16 @@ export class MapCluster extends Component {
         return(finalList)
     }
 
+    downloadData() {
+        var link = document.createElement('a');
+        link.href = "https://dl.dropboxusercontent.com/s/2iyd4imgq3g8g9t/bg465_clusters.zip?dl=0";
+        link.download = "BG465 Clusters";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        modal.showInfo("The file will be downloaded shortly!", "success", "top", "center");
+    }
+
     render() {
         const loadingData = this.state.loadingData;
         const currentCluster = this.state.currentCluster;
@@ -836,6 +846,9 @@ export class MapCluster extends Component {
                                 }
                             </Bar>
                         </BarChart>
+                        <br />
+                        <button onClick={this.downloadData.bind(this)} className="btn btn-primary">Download Data (Raw)</button>
+                        <br />
                     </div>
                     )}
                 </div>
