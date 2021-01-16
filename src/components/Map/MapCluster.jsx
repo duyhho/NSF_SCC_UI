@@ -23,8 +23,8 @@ export class MapCluster extends Component {
             neighborhoodList:[],
             sliderLabels: [],
             currentCluster: [],
-            colorArray: ['#FF8C00', '#E81123', '#FFFF00', '#00BCF2', '#00B294', '#FFB6C1', '#68217A', '#00188F',
-                        , , '#BAD80A', '#009E49', ],
+            colorArray: ['#FF8C00', '#E81123', '#FFFF00', '#00BCF2', '#00B294', 
+                        '#FFB6C1', '#68217A', '#00188F', '#BAD80A', '#009E49' ],
             colorArray2: ['#f47c7c', '#f7f48b', '#a1de93', '#70a1d7', '#d0baa8',
                         '#afffdf', '#aa96da', '#fcbad3', '#f25d9c', '#10ddc2'],
             categoryList: [
