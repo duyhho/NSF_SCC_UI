@@ -40,7 +40,8 @@ export class MapCluster extends Component {
             currentChartCategory: "Total population",
             currentClusterID: null,
             clusterMetadata: null,
-            currentChartData: null
+            currentChartData: null,
+            legendName:'',
         };
     }
     
@@ -218,7 +219,7 @@ export class MapCluster extends Component {
         }
         this.setState({
             currentChartCategory: selectedChartCategory,
-            legendName: "Mean",
+            // legendName: "Cluster Mean Value",
             currentChartData: chartData
         })
         console.log(this.state.currentChartCategory)
@@ -292,6 +293,7 @@ export class MapCluster extends Component {
             if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
                 //SKIP
             } else {
+                var yLabel = 'Cluster Mean Value'
                 if (currentCluster[bg]["BLOCKGROUP_ID"] === props.nbhId) {
                     self.setState({
                         selectedNeighborhood: currentCluster[bg]
@@ -303,13 +305,21 @@ export class MapCluster extends Component {
                     } else if (currentCategory === "Cluster by Response Time") {
                         
                         bgClusterID = currentCluster[bg]['Cluster by Response Time'] //Where this BG belongs to
-   
+                        yLabel = 'Cluster Mean (% of Cases)'
+                    }
+                    else if (currentCategory === "Cluster by Department") {
+                    
+                        bgClusterID = currentCluster[bg]['Cluster by Department'] //Where this BG belongs to
+                        yLabel = 'Cluster Mean (% of Total Depts)'
+                    
                     } else if (currentCategory === "Cluster by Call Category") {
                         bgClusterID = currentCluster[bg]['Cluster by Call Category'] //Where this BG belongs to
+                        yLabel = 'Cluster Mean (% of All Categories)'
 
                     } else if (currentCategory === "Cluster by Call Frequency") {
                         bgClusterID = currentCluster[bg]['Cluster by Call Frequency'] //Where this BG belongs to
-     
+                        yLabel = 'Cluster Mean (% of Total Calls)'
+                        
                     } else if (currentCategory === "Cluster by All Factors") {
                         bgClusterID = currentCluster[bg]['Cluster by All Factors'] //Where this BG belongs to
 
@@ -336,7 +346,7 @@ export class MapCluster extends Component {
                     }
 
                     self.setState({
-                        legendName: "Mean",
+                        legendName: yLabel,
                         currentChartData: chartData,
                         currentClusterID: bgClusterID
                     })
@@ -726,14 +736,15 @@ export class MapCluster extends Component {
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis
                                 dataKey="name"
-                                label={{value: "Cluster", position: "insideBottom", offset: -5}}
+                                label={{value: "Cluster #", position: "insideBottom", offset: -5}}
                             />
                             <YAxis
-                                label={{value: this.state.legendName, angle: -90, position: "insideLeft", offset: -10}}
+                           
+                                label={{value: this.state.legendName, angle: -90, position: "insideLeft", dy: this.state.legendName.length+55, offset: -10}}
                             />
                             {/* <Bar  
                              /> */}
-                             <Bar dataKey={this.state.legendName} fill="#8884D8">
+                             <Bar dataKey='Mean' fill="#8884D8">
                                 {   
                                     (currentChartData !== null) && currentChartData.map(function(cluster, index) {
                                         const color = currentColorArray[cluster['id']-1] // off by 1
