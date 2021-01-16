@@ -218,7 +218,8 @@ code {
 /* 150px is the width of sidebar */
 .page-container {
   margin-left: 151px;
-  height: 97vh
+  height: 100%;
+  min-height: 97vh;
 }
 
 .desc1 {
