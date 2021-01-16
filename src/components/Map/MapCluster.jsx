@@ -53,7 +53,6 @@ export class MapCluster extends Component {
 
         })
         this.loadNeighborhoodList()
-
     }
 
     loadNeighborhoodList() {
@@ -73,7 +72,6 @@ export class MapCluster extends Component {
                     }),
                 })
             }
-            // console.log(response.data[0])
             var chartFilterList = [];
 
             const allMetrics = response.data[0][self.state.defaultCategoryMetadata]
@@ -117,7 +115,6 @@ export class MapCluster extends Component {
                 self.setState({
                     currentCluster: item,
                     selectedNeighborhood: null,
-
                 })
             }
         })
@@ -158,28 +155,24 @@ export class MapCluster extends Component {
             this.setState({
                 currentCategory: "Cluster by Department",
                 currentChartCategory: this.state.clusterMetadata['Departments'][0]
-
             })
             this.renderChartList("Cluster by Department")
         } else if (selectedValue === "311 Response Time") {
             this.setState({
                 currentCategory: "Cluster by Response Time",
                 currentChartCategory: this.state.clusterMetadata['Response Times'][0]
-
             })
             this.renderChartList("Cluster by Response Time")
         } else if (selectedValue === "311 Call Frequency") {
             this.setState({
                 currentCategory: "Cluster by Call Frequency",
                 currentChartCategory: this.state.clusterMetadata['Frequency'][0]
-
             })
             this.renderChartList("Cluster by Call Frequency")
         } else if (selectedValue === "Census Socioeconomic Metrics") {
             this.setState({
                 currentCategory: "Cluster by Socioeconomic Metrics",
                 currentChartCategory: this.state.clusterMetadata['Socioeconomic Metrics'][0]
-
             })
             this.renderChartList("Cluster by Socioeconomic Metrics")
         } else if (selectedValue === "All Factors") {
@@ -221,48 +214,38 @@ export class MapCluster extends Component {
         }
         this.setState({
             currentChartCategory: selectedChartCategory,
-            // legendName: "Cluster Mean Value",
             currentChartData: chartData
         })
-        console.log(this.state.currentChartCategory)
-
     }
 
     renderChartList(category) {
         var chartFilterList = [];
-        console.log(this.state.clusterMetadata)
 
         if (category === "Cluster by Socioeconomic Metrics") {
             const allMetrics = this.state.clusterMetadata['Socioeconomic Metrics']
             allMetrics.forEach(function(item){
                 chartFilterList.push({cat: item })
             })
-            console.log(chartFilterList)
-        }
-        else if (category === "Cluster by Department") {
+        } else if (category === "Cluster by Department") {
             const allResponseTimes = this.state.clusterMetadata['Departments']
             allResponseTimes.forEach(function(item){
                 chartFilterList.push({cat: item })
             })
-        }
-        else if (category === "Cluster by Response Time") {
+        } else if (category === "Cluster by Response Time") {
             const allResponseTimes = this.state.clusterMetadata['Response Times']
             allResponseTimes.forEach(function(item){
                 chartFilterList.push({cat: item })
             })
-
         } else if (category === "Cluster by Call Category") {
             const allCats = this.state.clusterMetadata['Categories']
             allCats.forEach(function(item){
                 chartFilterList.push({cat: item })
             })
-
         } else if (category === "Cluster by Call Frequency") {
             const allFreqs = this.state.clusterMetadata['Frequency']
             allFreqs.forEach(function(item){
                 chartFilterList.push({cat: item })
             })
-
         } else if (category === "Cluster by All Factors") {
 
         }
@@ -305,28 +288,22 @@ export class MapCluster extends Component {
 
                         bgClusterID = currentCluster[bg]['Cluster by Socioeconomic Metrics'] //Where this BG belongs to
                     } else if (currentCategory === "Cluster by Response Time") {
-
                         bgClusterID = currentCluster[bg]['Cluster by Response Time'] //Where this BG belongs to
                         yLabel = 'Cluster Mean (% of Cases)'
                     }
                     else if (currentCategory === "Cluster by Department") {
-
                         bgClusterID = currentCluster[bg]['Cluster by Department'] //Where this BG belongs to
                         yLabel = 'Cluster Mean (% of Total Depts)'
 
                     } else if (currentCategory === "Cluster by Call Category") {
                         bgClusterID = currentCluster[bg]['Cluster by Call Category'] //Where this BG belongs to
                         yLabel = 'Cluster Mean (% of All Categories)'
-
                     } else if (currentCategory === "Cluster by Call Frequency") {
                         bgClusterID = currentCluster[bg]['Cluster by Call Frequency'] //Where this BG belongs to
                         yLabel = 'Cluster Mean (% of Total Calls)'
-
                     } else if (currentCategory === "Cluster by All Factors") {
                         bgClusterID = currentCluster[bg]['Cluster by All Factors'] //Where this BG belongs to
-
                     }
-
 
                     for (var i = 0; i < clusterProfiles[currentCategory].length; i++) {
                         const clusterID = clusterProfiles[currentCategory][i]["Cluster_ID"]
@@ -337,14 +314,13 @@ export class MapCluster extends Component {
                                 Mean: clusterProfiles[currentCategory][i][self.state.currentChartCategory].mean,
                             })
                         }
-                        else{
+                        else {
                             chartData.push({
                                 id: clusterID,
                                 name: clusterID ,
                                 Mean: clusterProfiles[currentCategory][i][self.state.currentChartCategory].mean,
                             })
                         }
-
                     }
 
                     self.setState({
@@ -352,11 +328,11 @@ export class MapCluster extends Component {
                         currentChartData: chartData,
                         currentClusterID: bgClusterID
                     })
-
                 }
             }
         })
     }
+
     sortObject(obj) {
         var items = Object.keys(obj).map(function(key) {
             return [key, obj[key]];
@@ -368,10 +344,6 @@ export class MapCluster extends Component {
         var finalList = []
         top10items.forEach(function(item) {
             var name = (item[0].length<=10) ? item[0] : item[0].substring(0,7) + '...';
-            // if (name.length > 10){
-            //     name = name.substring(0,7) + '...'
-            // }
-            // (lemons) ? alert("please give me a lemonade") : alert("then give me a beer");
             finalList.push({
                 name: name,
                 value: item[1]
@@ -380,6 +352,7 @@ export class MapCluster extends Component {
 
         return(finalList)
     }
+
     render() {
         const loadingData = this.state.loadingData;
         const currentCluster = this.state.currentCluster;
@@ -389,8 +362,6 @@ export class MapCluster extends Component {
         var currentChartData = [];
         if (selectedNeighborhood !== null && currentChartData != null) {
             currentChartData = this.state.currentChartData
-            // console.log(currentChartData)
-
         }
 
         const currentCategory = this.state.currentCategory;
@@ -405,7 +376,6 @@ export class MapCluster extends Component {
                     catFreqs[cat] = selectedNeighborhood[cat]
                 })
                 const sortedCatFreqs = this.sortObject(catFreqs)
-                console.log(sortedCatFreqs)
                 bgProfileContent = (
                 <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (CATEGORY)</div>
@@ -616,7 +586,7 @@ export class MapCluster extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (SOCIOECONOMIC)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9" >
+                        <div className="col-md-9">
                             <b>Blockgroup ID:</b>
                         </div>
                         <div className="col-md-3">
@@ -734,7 +704,6 @@ export class MapCluster extends Component {
                             initialCenter={this.state.currentLocation}
                             zoom={11}
                         >
-
                             {Object.keys(currentCluster).map(bg => {
                                 if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
                                     return <div></div>;
@@ -831,7 +800,6 @@ export class MapCluster extends Component {
                     <div className="col-md-12">
                         <hr />
                         <div align="center" style={{fontWeight: 'bold', fontSize: "130%"}}>CURRENT CLUSTER PROFILE</div>
-
                         <div align="center" className = "select-bg">
                             <span>View Chart By:&nbsp;&nbsp;</span>
                             <select onChange={this.handleChartCategoryChange.bind(this)}>
@@ -844,7 +812,7 @@ export class MapCluster extends Component {
                         </div>
                         <br />
                         <BarChart
-                            width={600}
+                            width={700}
                             height={300}
                             data={currentChartData}
                             margin={{top: 5, right: 30, left: 20, bottom: 5}}
