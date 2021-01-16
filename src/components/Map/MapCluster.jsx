@@ -3,7 +3,7 @@ import { Map, GoogleApiWrapper, Polygon } from "google-maps-react"
 import update from 'immutability-helper'
 import axios from 'axios'
 import Slider from '@material-ui/core/Slider'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
+import { BarChart, Cell, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 
 import { server } from '../../controllers/Server.js'
 import { modal } from '../../utilities/modal.js'
@@ -34,18 +34,23 @@ export class MapCluster extends Component {
                 {cat: "All Factors"}
             ],
             currentCategory: "Cluster by Socioeconomic Metrics",
+            defaultCategoryMetadata: 'Socioeconomic Metrics',
             selectedNeighborhood: null,
-            chartFilterList: [{cat: "Median Income"}, {cat: "Median Home Value"}, {cat: "Total Population"}],
-            currentChartCategory: "Median Income",
+            chartFilterList: [{cat: "Median income"}, {cat: "Median home value"}, {cat: "Total population"}],
+            currentChartCategory: "Total population",
+            currentClusterID: null,
             clusterMetadata: null,
+            currentChartData: null
         };
     }
     
     componentDidMount() {
         this.setState({
             loadingData: true
+
         })
         this.loadNeighborhoodList()
+        
     }
 
     loadNeighborhoodList() {
@@ -65,8 +70,16 @@ export class MapCluster extends Component {
                     }),
                 })
             }
+            // console.log(response.data[0])
+            var chartFilterList = [];
+
+            const allMetrics = response.data[0][self.state.defaultCategoryMetadata]
+            allMetrics.forEach(function(item){
+                chartFilterList.push({cat: item })
+            })
             self.setState({
-                clusterMetadata: response.data[0]
+                clusterMetadata: response.data[0],
+                chartFilterList: chartFilterList
             })
             const bgClusterLists = response.data.slice(1,response.data.length)
             bgClusterLists.forEach(function(item) {
@@ -96,14 +109,22 @@ export class MapCluster extends Component {
 
     onSliderLabelChange(event, value) {
         var self = this;
-        this.state.neighborhoodList.forEach(function(item) {
+        self.state.neighborhoodList.forEach(function(item) {
             if (item.Cluster_Total === value) {
                 self.setState({
                     currentCluster: item,
                     selectedNeighborhood: null,
+
                 })
             }
         })
+        
+        const obj = {
+            target: {
+                value: self.state.chartFilterList[0].cat //Resets back to first metric
+            }
+        }
+        self.handleChartCategoryChange(obj)
     }
 
     handleCategoryChange(e) {
@@ -126,27 +147,36 @@ export class MapCluster extends Component {
 
         if (selectedValue === "311 Call Category") {
             this.setState({
-                currentCategory: "Cluster by Call Category"
+                currentCategory: "Cluster by Call Category",
+                currentChartCategory: this.state.clusterMetadata['Categories'][0]
             })
             this.renderChartList("Cluster by Call Category")
         } else if (selectedValue === "311 Assigned Department") {
             this.setState({
-                currentCategory: "Cluster by Department"
+                currentCategory: "Cluster by Department",
+                currentChartCategory: this.state.clusterMetadata['Departments'][0]
+
             })
             this.renderChartList("Cluster by Department")
         } else if (selectedValue === "311 Response Time") {
             this.setState({
-                currentCategory: "Cluster by Response Time"
+                currentCategory: "Cluster by Response Time",
+                currentChartCategory: this.state.clusterMetadata['Response Times'][0]
+
             })
             this.renderChartList("Cluster by Response Time")
         } else if (selectedValue === "311 Call Frequency") {
             this.setState({
-                currentCategory: "Cluster by Call Frequency"
+                currentCategory: "Cluster by Call Frequency",
+                currentChartCategory: this.state.clusterMetadata['Frequency'][0]
+
             })
             this.renderChartList("Cluster by Call Frequency")
         } else if (selectedValue === "Census Socioeconomic Metrics") {
             this.setState({
-                currentCategory: "Cluster by Socioeconomic Metrics"
+                currentCategory: "Cluster by Socioeconomic Metrics",
+                currentChartCategory: this.state.clusterMetadata['Socioeconomic Metrics'][0]
+
             })
             this.renderChartList("Cluster by Socioeconomic Metrics")
         } else if (selectedValue === "All Factors") {
@@ -162,22 +192,66 @@ export class MapCluster extends Component {
     }
 
     handleChartCategoryChange(e) {
+        const currentCluster = this.state.currentCluster;
+        const currentCategory = this.state.currentCategory;
+        const clusterProfiles = currentCluster["Cluster_Profiles"];
+        const currentClusterID = this.state.currentClusterID;
+        const selectedChartCategory = e.target.value
+
+        var chartData = []
+        for (var i = 0; i < clusterProfiles[currentCategory].length; i++) {
+            const clusterID = clusterProfiles[currentCategory][i]["Cluster_ID"]
+            if (clusterID === currentClusterID){
+                chartData.unshift({
+                    id: clusterID,
+                    name: clusterID + ' (Current)' ,
+                    Mean: clusterProfiles[currentCategory][i][selectedChartCategory].mean,
+                })
+            }
+            else{
+                chartData.push({
+                    id: clusterID,
+                    name: clusterID ,
+                    Mean: clusterProfiles[currentCategory][i][selectedChartCategory].mean,
+                })
+            }
+        }
         this.setState({
-            currentChartCategory: e.target.value
+            currentChartCategory: selectedChartCategory,
+            legendName: "Mean",
+            currentChartData: chartData
         })
+        console.log(this.state.currentChartCategory)
+
     }
 
     renderChartList(category) {
         var chartFilterList = [];
+        console.log(this.state.clusterMetadata)
+
         if (category === "Cluster by Socioeconomic Metrics") {
-            chartFilterList.push({cat: "Median Income"})
-            chartFilterList.push({cat: "Median Home Value"})
-            chartFilterList.push({cat: "Total Population"})
+            const allMetrics = this.state.clusterMetadata['Socioeconomic Metrics']
+            allMetrics.forEach(function(item){
+                chartFilterList.push({cat: item })
+            })
+            console.log(chartFilterList)
         } else if (category === "Cluster by Response Time") {
+            const allResponseTimes = this.state.clusterMetadata['Response Times']
+            allResponseTimes.forEach(function(item){
+                chartFilterList.push({cat: item })
+            })
             
         } else if (category === "Cluster by Call Category") {
+            const allCats = this.state.clusterMetadata['Categories']
+            allCats.forEach(function(item){
+                chartFilterList.push({cat: item })
+            })
             
         } else if (category === "Cluster by Call Frequency") {
+            const allFreqs = this.state.clusterMetadata['Frequency']
+            allFreqs.forEach(function(item){
+                chartFilterList.push({cat: item })
+            })
             
         } else if (category === "Cluster by All Factors") {
             
@@ -204,7 +278,9 @@ export class MapCluster extends Component {
         var self = this;
         const currentCluster = this.state.currentCluster;
         const currentCategory = this.state.currentCategory;
-
+        const clusterProfiles = currentCluster["Cluster_Profiles"];
+        var bgClusterID = null;
+        var chartData = [];
         Object.keys(currentCluster).forEach(bg => {
             if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
                 //SKIP
@@ -214,40 +290,50 @@ export class MapCluster extends Component {
                         selectedNeighborhood: currentCluster[bg]
                     });
 
-                    const clusterProfiles = currentCluster["Cluster_Profiles"];
                     if (currentCategory === "Cluster by Socioeconomic Metrics") {
-                        var medianIncomeData = [];
-                        var medianHomeValueData = [];
-                        var totalPopulationData = [];
-                        for (var i = 0; i < clusterProfiles[currentCategory].length; i++) {
-                            medianIncomeData.push({
-                                name: clusterProfiles[currentCategory][i]["Cluster_ID"],
-                                Mean: clusterProfiles[currentCategory][i]["Median income"].mean,
-                            })
-                            medianHomeValueData.push({
-                                name: clusterProfiles[currentCategory][i]["Cluster_ID"],
-                                Mean: clusterProfiles[currentCategory][i]["Median home value"].mean,
-                            })
-                            totalPopulationData.push({
-                                name: clusterProfiles[currentCategory][i]["Cluster_ID"],
-                                Mean: clusterProfiles[currentCategory][i]["Total population"].mean,
-                            })
-                        }
-                        self.setState({
-                            medianIncomeData: medianIncomeData,
-                            medianHomeValueData: medianHomeValueData,
-                            totalPopulationData: totalPopulationData,
-                            legendName: "Mean"
-                        })
+            
+                        bgClusterID = currentCluster[bg]['Cluster by Socioeconomic Metrics'] //Where this BG belongs to
                     } else if (currentCategory === "Cluster by Response Time") {
                         
+                        bgClusterID = currentCluster[bg]['Cluster by Response Time'] //Where this BG belongs to
+   
                     } else if (currentCategory === "Cluster by Call Category") {
-                        
+                        bgClusterID = currentCluster[bg]['Cluster by Call Category'] //Where this BG belongs to
+
                     } else if (currentCategory === "Cluster by Call Frequency") {
-                        
+                        bgClusterID = currentCluster[bg]['Cluster by Call Frequency'] //Where this BG belongs to
+     
                     } else if (currentCategory === "Cluster by All Factors") {
+                        bgClusterID = currentCluster[bg]['Cluster by All Factors'] //Where this BG belongs to
+
+                    }
+
+
+                    for (var i = 0; i < clusterProfiles[currentCategory].length; i++) {
+                        const clusterID = clusterProfiles[currentCategory][i]["Cluster_ID"]
+                        if (bgClusterID === clusterID){
+                            chartData.unshift({
+                                id: clusterID,
+                                name: clusterID + ' (Current)' ,
+                                Mean: clusterProfiles[currentCategory][i][self.state.currentChartCategory].mean,
+                            })
+                        }
+                        else{
+                            chartData.push({
+                                id: clusterID,
+                                name: clusterID ,
+                                Mean: clusterProfiles[currentCategory][i][self.state.currentChartCategory].mean,
+                            })
+                        }
                         
                     }
+
+                    self.setState({
+                        legendName: "Mean",
+                        currentChartData: chartData,
+                        currentClusterID: bgClusterID
+                    })
+                    
                 }
             }
         })
@@ -276,15 +362,11 @@ export class MapCluster extends Component {
         const categoryList = this.state.categoryList;
         const currentColorArray = this.state.colorArray.slice(0, currentCluster['Cluster_Total']);
         const selectedNeighborhood = this.state.selectedNeighborhood;
-
         var currentChartData = [];
-        if (selectedNeighborhood !== null) {
-            switch (this.state.currentChartCategory) {
-                case "Median Income": currentChartData = this.state.medianIncomeData; break;
-                case "Median Home Value": currentChartData = this.state.medianHomeValueData; break;
-                case "Total Population": currentChartData = this.state.totalPopulationData; break;
-                default: currentChartData = this.state.medianIncomeData;
-            }
+        if (selectedNeighborhood !== null && currentChartData != null) {
+            currentChartData = this.state.currentChartData
+            // console.log(currentChartData)
+
         }
 
         const currentCategory = this.state.currentCategory;
@@ -640,7 +722,16 @@ export class MapCluster extends Component {
                             <YAxis
                                 label={{value: this.state.legendName, angle: -90, position: "insideLeft", offset: -10}}
                             />
-                            <Bar dataKey={this.state.legendName} fill="#8884D8" />
+                            {/* <Bar  
+                             /> */}
+                             <Bar dataKey={this.state.legendName} fill="#8884D8">
+                                {   
+                                    (currentChartData !== null) && currentChartData.map(function(cluster, index) {
+                                        const color = currentColorArray[cluster['id']-1] // off by 1
+                                        return <Cell key={`cell-${index}`} fill={color} />;
+                                    })
+                                }
+                            </Bar>
                         </BarChart>
                     </div>
                     )}
