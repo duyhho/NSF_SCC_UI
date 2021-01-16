@@ -25,6 +25,8 @@ export class MapCluster extends Component {
             currentCluster: [],
             colorArray: ['#FF8C00', '#E81123', '#EC008C', '#68217A', '#00188F',
                         '#00BCF2', '#00B294', '#BAD80A', '#009E49', '#FFF100'],
+            colorArray2: ['#f47c7c', '#f7f48b', '#a1de93', '#70a1d7', '#d0baa8',
+                        '#afffdf', '#aa96da', '#fcbad3', '#f25d9c', '#10ddc2'],
             categoryList: [
                 {cat: "311 Call Category"},
                 {cat: "311 Assigned Department"},
@@ -44,19 +46,19 @@ export class MapCluster extends Component {
             legendName:'',
         };
     }
-    
+
     componentDidMount() {
         this.setState({
             loadingData: true
 
         })
         this.loadNeighborhoodList()
-        
+
     }
 
     loadNeighborhoodList() {
         var self = this;
-    
+
         // axios.get(this.state.serverDomain + "/api/blockgroups/clusters/get")
         // axios.get('https://dl.dropboxusercontent.com/s/5dyq70p4l5ptkah/230BG-Clusters.json?dl=0')
 
@@ -90,7 +92,7 @@ export class MapCluster extends Component {
                     })
                 }
             })
-            
+
             self.setState({
                 neighborhoodList: bgClusterLists,
                 loadingData: false,
@@ -119,7 +121,7 @@ export class MapCluster extends Component {
                 })
             }
         })
-        
+
         const obj = {
             target: {
                 value: self.state.chartFilterList[0].cat //Resets back to first metric
@@ -242,27 +244,27 @@ export class MapCluster extends Component {
             allResponseTimes.forEach(function(item){
                 chartFilterList.push({cat: item })
             })
-        } 
+        }
         else if (category === "Cluster by Response Time") {
             const allResponseTimes = this.state.clusterMetadata['Response Times']
             allResponseTimes.forEach(function(item){
                 chartFilterList.push({cat: item })
             })
-            
+
         } else if (category === "Cluster by Call Category") {
             const allCats = this.state.clusterMetadata['Categories']
             allCats.forEach(function(item){
                 chartFilterList.push({cat: item })
             })
-            
+
         } else if (category === "Cluster by Call Frequency") {
             const allFreqs = this.state.clusterMetadata['Frequency']
             allFreqs.forEach(function(item){
                 chartFilterList.push({cat: item })
             })
-            
+
         } else if (category === "Cluster by All Factors") {
-            
+
         }
 
         this.setState({
@@ -300,18 +302,18 @@ export class MapCluster extends Component {
                     });
 
                     if (currentCategory === "Cluster by Socioeconomic Metrics") {
-            
+
                         bgClusterID = currentCluster[bg]['Cluster by Socioeconomic Metrics'] //Where this BG belongs to
                     } else if (currentCategory === "Cluster by Response Time") {
-                        
+
                         bgClusterID = currentCluster[bg]['Cluster by Response Time'] //Where this BG belongs to
                         yLabel = 'Cluster Mean (% of Cases)'
                     }
                     else if (currentCategory === "Cluster by Department") {
-                    
+
                         bgClusterID = currentCluster[bg]['Cluster by Department'] //Where this BG belongs to
                         yLabel = 'Cluster Mean (% of Total Depts)'
-                    
+
                     } else if (currentCategory === "Cluster by Call Category") {
                         bgClusterID = currentCluster[bg]['Cluster by Call Category'] //Where this BG belongs to
                         yLabel = 'Cluster Mean (% of All Categories)'
@@ -319,7 +321,7 @@ export class MapCluster extends Component {
                     } else if (currentCategory === "Cluster by Call Frequency") {
                         bgClusterID = currentCluster[bg]['Cluster by Call Frequency'] //Where this BG belongs to
                         yLabel = 'Cluster Mean (% of Total Calls)'
-                        
+
                     } else if (currentCategory === "Cluster by All Factors") {
                         bgClusterID = currentCluster[bg]['Cluster by All Factors'] //Where this BG belongs to
 
@@ -342,7 +344,7 @@ export class MapCluster extends Component {
                                 Mean: clusterProfiles[currentCategory][i][self.state.currentChartCategory].mean,
                             })
                         }
-                        
+
                     }
 
                     self.setState({
@@ -350,7 +352,7 @@ export class MapCluster extends Component {
                         currentChartData: chartData,
                         currentClusterID: bgClusterID
                     })
-                    
+
                 }
             }
         })
@@ -365,14 +367,19 @@ export class MapCluster extends Component {
         const top10items = items.slice(0,10);
         var finalList = []
         top10items.forEach(function(item) {
+            var name = (item[0].length<=10) ? item[0] : item[0].substring(0,7) + '...';
+            // if (name.length > 10){
+            //     name = name.substring(0,7) + '...'
+            // }
+            // (lemons) ? alert("please give me a lemonade") : alert("then give me a beer");
             finalList.push({
-                name: item[0],
+                name: name,
                 value: item[1]
             })
         })
 
         return(finalList)
-    } 
+    }
     render() {
         const loadingData = this.state.loadingData;
         const currentCluster = this.state.currentCluster;
@@ -388,6 +395,7 @@ export class MapCluster extends Component {
 
         const currentCategory = this.state.currentCategory;
         const clusterMetadata = this.state.clusterMetadata
+        const bgColorArray = this.state.colorArray2
         var bgProfileContent = '';
         if (selectedNeighborhood != null ){
             if (currentCategory.includes('Category')){
@@ -396,7 +404,8 @@ export class MapCluster extends Component {
                 allCats.forEach(function(cat){
                     catFreqs[cat] = selectedNeighborhood[cat]
                 })
-                const sortedCatFreqs = JSON.stringify(this.sortObject(catFreqs))
+                const sortedCatFreqs = this.sortObject(catFreqs)
+                console.log(sortedCatFreqs)
                 bgProfileContent = (
                 <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (CATEGORY)</div>
@@ -410,7 +419,38 @@ export class MapCluster extends Component {
                         </div>
                     </div>
                     <div className="row bgrow">
-                        <div>{sortedCatFreqs}</div>
+                        {/* <div>{sortedCatFreqs}</div> */}
+                        <BarChart
+                            width={700}
+                            height={300}
+                            data={sortedCatFreqs}
+                            margin={{top: 5, right: 30, left: 20, bottom: 5}}
+                            maxBarSize={70}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                                dataKey="name"
+                                label={{value: "Category", position: "insideBottom", offset: -5}}
+                                style={{
+                                    fontSize: '9px',
+                                    // fontFamily: 'Times New Roman',
+                                }}
+                                interval = {0}
+                            />
+                            <YAxis
+
+                                label={{value: 'Frequency', angle: -90, position: "insideLeft", dy: this.state.legendName.length+55, offset: -10}}
+                            />
+                            {/* <Bar
+                             /> */}
+                             <Bar dataKey='value' fill="#8884D8">
+                                {
+                                    bgColorArray.map(function(color, index) {
+                                        return <Cell key={`cell-${index}`} fill={color} />;
+                                    })
+                                }
+                            </Bar>
+                        </BarChart>
                     </div>
                 </div>
                 )
@@ -423,7 +463,7 @@ export class MapCluster extends Component {
                     deptFreqs[item] = selectedNeighborhood[item]
                 })
 
-                const sortedDeptFreqs = JSON.stringify(this.sortObject(deptFreqs))
+                const sortedDeptFreqs = this.sortObject(deptFreqs)
                 // Create a new array with only the first 5 items
                 bgProfileContent = (
                 <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
@@ -438,8 +478,38 @@ export class MapCluster extends Component {
                         </div>
                     </div>
                     <div className="row bgrow">
-                        <div>{sortedDeptFreqs}</div>
-                    </div>              
+                    <BarChart
+                            width={700}
+                            height={300}
+                            data={sortedDeptFreqs}
+                            margin={{top: 5, right: 30, left: 20, bottom: 5}}
+                            maxBarSize={70}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                                dataKey="name"
+                                label={{value: "Department", position: "insideBottom", offset: -5}}
+                                style={{
+                                    fontSize: '9px',
+                                    // fontFamily: 'Times New Roman',
+                                }}
+                                interval = {0}
+                            />
+                            <YAxis
+
+                                label={{value: 'Frequency', angle: -90, position: "insideLeft", dy: this.state.legendName.length+55, offset: -10}}
+                            />
+                            {/* <Bar
+                             /> */}
+                             <Bar dataKey='value' fill="#8884D8">
+                                {
+                                    bgColorArray.map(function(color, index) {
+                                        return <Cell key={`cell-${index}`} fill={color} />;
+                                    })
+                                }
+                            </Bar>
+                        </BarChart>
+                    </div>
                 </div>
                 )
             }
@@ -452,7 +522,7 @@ export class MapCluster extends Component {
                         value: selectedNeighborhood[item]
                     })
                 })
-                responseList = JSON.stringify(responseList)
+
                 bgProfileContent = (
                 <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (RESPONSE TIME)</div>
@@ -466,16 +536,46 @@ export class MapCluster extends Component {
                         </div>
                     </div>
                     <div className="row bgrow">
-                        <div>{responseList}</div>
-                    </div>              
+                        <BarChart
+                                width={700}
+                                height={300}
+                                data={responseList}
+                                margin={{top: 5, right: 30, left: 20, bottom: 5}}
+                                maxBarSize={70}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis
+                                    dataKey="name"
+                                    label={{value: "Time Window", position: "insideBottom", offset: -5}}
+                                    style={{
+                                        fontSize: '9px',
+                                        // fontFamily: 'Times New Roman',
+                                    }}
+                                    interval = {0}
+                                />
+                                <YAxis
+
+                                    label={{value: 'Frequency', angle: -90, position: "insideLeft", dy: this.state.legendName.length+55, offset: -10}}
+                                />
+                                {/* <Bar
+                                /> */}
+                                <Bar dataKey='value' fill="#8884D8">
+                                    {
+                                        bgColorArray.map(function(color, index) {
+                                            return <Cell key={`cell-${index}`} fill={color} />;
+                                        })
+                                    }
+                                </Bar>
+                            </BarChart>
+                    </div>
                 </div>
                 )
             }
             else if (currentCategory.includes('Frequency')){
-                const freq = JSON.stringify({
-                    name: 'Frequency',
+                const freq = [{
+                    name: selectedNeighborhood["BLOCKGROUP_ID"],
                     value: selectedNeighborhood['Frequency']
-                })
+                }]
                 bgProfileContent = (
                 <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (FREQUENCY)</div>
@@ -489,8 +589,38 @@ export class MapCluster extends Component {
                         </div>
                     </div>
                     <div className="row bgrow">
-                        <div>Blockgroup's 311 call frequency (Number of Calls/Population x 100): {freq}</div>
-                    </div>              
+                    <BarChart
+                            width={700}
+                            height={300}
+                            data={freq}
+                            margin={{top: 5, right: 30, left: 20, bottom: 5}}
+                            maxBarSize={70}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                                dataKey="name"
+                                label={{value: 'BLOCKGROUP ID', position: "insideBottom", offset: -5}}
+                                // style={{
+                                //     fontSize: '9px',
+                                //     // fontFamily: 'Times New Roman',
+                                // }}
+                                interval = {0}
+                            />
+                            <YAxis
+
+                                label={{value: 'Frequency', angle: -90, position: "insideLeft", dy: this.state.legendName.length+55, offset: -10}}
+                            />
+                            {/* <Bar
+                             /> */}
+                             <Bar dataKey='value' fill="#8884D8">
+                                {
+                                    bgColorArray.map(function(color, index) {
+                                        return <Cell key={`cell-${index}`} fill={color} />;
+                                    })
+                                }
+                            </Bar>
+                        </BarChart>
+                    </div>
                 </div>
                 )
             }
@@ -602,7 +732,7 @@ export class MapCluster extends Component {
                 bgProfileContent = (<div>All Factors</div>)
             }
         }
-        
+
         if (!this.props.google) {
             return <div>Loading...</div>;
         }
@@ -618,6 +748,7 @@ export class MapCluster extends Component {
                             initialCenter={this.state.currentLocation}
                             zoom={11}
                         >
+
                             {Object.keys(currentCluster).map(bg => {
                                 if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
                                     return <div></div>;
@@ -642,7 +773,7 @@ export class MapCluster extends Component {
                                         lat: y_min + ((y_max - y_min) / 2),
                                         lng: x_min + ((x_max - x_min) / 2),
                                     }
-                            
+
                                     return (
                                         <Polygon
                                             ref={this.polygonRef}
@@ -726,7 +857,7 @@ export class MapCluster extends Component {
                             </select>
                         </div>
                         <br />
-                        <BarChart 
+                        <BarChart
                             width={600}
                             height={300}
                             data={currentChartData}
@@ -739,13 +870,13 @@ export class MapCluster extends Component {
                                 label={{value: "Cluster #", position: "insideBottom", offset: -5}}
                             />
                             <YAxis
-                           
+
                                 label={{value: this.state.legendName, angle: -90, position: "insideLeft", dy: this.state.legendName.length+55, offset: -10}}
                             />
-                            {/* <Bar  
+                            {/* <Bar
                              /> */}
                              <Bar dataKey='Mean' fill="#8884D8">
-                                {   
+                                {
                                     (currentChartData !== null) && currentChartData.map(function(cluster, index) {
                                         const color = currentColorArray[cluster['id']-1] // off by 1
                                         return <Cell key={`cell-${index}`} fill={color} />;
