@@ -256,7 +256,8 @@ div {
   white-space: pre-wrap;
 }
 .bgrow {
-  margin-bottom: 4px;
+  margin-bottom: 0.15vh;
+  font-size: 1.05vw
 }
 select {
   border-radius: 5px;
@@ -264,8 +265,8 @@ select {
   font-family: 'Arvo', serif !important;
 }
 .select-bg {
-  font-size: 130%;
+  font-size: 120%;
 }
-.bgrow.sub-point {
-  font-size: 90%;
+.sub-point {
+  font-size: 0.9vw;
 }

@@ -235,7 +235,14 @@ export class MapCluster extends Component {
                 chartFilterList.push({cat: item })
             })
             console.log(chartFilterList)
-        } else if (category === "Cluster by Response Time") {
+        }
+        else if (category === "Cluster by Department") {
+            const allResponseTimes = this.state.clusterMetadata['Departments']
+            allResponseTimes.forEach(function(item){
+                chartFilterList.push({cat: item })
+            })
+        } 
+        else if (category === "Cluster by Response Time") {
             const allResponseTimes = this.state.clusterMetadata['Response Times']
             allResponseTimes.forEach(function(item){
                 chartFilterList.push({cat: item })
@@ -479,7 +486,7 @@ export class MapCluster extends Component {
             }
             else if (currentCategory.includes('Socioeconomic')){
                 bgProfileContent = (
-                <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
+                <div className="col-md-12" align="left" style = {{fontSize: "120%"}}>
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED BLOCKGROUP PROFILE (SOCIOECONOMIC)</div>
                     <br />
                     <div className="row bgrow">
@@ -499,42 +506,42 @@ export class MapCluster extends Component {
                         </div>
                     </div>
                     <div className="row bgrow">
-                        <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <div className="col-md-9 sub-point">
                             <b>&emsp;White Alone:</b>
                         </div>
-                        <div className="col-md-3" style = {{fontSize: "90%"}}>
+                        <div className="col-md-3 sub-point">
                             {selectedNeighborhood["White alone"]}
                         </div>
                     </div>
                     <div className="row bgrow">
-                        <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <div className="col-md-9 sub-point">
                             <b>&emsp;Black or African American Alone:</b>
                         </div>
-                        <div className="col-md-3" style = {{fontSize: "90%"}}>
+                        <div className="col-md-3 sub-point">
                             {selectedNeighborhood["Black or African American alone"]}
                         </div>
                     </div>
                     <div className="row bgrow">
-                        <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <div className="col-md-9 sub-point">
                             <b>&emsp;Hispanic or Latino Alone:</b>
                         </div>
-                        <div className="col-md-3" style = {{fontSize: "90%"}}>
+                        <div className="col-md-3 sub-point">
                             {selectedNeighborhood["Hispanic or Latino"]}
                         </div>
                     </div>
                     <div className="row bgrow">
-                        <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <div className="col-md-9 sub-point">
                             <b>&emsp;Asian Alone:</b>
                         </div>
-                        <div className="col-md-3" style = {{fontSize: "90%"}}>
+                        <div className="col-md-3 sub-point">
                             {selectedNeighborhood["Asian alone"]}
                         </div>
                     </div>
                     <div className="row bgrow">
-                        <div className="col-md-9" style = {{fontSize: "90%"}}>
+                        <div className="col-md-9 sub-point">
                             <b>&emsp;Total population with a Bachelor's degree or higher (age 25+):</b>
                         </div>
-                        <div className="col-md-3" style = {{fontSize: "90%"}}>
+                        <div className="col-md-3 sub-point">
                             {selectedNeighborhood["Total population age 25+ years with a bachelor's degree or higher"]}
                         </div>
                     </div>
@@ -696,6 +703,8 @@ export class MapCluster extends Component {
                     {selectedNeighborhood !== null && (
                     <div className="col-md-12">
                         <hr />
+                        <div align="center" style={{fontWeight: 'bold', fontSize: "130%"}}>CURRENT CLUSTER PROFILE</div>
+
                         <div align="center" className = "select-bg">
                             <span>View Chart By:&nbsp;&nbsp;</span>
                             <select onChange={this.handleChartCategoryChange.bind(this)}>
