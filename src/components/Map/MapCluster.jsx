@@ -3,7 +3,7 @@ import { Map, GoogleApiWrapper, Polygon } from "google-maps-react"
 import update from 'immutability-helper'
 import axios from 'axios'
 import Slider from '@material-ui/core/Slider'
-import { BarChart, Cell, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
+import { BarChart, Cell, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 
 import { server } from '../../controllers/Server.js'
 import { modal } from '../../utilities/modal.js'
@@ -419,7 +419,6 @@ export class MapCluster extends Component {
                         </div>
                     </div>
                     <div className="row bgrow">
-                        {/* <div>{sortedCatFreqs}</div> */}
                         <BarChart
                             width={700}
                             height={300}
@@ -433,17 +432,14 @@ export class MapCluster extends Component {
                                 label={{value: "Category", position: "insideBottom", offset: -5}}
                                 style={{
                                     fontSize: '9px',
-                                    // fontFamily: 'Times New Roman',
                                 }}
                                 interval = {0}
                             />
                             <YAxis
-
                                 label={{value: 'Frequency', angle: -90, position: "insideLeft", dy: this.state.legendName.length+55, offset: -10}}
                             />
-                            {/* <Bar
-                             /> */}
-                             <Bar dataKey='value' fill="#8884D8">
+                            <Tooltip />
+                            <Bar dataKey='value' fill="#8884D8">
                                 {
                                     bgColorArray.map(function(color, index) {
                                         return <Cell key={`cell-${index}`} fill={color} />;
@@ -478,7 +474,7 @@ export class MapCluster extends Component {
                         </div>
                     </div>
                     <div className="row bgrow">
-                    <BarChart
+                        <BarChart
                             width={700}
                             height={300}
                             data={sortedDeptFreqs}
@@ -496,12 +492,10 @@ export class MapCluster extends Component {
                                 interval = {0}
                             />
                             <YAxis
-
                                 label={{value: 'Frequency', angle: -90, position: "insideLeft", dy: this.state.legendName.length+55, offset: -10}}
                             />
-                            {/* <Bar
-                             /> */}
-                             <Bar dataKey='value' fill="#8884D8">
+                            <Tooltip />
+                            <Bar dataKey='value' fill="#8884D8">
                                 {
                                     bgColorArray.map(function(color, index) {
                                         return <Cell key={`cell-${index}`} fill={color} />;
@@ -537,36 +531,34 @@ export class MapCluster extends Component {
                     </div>
                     <div className="row bgrow">
                         <BarChart
-                                width={700}
-                                height={300}
-                                data={responseList}
-                                margin={{top: 5, right: 30, left: 20, bottom: 5}}
-                                maxBarSize={70}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis
-                                    dataKey="name"
-                                    label={{value: "Time Window", position: "insideBottom", offset: -5}}
-                                    style={{
-                                        fontSize: '9px',
-                                        // fontFamily: 'Times New Roman',
-                                    }}
-                                    interval = {0}
-                                />
-                                <YAxis
-
-                                    label={{value: 'Frequency', angle: -90, position: "insideLeft", dy: this.state.legendName.length+55, offset: -10}}
-                                />
-                                {/* <Bar
-                                /> */}
-                                <Bar dataKey='value' fill="#8884D8">
-                                    {
-                                        bgColorArray.map(function(color, index) {
-                                            return <Cell key={`cell-${index}`} fill={color} />;
-                                        })
-                                    }
-                                </Bar>
-                            </BarChart>
+                            width={700}
+                            height={300}
+                            data={responseList}
+                            margin={{top: 5, right: 30, left: 20, bottom: 5}}
+                            maxBarSize={70}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                                dataKey="name"
+                                label={{value: "Time Window", position: "insideBottom", offset: -5}}
+                                style={{
+                                    fontSize: '9px',
+                                    // fontFamily: 'Times New Roman',
+                                }}
+                                interval = {0}
+                            />
+                            <YAxis
+                                label={{value: 'Frequency', angle: -90, position: "insideLeft", dy: this.state.legendName.length+55, offset: -10}}
+                            />
+                            <Tooltip />
+                            <Bar dataKey='value' fill="#8884D8">
+                                {
+                                    bgColorArray.map(function(color, index) {
+                                        return <Cell key={`cell-${index}`} fill={color} />;
+                                    })
+                                }
+                            </Bar>
+                        </BarChart>
                     </div>
                 </div>
                 )
@@ -589,7 +581,7 @@ export class MapCluster extends Component {
                         </div>
                     </div>
                     <div className="row bgrow">
-                    <BarChart
+                        <BarChart
                             width={700}
                             height={300}
                             data={freq}
@@ -600,19 +592,13 @@ export class MapCluster extends Component {
                             <XAxis
                                 dataKey="name"
                                 label={{value: 'BLOCKGROUP ID', position: "insideBottom", offset: -5}}
-                                // style={{
-                                //     fontSize: '9px',
-                                //     // fontFamily: 'Times New Roman',
-                                // }}
                                 interval = {0}
                             />
                             <YAxis
-
                                 label={{value: 'Frequency', angle: -90, position: "insideLeft", dy: this.state.legendName.length+55, offset: -10}}
                             />
-                            {/* <Bar
-                             /> */}
-                             <Bar dataKey='value' fill="#8884D8">
+                            <Tooltip />
+                            <Bar dataKey='value' fill="#8884D8">
                                 {
                                     bgColorArray.map(function(color, index) {
                                         return <Cell key={`cell-${index}`} fill={color} />;
@@ -870,12 +856,10 @@ export class MapCluster extends Component {
                                 label={{value: "Cluster #", position: "insideBottom", offset: -5}}
                             />
                             <YAxis
-
                                 label={{value: this.state.legendName, angle: -90, position: "insideLeft", dy: this.state.legendName.length+55, offset: -10}}
                             />
-                            {/* <Bar
-                             /> */}
-                             <Bar dataKey='Mean' fill="#8884D8">
+                            <Tooltip />
+                            <Bar dataKey='Mean' fill="#8884D8">
                                 {
                                     (currentChartData !== null) && currentChartData.map(function(cluster, index) {
                                         const color = currentColorArray[cluster['id']-1] // off by 1
