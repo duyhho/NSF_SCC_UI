@@ -23,10 +23,14 @@ export class MapCluster extends Component {
             neighborhoodList:[],
             sliderLabels: [],
             currentCluster: [],
-            colorArray: ['#FF8C00', '#E81123', '#FFFF00', '#00BCF2', '#00B294', 
+            colorArray: ['#FF8C00', '#E81123', '#FFFF00', '#00BCF2', '#00B294',
                         '#FFB6C1', '#68217A', '#00188F', '#BAD80A', '#009E49' ],
-            colorArray2: ['#f47c7c', '#f7f48b', '#a1de93', '#70a1d7', '#d0baa8',
-                        '#afffdf', '#aa96da', '#fcbad3', '#f25d9c', '#10ddc2'],
+            // colorArray2: ['#f47c7c', '#f7f48b', '#a1de93', '#70a1d7', '#d0baa8',
+            //             '#afffdf', '#aa96da', '#fcbad3', '#f25d9c', '#10ddc2'],
+            colorArray2: ['#ff0000', '#FD706B', '#F8858B', 
+                            '#FFFF33','#FFFF66','#FFFFCC', 
+                            '#B7FFBF', '#95F985', '#4DED30', '#26D701', 
+                            '#70a1d7', '#d0baa8', '#afffdf', '#aa96da', '#fcbad3', '#f25d9c', '#10ddc2'],
             categoryList: [
                 {cat: "311 Call Category"},
                 {cat: "311 Assigned Department"},
@@ -44,6 +48,8 @@ export class MapCluster extends Component {
             clusterMetadata: null,
             currentChartData: null,
             legendName:'',
+            currentClusterProfileContent:null,
+            selected: ''
         };
     }
 
@@ -73,7 +79,7 @@ export class MapCluster extends Component {
                 })
             }
             var chartFilterList = [];
-
+            console.log(response.data)
             const allMetrics = response.data[0][self.state.defaultCategoryMetadata]
             allMetrics.forEach(function(item){
                 chartFilterList.push({cat: item })
@@ -193,29 +199,111 @@ export class MapCluster extends Component {
         const clusterProfiles = currentCluster["Cluster_Profiles"];
         const currentClusterID = this.state.currentClusterID;
         const selectedChartCategory = e.target.value
-
-        var chartData = []
-        for (var i = 0; i < clusterProfiles[currentCategory].length; i++) {
-            const clusterID = clusterProfiles[currentCategory][i]["Cluster_ID"]
-            if (clusterID === currentClusterID){
-                chartData.unshift({
-                    id: clusterID,
-                    name: clusterID + ' (Current)' ,
-                    Mean: clusterProfiles[currentCategory][i][selectedChartCategory].mean,
-                })
+        const colorArray = this.state.colorArray2
+        var self = this
+        if (!e.target.value.includes('Cluster')){
+            var chartData = []
+            for (var i = 0; i < clusterProfiles[currentCategory].length; i++) {
+                const clusterID = clusterProfiles[currentCategory][i]["Cluster_ID"]
+                if (clusterID === currentClusterID){
+                    chartData.unshift({
+                        id: clusterID,
+                        name: clusterID + ' (Current)' ,
+                        Mean: clusterProfiles[currentCategory][i][selectedChartCategory].mean,
+                    })
+                }
+                else{
+                    chartData.push({
+                        id: clusterID,
+                        name: clusterID ,
+                        Mean: clusterProfiles[currentCategory][i][selectedChartCategory].mean,
+                    })
+                }
             }
-            else{
-                chartData.push({
-                    id: clusterID,
-                    name: clusterID ,
-                    Mean: clusterProfiles[currentCategory][i][selectedChartCategory].mean,
-                })
-            }
+            this.setState({
+                currentChartCategory: selectedChartCategory,
+                currentChartData: chartData
+            })
         }
-        this.setState({
-            currentChartCategory: selectedChartCategory,
-            currentChartData: chartData
-        })
+        else if (e.target.value.includes('Cluster')){
+            const selectedCluster = e.target.value
+            
+            console.log(selectedCluster)
+            clusterProfiles[currentCategory].forEach(function(profile) {        
+                if (selectedCluster.includes(profile['Cluster_ID'])){
+                    var tempDict = {}
+                    Object.keys(profile).forEach(function(key) {
+                        if (key !== 'Cluster_ID'){
+                            tempDict[key] = profile[key].mean
+                        }
+                    })
+                    if (!currentCategory.includes('Socioeconomic')){
+                        const sortedDict = self.sortObject(tempDict)
+                        var chartData = (
+                            <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
+                                <br />
+                                <div className="row bgrow">
+                                    <BarChart
+                                        width={700}
+                                        height={300}
+                                        data={sortedDict}
+                                        margin={{top: 5, right: 30, left: 20, bottom: 5}}
+                                        maxBarSize={70}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis
+                                            dataKey="name"
+                                            label={{value: currentCategory, position: "insideBottom", offset: -5}}
+                                            style={{
+                                                fontSize: '9px',
+                                            }}
+                                            interval = {0}
+                                        />
+                                        <YAxis
+                                            label={{value: 'Frequency', angle: -90, position: "insideLeft", dy: 40, offset: -10}}
+                                        />
+                                        <Tooltip />
+                                        <Bar dataKey='value' fill="#8884D8">
+                                            {
+                                                colorArray.map(function(color, index) {
+                                                    return <Cell key={`cell-${index}`} fill={color} />;
+                                                })
+                                            }
+                                        </Bar>
+                                    </BarChart>
+                                </div>
+                            </div>
+                            )
+                            self.setState({
+                                currentClusterProfileContent: chartData,
+                                selected: selectedCluster
+                            })
+                            console.log(self.state.currentClusterProfileContent)
+                    }
+                    else {
+                        
+                        var content = Object.keys(tempDict).map(function(key) {
+                            return <div className="row bgrow">
+                                        <div className="col-md-9">
+                                            <b>{key}</b>
+                                        </div>
+                                        <div className="col-md-3">
+                                            {Math.round(tempDict[key]).toLocaleString('en')}
+                                        </div>
+                                    </div>
+                        })
+                        self.setState({
+                            currentClusterProfileContent: content,
+                            selected: selectedCluster
+
+                        })
+                    }
+                }      
+            })
+        }
+        
+
+        
     }
 
     renderChartList(category) {
@@ -326,7 +414,13 @@ export class MapCluster extends Component {
                     self.setState({
                         legendName: yLabel,
                         currentChartData: chartData,
-                        currentClusterID: bgClusterID
+                        currentClusterID: bgClusterID,
+                        selected: 'Cluster ' + bgClusterID + " (Current)"
+                    })
+                    self.handleChartCategoryChange({
+                        target: {
+                            value: 'Cluster ' + bgClusterID
+                        }
                     })
                 }
             }
@@ -369,7 +463,9 @@ export class MapCluster extends Component {
         const categoryList = this.state.categoryList;
         const currentColorArray = this.state.colorArray.slice(0, currentCluster['Cluster_Total']);
         const selectedNeighborhood = this.state.selectedNeighborhood;
+        const currentClusterID = this.state.currentClusterID;
         var currentChartData = [];
+        const clusterProfiles = currentCluster["Cluster_Profiles"];
         if (selectedNeighborhood !== null && currentChartData != null) {
             currentChartData = this.state.currentChartData
         }
@@ -378,6 +474,7 @@ export class MapCluster extends Component {
         const clusterMetadata = this.state.clusterMetadata
         const bgColorArray = this.state.colorArray2
         var bgProfileContent = '';
+        var clusterProfileContent = this.state.currentClusterProfileContent;
         if (selectedNeighborhood != null ){
             if (currentCategory.includes('Category')){
                 const allCats = clusterMetadata['Categories']
@@ -809,9 +906,28 @@ export class MapCluster extends Component {
                     {selectedNeighborhood !== null && (
                     <div className="col-md-12">
                         <hr />
-                        <div align="center" style={{fontWeight: 'bold', fontSize: "130%"}}>CURRENT CLUSTER PROFILE</div>
+                        <div align="center" style={{fontWeight: 'bold', fontSize: "130%"}}>CLUSTER PROFILE</div>
                         <div align="center" className = "select-bg">
-                            <span>View Chart By:&nbsp;&nbsp;</span>
+                            <span>View Details From:&nbsp;&nbsp;</span>
+                            <select onChange={this.handleChartCategoryChange.bind(this)} value = {this.state.selected}>
+                            {
+                            clusterProfiles[currentCategory].map(function(item) {
+                                if (item['Cluster_ID'] === currentClusterID){
+                                    return <option key={'Cluster ' + item['Cluster_ID'] + " (Current)"} value={'Cluster ' + item['Cluster_ID'] }>Cluster {item['Cluster_ID']} (Current)</option>
+                                
+                                }
+                                return <option key={'Cluster ' + item['Cluster_ID']} value={'Cluster ' + item['Cluster_ID'] }>Cluster {item['Cluster_ID']}</option>
+                            })
+                            }
+                            </select>
+                        </div>
+                        <div align="left" style = {{fontSize: "120%"}}>
+                            {clusterProfileContent}
+                        </div>
+                        
+                        
+                        <div align="center" className = "select-bg">
+                            <span>Compare Clusters by:&nbsp;&nbsp;</span>
                             <select onChange={this.handleChartCategoryChange.bind(this)}>
                             {
                             this.state.chartFilterList.map(function(item) {

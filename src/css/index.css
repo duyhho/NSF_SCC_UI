@@ -266,6 +266,7 @@ select {
   font-family: 'Arvo', serif !important;
 }
 .select-bg {
+  margin-top: 7px;
   font-size: 120%;
 }
 .sub-point {
