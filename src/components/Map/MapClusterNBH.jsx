@@ -662,11 +662,9 @@ export class MapClusterNBH extends Component {
                 const allResponseTimes = clusterMetadata['Response Times']
                 var responseList = []
                 allResponseTimes.forEach(function(item){
-                    responseList.push({
-                        name: item,
-                        value: selectedNeighborhood[item]
-                    })
+                    responseList[item] = selectedNeighborhood[item]
                 })
+                const sortedResponseFreqs = this.sortObject(responseList)
 
                 bgProfileContent = (
                 <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
@@ -684,7 +682,7 @@ export class MapClusterNBH extends Component {
                         <BarChart
                             width={700}
                             height={300}
-                            data={responseList}
+                            data={sortedResponseFreqs}
                             margin={{top: 5, right: 30, left: 20, bottom: 5}}
                             maxBarSize={70}
                         >
