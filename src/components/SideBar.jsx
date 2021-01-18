@@ -8,6 +8,8 @@ import Map311 from "./Map/Map311.jsx"
 import VirtualTour from "./Virtual Tour/VirtualTour.jsx"
 import NotFound from "./NotFound/NotFound.jsx"
 import MapCluster from "./Map/MapCluster.jsx"
+import MapClusterNBH from "./Map/MapClusterNBH.jsx"
+
 import Visualization311 from "./Visualization311/Visualization311.jsx"
 
 export default class SideBar extends React.Component {
@@ -35,9 +37,14 @@ export default class SideBar extends React.Component {
       this.setState({
         currentView: 4
       })
-    } else if (window.location.pathname === "/visualization311") {
+      
+    } else if (window.location.pathname === "/neighborhoods") {
       this.setState({
         currentView: 5
+      })
+    } else if (window.location.pathname === "/visualization311") {
+      this.setState({
+        currentView: 6
       })
     } else { //Default to 0
       this.setState({
@@ -130,11 +137,21 @@ export default class SideBar extends React.Component {
                     Block Groups
                   </Menu.Item>
                 </Link>
+                <Link to="/neighborhoods">
+                  <Menu.Item
+                    name="Neighborhood Cluster"
+                    onClick={this.handleMenuSelect.bind(this, 5)}
+                    active={currentView === 5}
+                  >
+                    <Icon name="connectdevelop" />
+                    Neighborhoods
+                  </Menu.Item>
+                </Link>
                 <Link to="/visualization311">
                   <Menu.Item
                     name="Visualization 311"
-                    onClick={this.handleMenuSelect.bind(this, 5)}
-                    active={currentView === 5}
+                    onClick={this.handleMenuSelect.bind(this, 6)}
+                    active={currentView === 6}
                   >
                     <Icon name="chart bar" />
                     Visualization 311
@@ -149,6 +166,7 @@ export default class SideBar extends React.Component {
                 <Route exact path="/call311" component={Map311} />
                 <Route exact path="/virtualTour" component={VirtualTour} />
                 <Route exact path="/blockgroups" component={MapCluster} />
+                <Route exact path="/neighborhoods" component={MapClusterNBH} />
                 <Route exact path="/visualization311" component={Visualization311} />
                 <Route component={NotFound} />
               </Switch>
