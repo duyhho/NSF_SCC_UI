@@ -29,11 +29,11 @@ export class VirtualTour extends Component {
             panorama: null,
         };
     }
-    
+
     componentDidMount() {
         var self = this;
         var curLocation = this.getcurrentLocation();
-        
+
         curLocation.then(function(result){
             const location = {lat: result.lat, lng: result.lng}
             if (result.lat != null && result.lng != null) {
@@ -54,7 +54,7 @@ export class VirtualTour extends Component {
                 }, function() {
                     this.initPositionListener();
                 })
-                
+
             } else {
                 self.setState({
                     panorama: new window.google.maps.StreetViewPanorama(
@@ -72,11 +72,11 @@ export class VirtualTour extends Component {
                 })
             }
         })
-        
-        
+
+
     }
     initPositionListener(){
-        if (this.state.panorama != null) 
+        if (this.state.panorama != null)
         {
             this.state.panorama.addListener("position_changed", () => {
                 const location = this.state.panorama.getPosition()
@@ -86,8 +86,8 @@ export class VirtualTour extends Component {
                         currentPosition: new_location
                     })
                 }
-                
-            });   
+
+            });
         }
     }
     getcurrentLocation() {
@@ -132,7 +132,7 @@ export class VirtualTour extends Component {
             dataLoading: true,
             returnedPercent: 0,
         })
-      
+
         var self = this;
         const location = this.state.panorama.getPosition();
         const panorama = this.state.panorama;
@@ -142,10 +142,10 @@ export class VirtualTour extends Component {
         const currentPitch = panorama.getPov().pitch;
         const category = this.state.category;
         const serverDomain = this.state.serverDomain;
-      
+
         var eventSource = new EventSource(serverDomain + '/api/virtualtour/predict?coord=' + JSON.stringify(currentPosition)
                                         + "&pitch=" + currentPitch + "&heading=" + currentHeading + "&category=" + category);
-        
+
         eventSource.onmessage = e => {
             if (self.state.firstImageReturned === false) {
                 modal.showInfo("Images are being streamed! See the progress bar below!", "success", "top", "center");
@@ -177,13 +177,13 @@ export class VirtualTour extends Component {
                     imageHasObjects: jsonData.hasObjects,
                 })
             }
-        
+
             self.setState({
                 serverError: false,
                 firstImageReturned: true
             })
         }
-    
+
         eventSource.onerror = e => {
             eventSource.close()
             modal.showInfo("Error while connecting with the server!", "danger", "top", "center");
@@ -193,7 +193,7 @@ export class VirtualTour extends Component {
             });
         }
     }
-    
+
     onMapClicked(mapProps, map, clickEvent) {
         this.setState({
             currentPosition: {lat: clickEvent.latLng.lat(), lng: clickEvent.latLng.lng()},
@@ -235,7 +235,7 @@ export class VirtualTour extends Component {
             this.initPositionListener()
         })
     }
-    
+
     render() {
         const imageList = this.state.imageList;
         const firstImageReturned = this.state.firstImageReturned;
@@ -244,7 +244,7 @@ export class VirtualTour extends Component {
         const dataLoading = this.state.dataLoading;
         // const imageHasObjects = this.state.imageHasObjects;
         const currentPosition = this.state.currentPosition;
-        
+
         var predictButtonText = ""
         if (dataLoading === false) {
             predictButtonText = "Predict"
@@ -257,7 +257,7 @@ export class VirtualTour extends Component {
         if (!this.props.google) {
             return <div>Loading...</div>;
         }
-        
+
         return (
         <div className="page-container">
             <div className="row">
@@ -274,7 +274,7 @@ export class VirtualTour extends Component {
                     </div>
                     <div className="map-container">
                         <Map
-                            google={this.props.google} 
+                            google={this.props.google}
                             initialCenter={currentPosition}
                             center={currentPosition}
                             zoom={16}

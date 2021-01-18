@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { Map, GoogleApiWrapper, Polygon } from "google-maps-react"
+import { Map, GoogleApiWrapper, Polygon, Marker } from "google-maps-react"
 import update from 'immutability-helper'
 import axios from 'axios'
 import Slider from '@material-ui/core/Slider'
@@ -15,11 +15,13 @@ export class MapClusterNBH extends Component {
         this.onPolygonMouseOver = this.onPolygonMouseOver.bind(this);
         this.onPolygonMouseOut = this.onPolygonMouseOut.bind(this);
         this.onPolygonClick = this.onPolygonClick.bind(this);
+        this.pano= React.createRef();
+
         this.state = {
             serverDomain: server.getServerDomain(),
             loadingData: false,
             initialMessage: "Loading the neighborhoods. Please wait...",
-            currentLocation: {lat: 39.0410436302915, lng: -94.5876739197085},
+            currentPosition: {lat: 39.0410436302915, lng: -94.5876739197085},
             neighborhoodList:[],
             sliderLabels: [],
             currentCluster: [],
@@ -49,7 +51,8 @@ export class MapClusterNBH extends Component {
             currentChartData: null,
             legendName:'',
             currentClusterProfileContent:null,
-            selected: ''
+            selected: '',
+            panorama: null,
         };
     }
 
@@ -59,6 +62,21 @@ export class MapClusterNBH extends Component {
 
         })
         this.loadNeighborhoodList()
+
+        // this.setState({
+        //     panorama: new window.google.maps.StreetViewPanorama(
+        //         this.pano.current,
+        //         {
+        //             position: {lat: 39.0410436302915, lng: -94.5876739197085},
+        //             pov: {
+        //                 heading: 50,
+        //                 pitch: 0,
+        //             },
+        //             addressControl: false,
+        //             visible: true
+        //         }
+        //     )
+        // })
     }
 
     loadNeighborhoodList() {
@@ -343,7 +361,41 @@ export class MapClusterNBH extends Component {
             chartFilterList: chartFilterList
         })
     }
-
+    initPositionListener(){
+        if (this.state.panorama != null) 
+        {
+            this.state.panorama.addListener("position_changed", () => {
+                const location = this.state.panorama.getPosition()
+                const new_location = {lat: location.lat(), lng: location.lng()}
+                if (new_location !== this.state.currentPosition){
+                    this.setState({
+                        currentPosition: new_location
+                    })
+                }
+                
+            });   
+        }
+    }
+    
+    onMarkerDrag(coord, map) {
+        this.setState({
+            currentPosition: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
+            panorama: new window.google.maps.StreetViewPanorama(
+                this.pano.current,
+                {
+                    position: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
+                    pov: {
+                        heading: 50,
+                        pitch: 16,
+                    },
+                    addressControl: false,
+                    visible: true
+                }
+            )
+        }, function(){
+            this.initPositionListener()
+        })
+    }
     onPolygonMouseOver(props, polygon, e){
         this.setPolygonOptions({
             paths: props.paths
@@ -363,6 +415,25 @@ export class MapClusterNBH extends Component {
         const clusterProfiles = currentCluster["Cluster_Profiles"];
         var bgClusterID = null;
         var chartData = [];
+        const polygonCenter = props.centerCoord
+        console.log(polygonCenter)
+        self.setState({
+            currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+            panorama: new window.google.maps.StreetViewPanorama(
+                this.pano.current,
+                {
+                    position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+                    pov: {
+                        heading: 50,
+                        pitch: 0,
+                    },
+                    addressControl: false,
+                    visible: true
+                }
+            )
+        }, function(){
+            this.initPositionListener()
+        })
         Object.keys(currentCluster).forEach(bg => {
             if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
                 //SKIP
@@ -459,6 +530,8 @@ export class MapClusterNBH extends Component {
     }
 
     render() {
+        const currentPosition = this.state.currentPosition;
+
         const loadingData = this.state.loadingData;
         const currentCluster = this.state.currentCluster;
         const categoryList = this.state.categoryList;
@@ -809,8 +882,10 @@ export class MapClusterNBH extends Component {
                     <div className="map-container">
                         <Map
                             google={this.props.google}
-                            initialCenter={this.state.currentLocation}
+                            initialCenter={currentPosition}
                             zoom={11}
+                            // onClick={this.onMapClicked.bind(this)}
+                            stretViewControl = {false}
                         >
                             {Object.keys(currentCluster).map(bg => {
                                 if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
@@ -824,8 +899,8 @@ export class MapClusterNBH extends Component {
                                         coordArr.push({
                                             lat: coord[1], lng: coord[0]
                                         });
-                                        x_coords.push(coord[1]);
-                                        y_coords.push(coord[0]);
+                                        x_coords.push(coord[0]);
+                                        y_coords.push(coord[1]);
                                     })
 
                                     const x_min = Math.min(...x_coords);
@@ -855,6 +930,15 @@ export class MapClusterNBH extends Component {
                                     )
                                 }
                             })}
+                            <Marker
+                                position={currentPosition}
+                                icon={{
+                                    url: process.env.PUBLIC_URL + '/img/human_marker.png',
+                                    scaledSize: new window.google.maps.Size(40, 40)
+                                }}
+                                draggable={true}
+                                onDragend={(t, map, coord) => this.onMarkerDrag(coord, map)}
+                            />
                         </Map>
                         <div className="legend" align="center">
                             <h3>Legend</h3>
@@ -870,6 +954,10 @@ export class MapClusterNBH extends Component {
                         }
                         </div>
                     </div>
+                    <div className="pano-view-container" align="center">
+                        <div id="pano" ref={this.pano}>
+                    </div>
+                </div>
                 </div>
                 <div className="col-md-5" align="center" style={{marginTop: "20px"}}>
                     <div align="center" className = "select-bg">
