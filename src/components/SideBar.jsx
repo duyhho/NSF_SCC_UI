@@ -9,8 +9,8 @@ import VirtualTour from "./Virtual Tour/VirtualTour.jsx"
 import NotFound from "./NotFound/NotFound.jsx"
 import MapCluster from "./Map/MapCluster.jsx"
 import MapClusterNBH from "./Map/MapClusterNBH.jsx"
-
 import Visualization311 from "./Visualization311/Visualization311.jsx"
+import Chatbot from './ChatBot/Chatbot.jsx';
 
 export default class SideBar extends React.Component {
   constructor(props) {
@@ -45,6 +45,10 @@ export default class SideBar extends React.Component {
     } else if (window.location.pathname === "/visualization311") {
       this.setState({
         currentView: 6
+      })
+    } else if (window.location.pathname === "/chatbot") {
+      this.setState({
+        currentView: 7
       })
     } else { //Default to 0
       this.setState({
@@ -157,6 +161,16 @@ export default class SideBar extends React.Component {
                     Visualization 311
                   </Menu.Item>
                 </Link>
+                <Link to="/chatbot">
+                  <Menu.Item
+                    name="Chatbot"
+                    onClick={this.handleMenuSelect.bind(this, 7)}
+                    active={currentView === 7}
+                  >
+                    <Icon name="chart bar" />
+                    Chatbot
+                  </Menu.Item>
+                </Link>
               </Sidebar>
 
               <Switch>
@@ -168,6 +182,8 @@ export default class SideBar extends React.Component {
                 <Route exact path="/blockgroups" component={MapCluster} />
                 <Route exact path="/neighborhoods" component={MapClusterNBH} />
                 <Route exact path="/visualization311" component={Visualization311} />
+                <Route exact path="/chatbot" component={Chatbot} />
+                
                 <Route component={NotFound} />
               </Switch>
 
