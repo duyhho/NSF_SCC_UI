@@ -369,3 +369,10 @@ select {
 .sub-point {
   font-size: 0.9vw;
 }
+.arrow {
+  position: absolute;
+  top:30%;
+  left:50%;
+  width:20%;
+  height:20%;
+}
