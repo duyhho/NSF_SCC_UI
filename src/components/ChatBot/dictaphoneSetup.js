@@ -2,7 +2,6 @@ import React, {useState} from 'react'
 import SpeechRecognition, {useSpeechRecognition } from 'react-speech-recognition'
 import moment from 'moment'
 import Geocode from 'react-geocode'
-import $ from 'jquery'
 
 import { modal } from '../../utilities/modal.js'
 
@@ -34,7 +33,9 @@ const Dictaphone = () => {
     const onStopListening = () => {
         SpeechRecognition.stopListening();
         setDate(moment().format('MMMM Do YYYY, h:mm:ss a'));
-        onSetLocation();
+        if (currentLocation.length < 10){
+            onSetLocation();
+        }
         modal.showInfo("You have stopped the voice detection!", "success", "top", "center");
     }
 
@@ -97,12 +98,23 @@ const Dictaphone = () => {
         // modal.showSuccessModalWithOK("Are you sure?", "Make sure the information is correct. Are you sure to submit the request?", "Submit")
         //TODO Setup API
         modal.showInfo("Request submitted successfully!", "success", "top", "center");
+        Geocode.fromAddress(currentLocation).then(
+            response => {
+                console.log(response)
+                const { lat, lng } = response.results[0].geometry.location;
+                console.log(lat, lng);
+                setLocation(response['results'][0]['formatted_address'])
+            },
+            error => {
+                console.error(error);
+            }
+        );
     }
 
     return (
     <div className="col-md-12">
         <div class="header">
-            <h4 class="title">Submit a 311 Request</h4>
+            <h4 class="title" style={{fontSize: "150%"}}>Submit a 311 Request</h4>
             <p class="category"></p>
         </div>
         <div class="content">
@@ -110,8 +122,8 @@ const Dictaphone = () => {
                 <div className="row">
                     <div className="col-md-12">
                         <div className="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
+                            <div class="col-md-6" align='center'>
+                                <div class="form-group" align='left'>
                                     <label for="assignee">Description</label>
                                     <textarea rows="12" cols="80" class="form-control" placeholder='Press "Start Voice Recording" and say something!' value={currentTranscript + transcript} onChange={onChangeDescription}/>
                                 </div>
@@ -135,7 +147,7 @@ const Dictaphone = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-md-3 offset-md-2">
+                        <div className = 'col-md-6' align='center'>
                             <button type="button" className="btn btn-primary" onClick={onSubmitRequest} autoComplete="off">Submit</button>
                         </div>
                     </div>

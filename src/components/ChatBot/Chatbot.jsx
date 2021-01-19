@@ -16,7 +16,7 @@ export default class Chatbot extends Component {
     render() {
         return (
             <div className="page-container">
-                <div className="row">
+                <div className="row request-form">
                     <Dictaphone />
                 </div>
             </div>
