@@ -373,15 +373,26 @@ select {
 .btn {
   margin: 5px;
 }
+
 .request-form {
   margin-left: 5px;
   margin-top:10px;
   font-size:130%
 }
+
 .arrow {
   position: absolute;
   top:30%;
   left:50%;
   width:20%;
   height:20%;
+}
+
+.cluster-profile-legend-color {
+  height: 30px;
+  width: 30px;
+  display: inline-block;
+  position: relative;
+  top: 9px;
+  left: 5px;
 }

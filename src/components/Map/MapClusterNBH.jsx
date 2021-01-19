@@ -51,6 +51,7 @@ export class MapClusterNBH extends Component {
             currentClusterProfileContent:null,
             selected: '',
             panorama: null,
+            showArrowGif: true,
         };
     }
 
@@ -117,7 +118,9 @@ export class MapClusterNBH extends Component {
             self.setState({
                 neighborhoodList: bgClusterLists,
                 loadingData: false,
+                showArrowGif: true,
             })
+            modal.showInfo("Click on a neighborhood on the map to view more information!", "success", "top", "center")
         })
         .catch(function(e) {
             self.setState({
@@ -138,6 +141,7 @@ export class MapClusterNBH extends Component {
                 self.setState({
                     currentCluster: item,
                     selectedNeighborhood: null,
+                    showArrowGif: true,
                 })
             }
         })
@@ -148,6 +152,7 @@ export class MapClusterNBH extends Component {
             }
         }
         self.handleChartCategoryChange(obj)
+        modal.showInfo("Click on a neighborhood on the map to view more information!", "success", "top", "center")
     }
 
     handleCategoryChange(e) {
@@ -206,8 +211,10 @@ export class MapClusterNBH extends Component {
         }
 
         this.setState({
-            selectedNeighborhood: null
+            selectedNeighborhood: null,
+            showArrowGif: true,
         })
+        modal.showInfo("Click on a neighborhood on the map to view more information!", "success", "top", "center")
     }
 
     handleChartCategoryChange(e) {
@@ -311,7 +318,6 @@ export class MapClusterNBH extends Component {
                         self.setState({
                             currentClusterProfileContent: content,
                             selected: selectedCluster
-
                         })
                     }
                 }      
@@ -355,6 +361,7 @@ export class MapClusterNBH extends Component {
             chartFilterList: chartFilterList
         })
     }
+
     initPositionListener(){
         if (this.state.panorama != null) 
         {
@@ -389,6 +396,13 @@ export class MapClusterNBH extends Component {
             this.initPositionListener()
         })
     }
+
+    onMapClicked() {
+        this.setState({
+            showArrowGif: false,
+        })
+    }
+
     onPolygonMouseOver(props, polygon, e){
         this.setPolygonOptions({
             paths: props.paths
@@ -409,7 +423,6 @@ export class MapClusterNBH extends Component {
         var bgClusterID = null;
         var chartData = [];
         const polygonCenter = props.centerCoord
-        console.log(polygonCenter)
         self.setState({
             currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
             panorama: new window.google.maps.StreetViewPanorama(
@@ -423,7 +436,8 @@ export class MapClusterNBH extends Component {
                     addressControl: false,
                     visible: true
                 }
-            )
+            ),
+            showArrowGif: false,
         }, function(){
             this.initPositionListener()
         })
@@ -438,7 +452,6 @@ export class MapClusterNBH extends Component {
                     });
 
                     if (currentCategory === "Cluster by Socioeconomic Metrics") {
-
                         bgClusterID = currentCluster[bg]['Cluster by Socioeconomic Metrics'] //Where this BG belongs to
                     } else if (currentCategory === "Cluster by Response Time") {
                         bgClusterID = currentCluster[bg]['Cluster by Response Time'] //Where this BG belongs to
@@ -447,7 +460,6 @@ export class MapClusterNBH extends Component {
                     else if (currentCategory === "Cluster by Department") {
                         bgClusterID = currentCluster[bg]['Cluster by Department'] //Where this BG belongs to
                         yLabel = 'Cluster Mean (% of Total Depts)'
-
                     } else if (currentCategory === "Cluster by Call Category") {
                         bgClusterID = currentCluster[bg]['Cluster by Call Category'] //Where this BG belongs to
                         yLabel = 'Cluster Mean (% of All Categories)'
@@ -530,15 +542,29 @@ export class MapClusterNBH extends Component {
         const currentColorArray = this.state.colorArray.slice(0, currentCluster['Cluster_Total']);
         const selectedNeighborhood = this.state.selectedNeighborhood;
         const currentClusterID = this.state.currentClusterID;
+        const currentCategory = this.state.currentCategory;
+        const clusterMetadata = this.state.clusterMetadata
+        const bgColorArray = this.state.colorArray2
+
         var currentChartData = [];
         const clusterProfiles = currentCluster["Cluster_Profiles"];
         if (selectedNeighborhood !== null && currentChartData != null) {
             currentChartData = this.state.currentChartData
         }
 
-        const currentCategory = this.state.currentCategory;
-        const clusterMetadata = this.state.clusterMetadata
-        const bgColorArray = this.state.colorArray2
+        var neighborhoodCounts = [];
+        Object.keys(currentCluster).forEach(bg => {
+            if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
+                //SKIP
+            } else {
+                if (neighborhoodCounts[currentCluster[bg][currentCategory] - 1] === undefined) {
+                    neighborhoodCounts[currentCluster[bg][currentCategory] - 1] = 1
+                } else {
+                    neighborhoodCounts[currentCluster[bg][currentCategory] - 1] += 1
+                }
+            }
+        })
+
         var bgProfileContent = '';
         var clusterProfileContent = this.state.currentClusterProfileContent;
         if (selectedNeighborhood != null ){
@@ -874,7 +900,7 @@ export class MapClusterNBH extends Component {
                             google={this.props.google}
                             initialCenter={currentPosition}
                             zoom={11}
-                            // onClick={this.onMapClicked.bind(this)}
+                            onClick={this.onMapClicked.bind(this)}
                             stretViewControl = {false}
                         >
                             {Object.keys(currentCluster).map(bg => {
@@ -937,22 +963,22 @@ export class MapClusterNBH extends Component {
                             return (
                                 <div className="legend-item">
                                     <div className="legend-color" style={{backgroundColor: color}}></div>
-                                    <div>Cluster {index + 1}</div>
+                                    <div>Cluster {index + 1} ({neighborhoodCounts[index]} neighborhoods)</div>
                                 </div>
                             )
                         })
                         }
                         </div>
                         
-                        <img className = 'arrow' src=" https://media.giphy.com/media/bqb0oWQTUIlB21rvnS/giphy.gif" alt="description of gif" />  
-                        
-                        
+                        {this.state.showArrowGif === true && (
+                        <img className = 'arrow' src="https://media.giphy.com/media/bqb0oWQTUIlB21rvnS/giphy.gif" alt="Neighborhood Arrow" />
+                        )}
                     </div>
                     {this.state.panorama !== null && (
-                        <div className="pano-view-container" align="center">
-                            <div id="pano" ref={this.pano}></div>
-                    </div>)}
-                    
+                    <div className="pano-view-container" align="center">
+                        <div id="pano" ref={this.pano}></div>
+                    </div>
+                    )}
                 </div>
                 <div className="col-md-5" align="center" style={{marginTop: "20px"}}>
                     <div align="center" className = "select-bg">
@@ -979,9 +1005,6 @@ export class MapClusterNBH extends Component {
                             onChangeCommitted={this.onSliderLabelChange.bind(this)}
                         />
                     </div>
-                    {selectedNeighborhood === null && (
-                    <div>Click on a neighborhood on the map to view more information!</div>
-                    )}
                     {selectedNeighborhood !== null && (
                     <div>
                         {bgProfileContent}
@@ -998,12 +1021,21 @@ export class MapClusterNBH extends Component {
                             clusterProfiles[currentCategory].map(function(item) {
                                 if (item['Cluster_ID'] === currentClusterID){
                                     return <option key={'Cluster ' + item['Cluster_ID'] + " (Current)"} value={'Cluster ' + item['Cluster_ID'] }>Cluster {item['Cluster_ID']} (Current)</option>
-                                
+                                } else {
+                                    return <option key={'Cluster ' + item['Cluster_ID']} value={'Cluster ' + item['Cluster_ID'] }>Cluster {item['Cluster_ID']}</option>
                                 }
-                                return <option key={'Cluster ' + item['Cluster_ID']} value={'Cluster ' + item['Cluster_ID'] }>Cluster {item['Cluster_ID']}</option>
                             })
                             }
                             </select>
+                            {
+                            currentColorArray.map(function(color, index) {
+                                if (index + 1 === currentClusterID) {
+                                    return (
+                                        <div className="cluster-profile-legend-color" style={{backgroundColor: color}}></div>
+                                    )
+                                }
+                            })
+                            }
                         </div>
                         <div align="left" style = {{fontSize: "120%"}}>
                             {clusterProfileContent}
