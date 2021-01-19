@@ -167,7 +167,7 @@ export default class SideBar extends React.Component {
                     onClick={this.handleMenuSelect.bind(this, 7)}
                     active={currentView === 7}
                   >
-                    <Icon name="chart bar" />
+                    <Icon name="comment alternate outline" />
                     Chatbot
                   </Menu.Item>
                 </Link>
