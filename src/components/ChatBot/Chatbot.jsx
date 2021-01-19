@@ -1,5 +1,7 @@
 import React, { Component } from "react"
 import Dictaphone from './dictaphoneSetup.js'
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+
 export default class Chatbot extends Component {
     constructor(props) {
         super(props);
@@ -8,6 +10,7 @@ export default class Chatbot extends Component {
         };
     }
     componentDidMount() {
+
     }
 
     render() {
