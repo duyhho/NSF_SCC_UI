@@ -139,10 +139,14 @@ export class MapClusterNBH extends Component {
         self.state.neighborhoodList.forEach(function(item) {
             if (item.Cluster_Total === value) {
                 self.setState({
-                    currentCluster: item,
-                    selectedNeighborhood: null,
-                    showArrowGif: true,
-                })
+                    currentCluster: []
+                }, function() {
+                    self.setState({
+                        currentCluster: item,
+                        selectedNeighborhood: null,
+                        showArrowGif: true,
+                    })
+                })               
             }
         })
 
@@ -157,22 +161,18 @@ export class MapClusterNBH extends Component {
 
     handleCategoryChange(e) {
         const selectedValue = e.target.value;
-        var currentCluster = this.state.currentCluster
-        const oldCluster = this.state.currentCluster
-        var keys = Object.keys(currentCluster)
-        keys.forEach(function(key) {
-            if (key !== 'Cluster_Total' && key !== 'Cluster_Profiles'){
-                currentCluster[key]['Boundaries'][0][0] += 0.00000000000001
-            }
-        })
-
+        const currentCluster = this.state.currentCluster
         this.setState({
-            currentCluster: currentCluster
+            currentCluster: []
+        }, function(){
+            // console.log(this.state.currentCluster)
+            this.setState({
+                currentCluster: currentCluster
+            })
         })
-        this.setState({
-            currentCluster: oldCluster
-        })
+        // console.log(this.state.currentCluster)
 
+        
         if (selectedValue === "311 Call Category") {
             this.setState({
                 currentCategory: "Cluster by Call Category",
