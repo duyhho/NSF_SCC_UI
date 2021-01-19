@@ -1,17 +1,10 @@
-import React, {useState, useEffect} from 'react'
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+import React, {useState} from 'react'
+import SpeechRecognition, {useSpeechRecognition } from 'react-speech-recognition'
 import { modal } from '../../utilities/modal.js'
 
 const Dictaphone = () => {
     const { transcript, resetTranscript } = useSpeechRecognition();
     const [currentTranscript, updateTranscript] = useState('')
-
-    const [speaking, updateSpeaking] = useState(false)
-    useEffect(() => {
-        if (!speaking){
-
-        }
-    })
     if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
         modal.showInfo("Your browser does not support speech recognition!", "danger", "top", "center");
         return null
@@ -57,8 +50,6 @@ const Dictaphone = () => {
         console.log(transcript)
         updateTranscript(e.target.value)
 
-        // currentTranscript += e.target.value
-        // console.log(currentTranscript)
     }
 
     return (
@@ -75,7 +66,7 @@ const Dictaphone = () => {
                     <div class="col-md-6">
                     <div class="form-group">
                         <label for="assignee">Description</label>
-                        <textarea rows="4" cols="80" class="form-control" placeholder="Press Start and say something!" value={currentTranscript + transcript} onChange={onChangeDescription}/>
+                        <textarea rows="12" cols="80" class="form-control" placeholder="Press Start and say something!" value={currentTranscript + transcript} onChange={onChangeDescription}/>
                     </div>
                     <button type="button" className="btn btn-primary" onClick={onStartListening} autoComplete="off">Start Voice Recording</button>
                     <button type="button" className="btn btn-danger" onClick={onStopListening} autoComplete="off">Stop Voice Recording</button>
