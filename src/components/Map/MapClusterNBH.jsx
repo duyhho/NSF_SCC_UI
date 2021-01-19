@@ -366,7 +366,6 @@ export class MapClusterNBH extends Component {
                         currentPosition: new_location
                     })
                 }
-                
             });   
         }
     }

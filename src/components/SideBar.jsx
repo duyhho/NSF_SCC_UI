@@ -183,7 +183,6 @@ export default class SideBar extends React.Component {
                 <Route exact path="/neighborhoods" component={MapClusterNBH} />
                 <Route exact path="/visualization311" component={Visualization311} />
                 <Route exact path="/chatbot" component={Chatbot} />
-                
                 <Route component={NotFound} />
               </Switch>
 
