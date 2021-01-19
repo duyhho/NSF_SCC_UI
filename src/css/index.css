@@ -383,9 +383,9 @@ select {
 .arrow {
   position: absolute;
   top:30%;
-  left:50%;
-  width:20%;
-  height:20%;
+  left:60%;
+  width:25%;
+  height:25%;
 }
 
 .cluster-profile-legend-color {
