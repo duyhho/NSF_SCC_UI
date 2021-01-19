@@ -1033,6 +1033,8 @@ export class MapClusterNBH extends Component {
                                     return (
                                         <div className="cluster-profile-legend-color" style={{backgroundColor: color}}></div>
                                     )
+                                } else {
+                                    return <div></div>
                                 }
                             })
                             }
