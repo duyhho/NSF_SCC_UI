@@ -378,3 +378,10 @@ select {
   margin-top:10px;
   font-size:130%
 }
+.arrow {
+  position: absolute;
+  top:30%;
+  left:50%;
+  width:20%;
+  height:20%;
+}

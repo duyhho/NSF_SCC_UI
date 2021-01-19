@@ -943,11 +943,15 @@ export class MapClusterNBH extends Component {
                         })
                         }
                         </div>
+                        
+                        <img className = 'arrow' src=" https://media.giphy.com/media/bqb0oWQTUIlB21rvnS/giphy.gif" alt="description of gif" />  
+                        
+                        
                     </div>
                     <div className="pano-view-container" align="center">
-                        <div id="pano" ref={this.pano}>
+                            <div id="pano" ref={this.pano}></div>
                     </div>
-                </div>
+                    
                 </div>
                 <div className="col-md-5" align="center" style={{marginTop: "20px"}}>
                     <div align="center" className = "select-bg">
