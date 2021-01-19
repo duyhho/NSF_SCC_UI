@@ -83,7 +83,7 @@ code {
 }
 .form-control:placeholder-shown {
   color: #9EA5BD;
-  background-color: #F0F3F8;
+  background-color: #f2f6fa;
   font-weight: 0;
 }
 .form-control:focus:placeholder-shown {
@@ -145,7 +145,7 @@ code {
   color: #87CB16;
 }
 .form-control[disabled], .form-control[readonly] {
-  background-color: #F0F3F8;
+  background-color: #f2f6fa;
   color: #9EA5BD;
   cursor: not-allowed;
   font-weight: 0px !important;
@@ -368,4 +368,8 @@ select {
 }
 .sub-point {
   font-size: 0.9vw;
+}
+
+.btn {
+  margin: 5px;
 }

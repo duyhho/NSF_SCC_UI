@@ -3,7 +3,10 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 import { modal } from '../../utilities/modal.js'
 
 const Dictaphone = () => {
-  const { transcript, resetTranscript } = useSpeechRecognition()
+  const { transcript, resetTranscript } = useSpeechRecognition();
+  var currentDate = "";
+  var currentLocation = "";
+  var currentTranscript = "";
 
   if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
     modal.showInfo("Your browser does not support speech recognition!", "danger", "top", "center");
@@ -11,6 +14,8 @@ const Dictaphone = () => {
   }
 
   const onStartListening = () => {
+    console.log(transcript)
+    resetTranscript();
     SpeechRecognition.startListening({
       continuous: true
     });
@@ -18,6 +23,9 @@ const Dictaphone = () => {
   };
 
   const onStopListening = () => {
+    console.log(transcript)
+    currentTranscript += transcript;
+    console.log(currentTranscript)
     SpeechRecognition.stopListening();
     modal.showInfo("You have stopped the voice detection!", "success", "top", "center");
   }
@@ -27,15 +35,51 @@ const Dictaphone = () => {
     modal.showInfo("Successfully reset!", "success", "top", "center");
   }
 
+  const onChangeDescription = (e) => {
+    console.log(e.target.value)
+    currentTranscript += e.target.value
+    console.log(currentTranscript)
+  }
+
   return (
-    <div className="row col-md-12">
-      <div className="col-md-6 offset-md-3">
-        <input type="text" className="form-control" value={transcript} placeholder="Press Start and say something!"></input>
+    <div className="col-md-12">
+      <div class="header">
+          <h4 class="title">Submit a 311 Request</h4>
+          <p class="category"></p>
       </div>
-      <div className="col-md-6 offset-md-5">
-        <button className="btn btn-primary" onClick={onStartListening}>Start</button>
-        <button className="btn btn-danger" onClick={onStopListening}>Stop</button>
-        <button className="btn btn-secondary" onClick={onReset}>Reset</button>
+      <div class="content">
+        <form>
+          <div className="row">
+            <div className="col-md-12">
+              <div className="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="assignee">Description</label>
+                    <textarea rows="4" cols="80" class="form-control" placeholder="Press Start and say something!" value={currentTranscript} onChange={onChangeDescription}/>
+                  </div>
+                  <button type="button" className="btn btn-primary" onClick={onStartListening} autoComplete="off">Start Voice Recording</button>
+                  <button type="button" className="btn btn-danger" onClick={onStopListening} autoComplete="off">Stop Voice Recording</button>
+                  <button type="button" className="btn btn-secondary" onClick={onReset} autoComplete="off">Reset Text</button>
+                </div>
+              </div>
+              <br />
+              <div className="row">
+                <div className="col-md-3">
+                  <div class="form-group">
+                    <label for="assignee">Current Date</label>
+                    <input class="form-control" placeholder="Date of this request" value={currentDate}/>
+                  </div>
+                </div>
+                <div className="col-md-3">
+                  <div class="form-group">
+                    <label for="assignee">Current Location</label>
+                    <input class="form-control" placeholder="Your current location" value={currentLocation}/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   )
