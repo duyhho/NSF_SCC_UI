@@ -94,7 +94,7 @@ const Dictaphone = () => {
     }
 
     const onSubmitRequest = () => {
-        modal.showSuccessModalWithOK("Are you sure?", "Make sure the information is correct. Are you sure to submit the request?", "Submit")
+        // modal.showSuccessModalWithOK("Are you sure?", "Make sure the information is correct. Are you sure to submit the request?", "Submit")
         //TODO Setup API
         modal.showInfo("Request submitted successfully!", "success", "top", "center");
     }
