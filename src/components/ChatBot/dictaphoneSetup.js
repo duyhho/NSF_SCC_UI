@@ -100,9 +100,6 @@ const Dictaphone = () => {
         modal.showInfo("Request submitted successfully!", "success", "top", "center");
         Geocode.fromAddress(currentLocation).then(
             response => {
-                console.log(response)
-                const { lat, lng } = response.results[0].geometry.location;
-                console.log(lat, lng);
                 setLocation(response['results'][0]['formatted_address'])
             },
             error => {
@@ -122,8 +119,8 @@ const Dictaphone = () => {
                 <div className="row">
                     <div className="col-md-12">
                         <div className="row">
-                            <div class="col-md-6" align='center'>
-                                <div class="form-group" align='left'>
+                            <div class="col-md-6" align="center">
+                                <div class="form-group" align="left">
                                     <label for="assignee">Description</label>
                                     <textarea rows="12" cols="80" class="form-control" placeholder='Press "Start Voice Recording" and say something!' value={currentTranscript + transcript} onChange={onChangeDescription}/>
                                 </div>
@@ -147,7 +144,7 @@ const Dictaphone = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className = 'col-md-6' align='center'>
+                        <div className="col-md-6" align="center">
                             <button type="button" className="btn btn-primary" onClick={onSubmitRequest} autoComplete="off">Submit</button>
                         </div>
                     </div>
