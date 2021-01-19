@@ -25,8 +25,6 @@ export class MapCluster extends Component {
             currentCluster: [],
             colorArray: ['#FF8C00', '#E81123', '#FFFF00', '#00BCF2', '#00B294',
                         '#FFB6C1', '#68217A', '#00188F', '#BAD80A', '#009E49' ],
-            // colorArray2: ['#f47c7c', '#f7f48b', '#a1de93', '#70a1d7', '#d0baa8',
-            //             '#afffdf', '#aa96da', '#fcbad3', '#f25d9c', '#10ddc2'],
             colorArray2: ['#ff0000', '#FD706B', '#F8858B', 
                             '#FFFF33','#FFFF66','#FFFFCC', 
                             '#B7FFBF', '#95F985', '#4DED30', '#26D701', 
@@ -273,15 +271,14 @@ export class MapCluster extends Component {
                                     </BarChart>
                                 </div>
                             </div>
-                            )
-                            self.setState({
-                                currentClusterProfileContent: chartData,
-                                selected: selectedCluster
-                            })
-                            console.log(self.state.currentClusterProfileContent)
+                        )
+                        self.setState({
+                            currentClusterProfileContent: chartData,
+                            selected: selectedCluster
+                        })
+                        console.log(self.state.currentClusterProfileContent)
                     }
                     else {
-                        
                         var content = Object.keys(tempDict).map(function(key) {
                             return <div className="row bgrow">
                                         <div className="col-md-9">
@@ -295,15 +292,11 @@ export class MapCluster extends Component {
                         self.setState({
                             currentClusterProfileContent: content,
                             selected: selectedCluster
-
                         })
                     }
                 }      
             })
         }
-        
-
-        
     }
 
     renderChartList(category) {
@@ -564,7 +557,6 @@ export class MapCluster extends Component {
                                 label={{value: "Department", position: "insideBottom", offset: -5}}
                                 style={{
                                     fontSize: '9px',
-                                    // fontFamily: 'Times New Roman',
                                 }}
                                 interval = {0}
                             />
@@ -620,7 +612,6 @@ export class MapCluster extends Component {
                                 label={{value: "Time Window", position: "insideBottom", offset: -5}}
                                 style={{
                                     fontSize: '9px',
-                                    // fontFamily: 'Times New Roman',
                                 }}
                                 interval = {0}
                             />
@@ -924,7 +915,6 @@ export class MapCluster extends Component {
                         <div align="left" style = {{fontSize: "120%"}}>
                             {clusterProfileContent}
                         </div>
-                        
                         
                         <div align="center" className = "select-bg">
                             <span>Compare Clusters by:&nbsp;&nbsp;</span>
