@@ -27,8 +27,6 @@ export class MapClusterNBH extends Component {
             currentCluster: [],
             colorArray: ['#FF8C00', '#E81123', '#FFFF00', '#00BCF2', '#00B294',
                         '#FFB6C1', '#68217A', '#00188F', '#BAD80A', '#009E49' ],
-            // colorArray2: ['#f47c7c', '#f7f48b', '#a1de93', '#70a1d7', '#d0baa8',
-            //             '#afffdf', '#aa96da', '#fcbad3', '#f25d9c', '#10ddc2'],
             colorArray2: ['#ff0000', '#FD706B', '#F8858B', 
                             '#FFFF33','#FFFF66','#FFFFCC', 
                             '#B7FFBF', '#95F985', '#4DED30', '#26D701', 
@@ -300,7 +298,6 @@ export class MapClusterNBH extends Component {
                             console.log(self.state.currentClusterProfileContent)
                     }
                     else {
-                        
                         var content = Object.keys(tempDict).map(function(key) {
                             return <div className="row bgrow">
                                         <div className="col-md-9">
@@ -320,9 +317,6 @@ export class MapClusterNBH extends Component {
                 }      
             })
         }
-        
-
-        
     }
 
     renderChartList(category) {
@@ -531,7 +525,6 @@ export class MapClusterNBH extends Component {
 
     render() {
         const currentPosition = this.state.currentPosition;
-
         const loadingData = this.state.loadingData;
         const currentCluster = this.state.currentCluster;
         const categoryList = this.state.categoryList;
