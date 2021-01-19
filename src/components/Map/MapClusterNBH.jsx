@@ -948,9 +948,10 @@ export class MapClusterNBH extends Component {
                         
                         
                     </div>
-                    <div className="pano-view-container" align="center">
+                    {this.state.panorama !== null && (
+                        <div className="pano-view-container" align="center">
                             <div id="pano" ref={this.pano}></div>
-                    </div>
+                    </div>)}
                     
                 </div>
                 <div className="col-md-5" align="center" style={{marginTop: "20px"}}>
