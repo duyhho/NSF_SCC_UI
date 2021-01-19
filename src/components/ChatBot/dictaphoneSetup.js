@@ -9,7 +9,7 @@ const Dictaphone = () => {
     const [speaking, updateSpeaking] = useState(false)
     useEffect(() => {
         if (!speaking){
-            
+
         }
     })
     if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
@@ -25,7 +25,7 @@ const Dictaphone = () => {
             updateTranscript(currentTranscript + capitalizeFirstLetter(transcript)  + '. ')
             resetTranscript();
         }
-        
+
         SpeechRecognition.startListening({
             continuous: true
         });
@@ -41,7 +41,7 @@ const Dictaphone = () => {
     const capitalizeFirstLetter = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
       }
-      
+
     const onReset = () => {
         updateTranscript('')
         resetTranscript();
