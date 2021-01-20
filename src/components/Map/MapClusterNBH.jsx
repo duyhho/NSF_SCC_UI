@@ -987,7 +987,7 @@ export class MapClusterNBH extends Component {
                             return (
                                 <div className="legend-item">
                                     <div className="legend-color" style={{backgroundColor: color}}></div>
-                                    <div>Cluster {index + 1} ({neighborhoodCounts[index]} neighborhoods)</div>
+                                    <div>Cluster {index + 1} ({neighborhoodCounts[index]} neighborhood{neighborhoodCounts[index]>1 && "s"})</div>
                                 </div>
                             )
                         })
@@ -1053,17 +1053,15 @@ export class MapClusterNBH extends Component {
                             </select>
                             {
                             currentColorArray.map(function(color, index) {
-                                if (selectedCluster !== ''){
-                                    // console.log(index + 1)
-                                    // console.log(selectedCluster.match(/\d+/)[0])
-                                    if (index + 1 === parseInt(selectedCluster.match(/\d+/)[0])) {
-                                        console.log();
-                                        console.log(color)
+                                if (selectedCluster !== '' && index + 1 === parseInt(selectedCluster.match(/\d+/)[0])){
 
-                                        return (
-                                            <div className="cluster-profile-legend-color" style={{backgroundColor: color}}></div>
-                                        )
-                                    }
+                                    console.log();
+                                    console.log(color)
+
+                                    return (
+                                        <div className="cluster-profile-legend-color" style={{backgroundColor: color}}></div>
+                                    )
+
                                 } else {
                                     return null;
                                 }
