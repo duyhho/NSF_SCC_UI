@@ -569,7 +569,7 @@ export class MapClusterNBH extends Component {
         const currentCategory = this.state.currentCategory;
         const clusterMetadata = this.state.clusterMetadata
         const bgColorArray = this.state.colorArray2
-
+        const selectedCluster = this.state.selected
         var currentChartData = [];
         const clusterProfiles = currentCluster["Cluster_Profiles"];
         if (selectedNeighborhood !== null && currentChartData != null) {
@@ -1053,12 +1053,19 @@ export class MapClusterNBH extends Component {
                             </select>
                             {
                             currentColorArray.map(function(color, index) {
-                                if (index + 1 === currentClusterID) {
-                                    return (
-                                        <div className="cluster-profile-legend-color" style={{backgroundColor: color}}></div>
-                                    )
+                                if (selectedCluster !== ''){
+                                    // console.log(index + 1)
+                                    // console.log(selectedCluster.match(/\d+/)[0])
+                                    if (index + 1 === parseInt(selectedCluster.match(/\d+/)[0])) {
+                                        console.log();
+                                        console.log(color)
+
+                                        return (
+                                            <div className="cluster-profile-legend-color" style={{backgroundColor: color}}></div>
+                                        )
+                                    }
                                 } else {
-                                    return <div></div>
+                                    return null;
                                 }
                             })
                             }
@@ -1066,8 +1073,8 @@ export class MapClusterNBH extends Component {
                         <div align="left" style = {{fontSize: "120%"}}>
                             {clusterProfileContent}
                         </div>
-                        
-                        
+
+
                         <div align="center" className = "select-bg">
                             <span>Compare Clusters by:&nbsp;&nbsp;</span>
                             <select onChange={this.handleChartCategoryChange.bind(this)}>
