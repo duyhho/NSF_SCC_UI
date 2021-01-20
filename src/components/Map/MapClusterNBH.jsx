@@ -138,15 +138,32 @@ export class MapClusterNBH extends Component {
         var self = this;
         self.state.neighborhoodList.forEach(function(item) {
             if (item.Cluster_Total === value) {
+                var currentCluster = self.state.currentCluster
+                const oldCluster = item
+                var keys = Object.keys(currentCluster)
+                keys.forEach(function(key) {
+                    if (key !== 'Cluster_Total' && key !== 'Cluster_Profiles'){
+                        currentCluster[key]['Boundaries'][0][0] += 0.00000000000001
+                    }
+                })
+
                 self.setState({
-                    currentCluster: []
-                }, function() {
-                    self.setState({
-                        currentCluster: item,
-                        selectedNeighborhood: null,
-                        showArrowGif: true,
-                    })
-                })               
+                    currentCluster: currentCluster
+                })
+                self.setState({
+                    currentCluster: oldCluster,
+                    selectedNeighborhood: null,
+                    showArrowGif: true,
+                })
+                // self.setState({
+                //     currentCluster: []
+                // }, function() {
+                //     self.setState({
+                //         currentCluster: item,
+                //         selectedNeighborhood: null,
+                //         showArrowGif: true,
+                //     })
+                // })               
             }
         })
 
@@ -161,14 +178,20 @@ export class MapClusterNBH extends Component {
 
     handleCategoryChange(e) {
         const selectedValue = e.target.value;
-        const currentCluster = this.state.currentCluster
+        var currentCluster = this.state.currentCluster
+        const oldCluster = this.state.currentCluster
+        var keys = Object.keys(currentCluster)
+        keys.forEach(function(key) {
+            if (key !== 'Cluster_Total' && key !== 'Cluster_Profiles'){
+                currentCluster[key]['Boundaries'][0][0] += 0.00000000000001
+            }
+        })
+
         this.setState({
-            currentCluster: []
-        }, function(){
-            // console.log(this.state.currentCluster)
-            this.setState({
-                currentCluster: currentCluster
-            })
+            currentCluster: currentCluster
+        })
+        this.setState({
+            currentCluster: oldCluster
         })
         // console.log(this.state.currentCluster)
 
@@ -218,6 +241,7 @@ export class MapClusterNBH extends Component {
     }
 
     handleChartCategoryChange(e) {
+
         const currentCluster = this.state.currentCluster;
         const currentCategory = this.state.currentCategory;
         const clusterProfiles = currentCluster["Cluster_Profiles"];
