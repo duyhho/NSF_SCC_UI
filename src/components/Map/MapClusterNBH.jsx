@@ -97,7 +97,6 @@ export class MapClusterNBH extends Component {
                 })
             }
             var chartFilterList = [];
-            console.log(response.data)
             const allMetrics = response.data[0][self.state.defaultCategoryMetadata]
             allMetrics.forEach(function(item){
                 chartFilterList.push({cat: item })
@@ -193,8 +192,6 @@ export class MapClusterNBH extends Component {
         this.setState({
             currentCluster: oldCluster
         })
-        // console.log(this.state.currentCluster)
-
         
         if (selectedValue === "311 Call Category") {
             this.setState({
@@ -241,7 +238,6 @@ export class MapClusterNBH extends Component {
     }
 
     handleChartCategoryChange(e) {
-
         const currentCluster = this.state.currentCluster;
         const currentCategory = this.state.currentCategory;
         const clusterProfiles = currentCluster["Cluster_Profiles"];
@@ -275,8 +271,7 @@ export class MapClusterNBH extends Component {
         }
         else if (e.target.value.includes('Cluster')){
             const selectedCluster = e.target.value
-            
-            console.log(selectedCluster)
+
             clusterProfiles[currentCategory].forEach(function(profile) {        
                 if (selectedCluster.includes(profile['Cluster_ID'])){
                     var tempDict = {}
@@ -326,18 +321,19 @@ export class MapClusterNBH extends Component {
                                 currentClusterProfileContent: chartData,
                                 selected: selectedCluster
                             })
-                            console.log(self.state.currentClusterProfileContent)
                     }
                     else {
                         var content = Object.keys(tempDict).map(function(key) {
-                            return <div className="row bgrow">
-                                        <div className="col-md-9">
-                                            <b>{key}</b>
-                                        </div>
-                                        <div className="col-md-3">
-                                            {Math.round(tempDict[key]).toLocaleString('en')}
-                                        </div>
-                                    </div>
+                            return (
+                            <div className="row bgrow">
+                                <div className="col-md-9">
+                                    <b>{key}</b>
+                                </div>
+                                <div className="col-md-3">
+                                    {Math.round(tempDict[key]).toLocaleString('en')}
+                                </div>
+                            </div>
+                            )
                         })
                         self.setState({
                             currentClusterProfileContent: content,
@@ -387,8 +383,7 @@ export class MapClusterNBH extends Component {
     }
 
     initPositionListener(){
-        if (this.state.panorama != null) 
-        {
+        if (this.state.panorama != null) {
             this.state.panorama.addListener("position_changed", () => {
                 const location = this.state.panorama.getPosition()
                 const new_location = {lat: location.lat(), lng: location.lng()}
@@ -1054,14 +1049,9 @@ export class MapClusterNBH extends Component {
                             {
                             currentColorArray.map(function(color, index) {
                                 if (selectedCluster !== '' && index + 1 === parseInt(selectedCluster.match(/\d+/)[0])){
-
-                                    console.log();
-                                    console.log(color)
-
                                     return (
                                         <div className="cluster-profile-legend-color" style={{backgroundColor: color}}></div>
                                     )
-
                                 } else {
                                     return null;
                                 }
