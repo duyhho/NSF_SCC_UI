@@ -66,52 +66,6 @@ class CurrentLocation extends Component {
     }
 }
 
-class CurrentLocationWithNoDiv extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            currentLocation: ""
-        };
-    }
-
-    componentDidMount() {
-        var self = this;
-        Geocode.setApiKey("AIzaSyAAKEUHaLzR2U_-XBdTwPE_VZ39ZPh6hb8")
-        var curLocation = this.getCurrentLocation();
-        curLocation.then(function(result){
-            if (result.lat != null && result.lng != null) {
-                Geocode.fromLatLng(result.lat, result.lng).then(
-                    response => {
-                        const address = response.results[0].formatted_address
-                        self.setState({
-                            currentLocation: address
-                        });
-                    },
-                )
-            }
-        })
-    }
-
-    getCurrentLocation() {
-        if (navigator && navigator.geolocation) {
-            return new Promise((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(pos => {
-                    const coords = pos.coords;
-                    resolve({
-                        lat: coords.latitude,
-                        lng: coords.longitude
-                    });
-                });
-            });
-        }
-    }
-
-    render() {
-        return this.state.currentLocation
-    }
-}
-
 class RequestForm extends Component {
     constructor(props) {
         super(props);
@@ -127,19 +81,41 @@ class RequestForm extends Component {
         const { steps } = this.props;
         const { request_location, request_description, update_request_location_user_input } = steps;
 
-        this.setState({ request_location, request_description, update_request_location_user_input });
+        var formattedNewLocation = undefined
+        if (update_request_location_user_input.value !== undefined) {
+            Geocode.fromAddress(update_request_location_user_input.value).then(
+                response => {
+                    formattedNewLocation = response['results'][0]['formatted_address']
+                },
+                error => {
+                    formattedNewLocation = update_request_location_user_input.value
+                }
+            );
+        }
+
+        this.setState({
+            request_location: request_location,
+            request_description: request_description,
+            update_request_location_user_input: formattedNewLocation });
     }
 
     render() {
         const { request_location, request_description, update_request_location_user_input } = this.state;
-        var currentLocation = ""
         if (update_request_location_user_input !== undefined) {
-            currentLocation = update_request_location_user_input.value
+            Geocode.fromAddress(update_request_location_user_input.value).then(
+                response => {
+                    console.log(response)
+                    var currentLocation = response['results'][0]['formatted_address']
+                    console.log(currentLocation)
+                },
+                error => {
+                    var currentLocation = update_request_location_user_input.value
+                }
+            );
         } else if (request_location.value !== undefined) {
-            currentLocation = request_location.value
-        } else {
-            currentLocation = <CurrentLocationWithNoDiv />
+            var currentLocation = request_location.value
         }
+
         return (
             <div style={{width: "100%"}}>
                 <h3>311 Request</h3>
@@ -199,6 +175,12 @@ export default class Chatbot extends Component {
                 {
                     id: "request_description",
                     user: true,
+                    validator: (value) => {
+                        if (value === "") {
+                            return "You must enter something!";
+                        }
+                        return true;
+                    },
                     trigger: "request_location"
                 },
                 {
@@ -222,6 +204,12 @@ export default class Chatbot extends Component {
                 {
                     id: "update_request_location_user_input",
                     user: true,
+                    validator: (value) => {
+                        if (value === "") {
+                            return "You must enter something!";
+                        }
+                        return true;
+                    },
                     trigger: "confirm_new_location"
                 },
                 {
