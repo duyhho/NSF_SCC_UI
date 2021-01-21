@@ -4,6 +4,10 @@ import PropTypes from 'prop-types'
 import { ThemeProvider } from 'styled-components'
 import Geocode from 'react-geocode'
 import moment from 'moment'
+import DropzoneComponent from 'react-dropzone-component'
+
+import { dropZone } from '../../utilities/DropZoneHandler.js'
+import { modal } from '../../utilities/modal.js'
 import { locationProvider } from '../../controllers/LocationProvider.js'
 
 const chatbotTheme = {
@@ -26,7 +30,7 @@ class CurrentLocation extends Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         var self = this;
         const { steps } = this.props;
         const { update_request_location_user_input } = steps;
@@ -71,7 +75,7 @@ class RequestForm extends Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         var self = this;
         const { steps } = this.props;
         const { request_description, update_request_location_user_input } = steps;
@@ -142,7 +146,6 @@ export default class Chatbot extends Component {
         super(props);
 
         this.state = {
-            currentStepId: 0,
             steps: [
                 {
                     id: "start_chat",
@@ -257,7 +260,10 @@ export default class Chatbot extends Component {
     }
 
     componentDidMount() {
-
+        this.setState({
+            voice: window.speechSynthesis.getVoices()[4]
+        })
+        dropZone.setup(this, '311Request', 0); //TODO: Update "0" to be the ID of the request
     }
 
     submitForm({steps, values}) {
@@ -265,29 +271,47 @@ export default class Chatbot extends Component {
         console.log(values)
     }
 
-    componentWillMount() {
-        this.setState({
-            voice: window.speechSynthesis.getVoices()[4]
-        })
+    triggerUpload() {
+        dropZone.upload(function() {
+            if (dropZone.isUploadSuccess() === true) {
+                modal.showInfo("You have uploaded the files successfully!", "success", "top", "center");
+            } else if (dropZone.isFilesAdded() === false) {
+                modal.showInfo("There is no pending file to upload!", "warning", "top", "center");
+            }
+        });
     }
 
     render() {
         console.log(window.speechSynthesis.getVoices())
         return (
             <div className="page-container">
-                <div className="col-md-6 offset-md-3">
-                    <ThemeProvider theme={chatbotTheme}>
-                        <ChatBot
-                            handleEnd={this.submitForm.bind(this)}
-                            headerTitle="Chatbot"
-                            speechSynthesis={{ enable: true, lang: 'en', voice: this.state.voice}}
-                            steps={this.state.steps}
-                            placeholder="Enter a message"
-                            recognitionEnable={true}
-                            width="100%"
-                            userDelay={0}
-                        />
-                    </ThemeProvider>
+                <div className="row">
+                    <div className="col-md-6">
+                        <ThemeProvider theme={chatbotTheme}>
+                            <ChatBot
+                                handleEnd={this.submitForm.bind(this)}
+                                headerTitle="Chatbot"
+                                speechSynthesis={{ enable: true, lang: 'en', voice: this.state.voice }}
+                                steps={this.state.steps}
+                                placeholder="Enter a message"
+                                recognitionEnable={true}
+                                width="100%"
+                                userDelay={0}
+                            />
+                        </ThemeProvider>
+                    </div>
+                    <div className="col-md-5">
+                        {this.state.dropZoneSetup !== undefined && (
+                        <div align="center">
+                            <DropzoneComponent
+                                config={this.state.dropZoneConfig}
+                                eventHandlers={this.state.dropZoneEventHandlers}
+                                djsConfig={this.state.dropZoneJSConfig}
+                            />
+                            <button type="button" className="btn btn-primary" onClick={this.triggerUpload.bind(this)} autoComplete="off">Upload</button>
+                        </div>
+                        )}
+                    </div>
                 </div>
             </div>
         )
