@@ -25,10 +25,13 @@
     "react-router": "^3.2.6",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.0",
+    "react-simple-chatbot": "^0.6.1",
+    "react-speech": "^1.0.2",
     "react-speech-recognition": "^3.6.0",
     "react-streetview": "https://github.com/benamreview/react-streetview/tarball/master",
     "recharts": "^2.0.3",
     "semantic-ui-react": "2.0.1",
+    "styled-components": "^5.2.1",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
