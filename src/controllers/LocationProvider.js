@@ -18,28 +18,22 @@ class LocationProvider {
             });
         }
     }
-    setCurrentLocation(callback) {
 
+    getCurrentLocation(callback) {
         Geocode.setApiKey("AIzaSyAAKEUHaLzR2U_-XBdTwPE_VZ39ZPh6hb8")
-        var self = this
         var curLocation = this.getGeocode();
         curLocation.then(function(result){
             if (result.lat != null && result.lng != null) {
-                 Geocode.fromLatLng(result.lat, result.lng).then(
+                Geocode.fromLatLng(result.lat, result.lng).then(
                     response => {
-                        self.currentLocation = response.results[0].formatted_address
-                        callback(response.results[0].formatted_address)
+                        if (callback) {
+                            callback(response.results[0].formatted_address)
+                        }
                     },
                 )
             }
-
         })
     }
-    getCurrentLocation(){
-        console.log('in getCurrentLocation()')
-        return this.currentLocation
-    }
-
 }
 
 export let locationProvider = new LocationProvider();

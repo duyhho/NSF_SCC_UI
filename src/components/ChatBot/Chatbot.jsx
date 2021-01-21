@@ -4,7 +4,8 @@ import PropTypes from 'prop-types'
 import { ThemeProvider } from 'styled-components'
 import Geocode from 'react-geocode'
 import moment from 'moment'
-import {locationProvider} from '../../controllers/LocationProvider.js'
+import { locationProvider } from '../../controllers/LocationProvider.js'
+
 const chatbotTheme = {
     background: '#f5f8fb',
     headerBgColor: '#CD853F',
@@ -15,94 +16,20 @@ const chatbotTheme = {
     userBubbleColor: '#28a745',
     userFontColor: '#FFFFFF',
 };
-class RequestForm extends Component {
+
+class CurrentLocation extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            request_location: '',
-            request_description: '',
-            formattedNewLocation: '',
+
         };
     }
 
     componentWillMount() {
         var self = this;
         const { steps } = this.props;
-        const { request_location, request_description, update_request_location_user_input } = steps;
-
-        if (update_request_location_user_input !== undefined) {
-            Geocode.fromAddress(update_request_location_user_input.value).then(
-                response => {
-                    self.setState({
-                        currentLocation: response['results'][0]['formatted_address']
-                    })
-                },
-                error => {
-                    self.setState({
-                        formattedNewLocation: update_request_location_user_input.value
-                    })
-                }
-            );
-        }
-        locationProvider.setCurrentLocation(function(response){
-            self.setState({
-                currentLocation: response,
-                request_location: request_location,
-                request_description: request_description,
-            });
-        });
-
-    }
-
-    render() {
-        const { request_location, request_description, formattedNewLocation } = this.state;
-        // var currentLocation = this.state.currentLocation
-        // console.log(formattedNewLocation)
-        // if (formattedNewLocation !== undefined) {
-        //     currentLocation = formattedNewLocation
-        // } else if (request_location.value !== undefined) {
-        //     currentLocation = request_location.value
-        // }
-
-        return (
-            <div style={{width: "100%"}}>
-                <h3>311 Request</h3>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>Location: </td>
-                            <td>{this.state.currentLocation}</td>
-                        </tr>
-                        <tr>
-                            <td>Time: </td>
-                            <td>{moment().format('MMMM Do YYYY, h:mm:ss a')}</td>
-                        </tr>
-                        <tr>
-                            <td>Description: </td>
-                            <td>{request_description.value}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        );
-    }
-}
-
-class FormattedNewLocation extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            request_location: '',
-            formattedNewLocation: '',
-        };
-    }
-
-    componentWillMount() {
-        var self = this;
-        const { steps } = this.props;
-        const { request_location, update_request_location_user_input } = steps;
+        const { update_request_location_user_input } = steps;
 
         if (update_request_location_user_input !== undefined) {
             Geocode.fromAddress(update_request_location_user_input.value).then(
@@ -117,24 +44,87 @@ class FormattedNewLocation extends Component {
                     })
                 }
             );
+        } else {
+            locationProvider.getCurrentLocation(function(response) {
+                self.setState({
+                    formattedNewLocation: response
+                })
+            })
         }
-
-        this.setState({
-            request_location: request_location,
-        });
     }
 
     render() {
-        const { request_location, formattedNewLocation } = this.state;
-        var currentLocation = ""
-        if (formattedNewLocation !== undefined) {
-            currentLocation = formattedNewLocation
-        } else if (request_location.value !== undefined) {
-            currentLocation = request_location.value
-        }
+        const { formattedNewLocation } = this.state;
 
         return (
-            <div style={{width: "100%"}}>Your new address is {currentLocation}. Is this correct?</div>
+            <div style={{width: "100%"}}>Your current address is {formattedNewLocation}. Is this correct?</div>
+        );
+    }
+}
+
+class RequestForm extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+
+        };
+    }
+
+    componentWillMount() {
+        var self = this;
+        const { steps } = this.props;
+        const { request_description, update_request_location_user_input } = steps;
+
+        if (update_request_location_user_input !== undefined) {
+            Geocode.fromAddress(update_request_location_user_input.value).then(
+                response => {
+                    self.setState({
+                        formattedNewLocation: response['results'][0]['formatted_address']
+                    })
+                },
+                error => {
+                    self.setState({
+                        formattedNewLocation: update_request_location_user_input.value
+                    })
+                }
+            );
+        } else {
+            locationProvider.getCurrentLocation(function(response) {
+                self.setState({
+                    formattedNewLocation: response
+                })
+            })
+        }
+
+        this.setState({
+            request_description: request_description
+        })
+    }
+
+    render() {
+        const { request_description, formattedNewLocation } = this.state;
+
+        return (
+            <div style={{width: "100%"}}>
+                <h3>311 Request</h3>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>Location: </td>
+                            <td>{formattedNewLocation}</td>
+                        </tr>
+                        <tr>
+                            <td>Time: </td>
+                            <td>{moment().format('MMMM Do YYYY, h:mm:ss a')}</td>
+                        </tr>
+                        <tr>
+                            <td>Description: </td>
+                            <td>{request_description.value}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         );
     }
 }
@@ -184,7 +174,8 @@ export default class Chatbot extends Component {
                 },
                 {
                     id: "request_location",
-                    message: "Your current location is: " + locationProvider.getCurrentLocation() + ". Is this correct?",
+                    component: <CurrentLocation />,
+                    asMessage: true,
                     trigger: "confirm_location"
                 },
                 {
@@ -208,13 +199,7 @@ export default class Chatbot extends Component {
                         }
                         return true;
                     },
-                    trigger: "confirm_new_location"
-                },
-                {
-                    id: "confirm_new_location",
-                    component: <FormattedNewLocation />,
-                    asMessage: true,
-                    trigger: "confirm_location"
+                    trigger: "request_location"
                 },
                 {
                     id: "confirm_submission_message",
@@ -274,17 +259,15 @@ export default class Chatbot extends Component {
         console.log(steps)
         console.log(values)
     }
-    componentWillMount(){
-        var self = this
-        setTimeout(() => {
-            self.setState({
-                voice: window.speechSynthesis.getVoices()[0]
-            })
-        }, 50);
+
+    componentWillMount() {
+        this.setState({
+            voice: window.speechSynthesis.getVoices()[4]
+        })
     }
+
     render() {
-        const voice = this.state.voice
-        console.log(voice)
+        console.log(window.speechSynthesis.getVoices())
         return (
             <div className="page-container">
                 <div className="col-md-6 offset-md-3">
@@ -292,7 +275,7 @@ export default class Chatbot extends Component {
                         <ChatBot
                             handleEnd={this.submitForm.bind(this)}
                             headerTitle="Chatbot"
-                            speechSynthesis={{ enable: true, lang: 'en'}}
+                            speechSynthesis={{ enable: true, lang: 'en', voice: this.state.voice}}
                             steps={this.state.steps}
                             placeholder="Enter a message"
                             recognitionEnable={true}
