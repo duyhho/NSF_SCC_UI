@@ -62,11 +62,11 @@ const Dictaphone = () => {
         if (navigator && navigator.geolocation) {
             return new Promise((resolve, reject) => {
                 navigator.geolocation.getCurrentPosition(pos => {
-                const coords = pos.coords;
-                resolve({
-                    lat: coords.latitude,
-                    lng: coords.longitude
-                });
+                    const coords = pos.coords;
+                    resolve({
+                        lat: coords.latitude,
+                        lng: coords.longitude
+                    });
                 });
             });
         }
