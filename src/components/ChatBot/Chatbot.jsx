@@ -73,22 +73,26 @@ class RequestForm extends Component {
         this.state = {
             request_location: '',
             request_description: '',
-            update_request_location_user_input: '',
+            formattedNewLocation: '',
         };
     }
 
     componentWillMount() {
+        var self = this;
         const { steps } = this.props;
         const { request_location, request_description, update_request_location_user_input } = steps;
 
-        var formattedNewLocation = undefined
         if (update_request_location_user_input.value !== undefined) {
             Geocode.fromAddress(update_request_location_user_input.value).then(
                 response => {
-                    formattedNewLocation = response['results'][0]['formatted_address']
+                    self.setState({
+                        formattedNewLocation: response['results'][0]['formatted_address']
+                    })
                 },
                 error => {
-                    formattedNewLocation = update_request_location_user_input.value
+                    self.setState({
+                        formattedNewLocation: update_request_location_user_input.value
+                    })
                 }
             );
         }
@@ -96,7 +100,7 @@ class RequestForm extends Component {
         this.setState({
             request_location: request_location,
             request_description: request_description,
-            formattedNewLocation: formattedNewLocation });
+        });
     }
 
     render() {
