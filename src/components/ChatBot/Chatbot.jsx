@@ -324,8 +324,7 @@ export default class Chatbot extends Component {
     }
 
     render() {
-        var voices = window.speechSynthesis.getVoices()
-        console.log(voices)
+        console.log(window.speechSynthesis.getVoices())
         return (
             <div className="page-container">
                 <div className="col-md-6 offset-md-3">
@@ -333,7 +332,7 @@ export default class Chatbot extends Component {
                         <ChatBot
                             handleEnd={this.submitForm.bind(this)}
                             headerTitle="Chatbot"
-                            speechSynthesis={{ enable: true, lang: 'en', voice: voices[13] }}
+                            speechSynthesis={{ enable: true, lang: 'en', voice: window.speechSynthesis.getVoices()[17] }}
                             steps={this.state.steps}
                             placeholder="Enter a message"
                             recognitionEnable={true}
