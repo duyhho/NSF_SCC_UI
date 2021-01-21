@@ -136,6 +136,56 @@ class RequestForm extends Component {
     }
 }
 
+class FormattedNewLocation extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            request_location: '',
+            formattedNewLocation: '',
+        };
+    }
+
+    componentWillMount() {
+        var self = this;
+        const { steps } = this.props;
+        const { request_location, update_request_location_user_input } = steps;
+
+        if (update_request_location_user_input !== undefined) {
+            Geocode.fromAddress(update_request_location_user_input.value).then(
+                response => {
+                    self.setState({
+                        formattedNewLocation: response['results'][0]['formatted_address']
+                    })
+                },
+                error => {
+                    self.setState({
+                        formattedNewLocation: update_request_location_user_input.value
+                    })
+                }
+            );
+        }
+
+        this.setState({
+            request_location: request_location,
+        });
+    }
+
+    render() {
+        const { request_location, formattedNewLocation } = this.state;
+        var currentLocation = ""
+        if (formattedNewLocation !== undefined) {
+            currentLocation = formattedNewLocation
+        } else if (request_location.value !== undefined) {
+            currentLocation = request_location.value
+        }
+
+        return (
+            <div style={{width: "100%"}}>Your new address is {currentLocation}. Is this correct?</div>
+        );
+    }
+}
+
 RequestForm.propTypes = {
     steps: PropTypes.object,
 };
@@ -210,7 +260,8 @@ export default class Chatbot extends Component {
                 },
                 {
                     id: "confirm_new_location",
-                    message: "Your new address is {previousValue}. Is this correct?",
+                    component: <FormattedNewLocation />,
+                    asMessage: true,
                     trigger: "confirm_location"
                 },
                 {
@@ -273,6 +324,8 @@ export default class Chatbot extends Component {
     }
 
     render() {
+        var voices = window.speechSynthesis.getVoices()
+        console.log(voices)
         return (
             <div className="page-container">
                 <div className="col-md-6 offset-md-3">
@@ -280,7 +333,7 @@ export default class Chatbot extends Component {
                         <ChatBot
                             handleEnd={this.submitForm.bind(this)}
                             headerTitle="Chatbot"
-                            speechSynthesis={{ enable: true, lang: 'en' }}
+                            speechSynthesis={{ enable: true, lang: 'en', voice: voices[13] }}
                             steps={this.state.steps}
                             placeholder="Enter a message"
                             recognitionEnable={true}
