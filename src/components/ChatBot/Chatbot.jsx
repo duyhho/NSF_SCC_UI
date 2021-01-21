@@ -187,7 +187,7 @@ export default class Chatbot extends Component {
                 },
                 {
                     id: "edit_location",
-                    message: "Type in your current address!",
+                    message: "Please type in your current address!",
                     trigger: "update_request_location_user_input"
                 },
                 {
@@ -228,9 +228,14 @@ export default class Chatbot extends Component {
                     id: "edit_submission",
                     options: [
                         { value: "Edit Location", label: "Edit Location", trigger: "edit_location" },
-                        { value: "Edit Description", label: "Edit Description", trigger: "update_description" },
-                        { value: "End", label: "Nah, let's Submit!", trigger: "submit_form" },
+                        { value: "Edit Description", label: "Edit Description", trigger: "edit_description_message" },
+                        { value: "End", label: "Submit!", trigger: "submit_form" },
                     ],
+                },
+                {
+                    id: "edit_description_message",
+                    message: "Please revise your description below.",
+                    trigger: "request_description"
                 },
                 {
                     id: "update_description",
