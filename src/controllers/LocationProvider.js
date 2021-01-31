@@ -17,6 +17,10 @@ class LocationProvider {
                         lng: coords.longitude
                     });
 
+                },function (e) {
+                    //Your error handling here
+                }, {
+                    enableHighAccuracy: true
                 });
             });
         }
@@ -28,6 +32,7 @@ class LocationProvider {
         var curLocation = this.getGeocode();
         curLocation.then(function(result){
             if (result.lat != null && result.lng != null) {
+                console.log(result)
                 self.latLng = {lat: result.lat.toFixed(6), lng: result.lng.toFixed(6)}
                 Geocode.fromLatLng(result.lat, result.lng).then(
                     response => {

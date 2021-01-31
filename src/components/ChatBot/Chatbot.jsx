@@ -132,7 +132,7 @@ class RequestForm extends Component {
                     submissionDetails.location = response['results'][0]['formatted_address']
                     submissionDetails.latLng = {lat: response['results'][0]['geometry']['location'].lat.toFixed(6),
                                                 lng: response['results'][0]['geometry']['location'].lng.toFixed(6),
-                                        }
+                                                }
                 },
                 error => {
                     self.setState({
@@ -457,7 +457,7 @@ export default class Chatbot extends Component {
                             <tbody>
                                 {
                                     dummyData.map(row => {
-                                        console.log(row['CASE ID'].toString())
+                                        // console.log(row['CASE ID'].toString())
                                         if (row['CASE ID'].toString().includes('2021')){
                                                 return <tr>
                                                     {Object.values(row).map(val => {
