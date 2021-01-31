@@ -320,7 +320,7 @@ export default class Chatbot extends Component {
                 },
                 {
                     id: "submit_form",
-                    message: "Thank you. Your request has been submitted!",
+                    message: "Thank you. Your request has been submitted! Please see your case below.",
                     trigger: "end_chat"
                 },
                 {
@@ -442,6 +442,8 @@ export default class Chatbot extends Component {
                         />
                     </ThemeProvider>
                 </div>
+                <hr></hr>
+                <h1 style = {{textAlign: 'center'}}>311 Case Records</h1>
                 <div className = 'row data-table'>
                     <div className="col-md-6">
                         <table class="ui sortable celled table " >
