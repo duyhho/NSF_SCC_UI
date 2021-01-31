@@ -317,6 +317,9 @@ code {
   margin-left: 151px;
   height: 100%;
   min-height: 97vh;
+  /* width:100%; */
+  /* position:relative */
+
 }
 
 .desc1 {
@@ -395,4 +398,11 @@ select {
   position: relative;
   top: 9px;
   left: 5px;
+}
+.data-table {
+  font-size: 80%;
+  padding:25px 10px
+}
+.overflow {
+  overflow-x: auto;
 }
