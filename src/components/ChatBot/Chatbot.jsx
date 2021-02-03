@@ -1,3 +1,8 @@
+
+// https://dl.dropboxusercontent.com/s/yjd2lxrwvmkc12q/Council%20Districts.geojson?dl=0
+// https://dl.dropboxusercontent.com/s/67xw4zvp2retyah/School%20Districts.geojson?dl=0
+// https://dl.dropboxusercontent.com/s/nnvcad4r0twpij1/Police%20Divisions.geojson?dl=0
+
 import React, { Component } from 'react'
 import ChatBot from 'react-simple-chatbot'
 import PropTypes from 'prop-types'
@@ -11,6 +16,8 @@ import { modal } from '../../utilities/modal.js'
 import { locationProvider } from '../../controllers/LocationProvider.js'
 import { dummyData } from './dummyData.js'
 import axios from 'axios'
+
+
 var submissionDetails = {
     case_id: '2021' + Math.floor(100000 + Math.random() * 900000),
     source: 'WEB',
