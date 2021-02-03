@@ -43,6 +43,8 @@ var submissionDetails = {
     time: '',
     blockgroup_id: '',
     nbh_id: '',
+    council_district: '',
+    police_district: ''
 };
 
 const chatbotTheme = {
@@ -105,17 +107,17 @@ class RequestForm extends Component {
         super(props);
 
         this.state = {
-
+            // request_description: null
         };
     }
 
-    componentDidMount() {
+    componentWillMount() {
         var self = this;
         const { steps } = this.props;
         // console.log(this.props)
-        // console.log(steps)
+        console.log(steps)
         const { request_description, update_request_location_user_input } = steps;
-
+        console.log(request_description)
         if (update_request_location_user_input !== undefined) {
             Geocode.fromAddress(update_request_location_user_input.value).then(
                 response => {
@@ -182,7 +184,7 @@ class RequestForm extends Component {
 
     render() {
         const { request_description, formattedNewLocation, request_time } = this.state;
-
+        console.log(request_description)
         return (
             <div style={{width: "100%"}}>
                 <h3>311 Request</h3>
@@ -365,6 +367,9 @@ export default class Chatbot extends Component {
                     submissionDetails.nbh_id = response.data['nbh_id']
                     submissionDetails.nbh_name = response.data['nbh_name']
                     submissionDetails.blockgroup_id = response.data['block_id']
+                    submissionDetails.council_district = response.data['district']
+                    submissionDetails.police_district = response.data['divisionname']
+
                     console.log(submissionDetails)
                     console.log(self.state.dummyData)
                     const newRow = {
@@ -391,8 +396,8 @@ export default class Chatbot extends Component {
                         "ZIP CODE": submissionDetails.zipcode,
                         "NEIGHBORHOOD": submissionDetails.nbh_name,
                         "COUNTY": submissionDetails.county,
-                        "COUNCIL DISTRICT": "",
-                        "POLICE DISTRICT": "",
+                        "COUNCIL DISTRICT": submissionDetails.council_district,
+                        "POLICE DISTRICT": submissionDetails.police_district,
                         "PARCEL ID NO": "",
                         "LATITUDE": submissionDetails.latLng.lat,
                         "LONGITUDE": submissionDetails.latLng.lng,
@@ -438,7 +443,7 @@ export default class Chatbot extends Component {
         const cols = this.state.cols
         console.log(window.speechSynthesis.getVoices())
         return (
-            <div className="page-container">
+            <div className="page-container overflow">
                 <div className="row">
                     <div className="col-md-6">
                         <ThemeProvider theme={chatbotTheme}>
