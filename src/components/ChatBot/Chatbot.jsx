@@ -16,7 +16,7 @@ import { modal } from '../../utilities/modal.js'
 import { locationProvider } from '../../controllers/LocationProvider.js'
 import { dummyData } from './dummyData.js'
 import axios from 'axios'
-import { FirestoreProvider } from "@react-firebase/firestore";
+// import { FirestoreProvider } from "@react-firebase/firestore";
 // Firebase Config
 const config = {
     apiKey: "AIzaSyAuqrJSVK3_RyZkIPGt2nqt2XMM9XvLad8",
