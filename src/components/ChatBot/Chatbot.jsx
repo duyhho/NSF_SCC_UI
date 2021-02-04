@@ -16,20 +16,27 @@ import { modal } from '../../utilities/modal.js'
 import { locationProvider } from '../../controllers/LocationProvider.js'
 import { dummyData } from './dummyData.js'
 import axios from 'axios'
-import { FirestoreProvider } from "@react-firebase/firestore";
+
+import "firebase/firestore";
+import {
+  FirebaseAppProvider,
+  useFirestoreDocData,
+  useFirestore,
+} from "reactfire";
+
 // Firebase Config
-const config = {
+const firebaseConfig = {
     apiKey: "AIzaSyAuqrJSVK3_RyZkIPGt2nqt2XMM9XvLad8",
+    authDomain: "nsfscc-umkc.firebaseapp.com",
     projectId: "nsfscc-umkc",
-    databaseURL: "DATABASE_URL",
-    authDomain: "AUTH_DOMAIN",
-    // OPTIONAL
-    storageBucket: "STORAGE_BUCKET",
-    messagingSenderId: "MESSAGING_SENDER_ID"
+    storageBucket: "nsfscc-umkc.appspot.com",
+    messagingSenderId: "1051748532808",
+    appId: "1:1051748532808:web:329f4b10628ab679a38e7d",
+    measurementId: "G-3NK4G5XJZM"
   };
 var submissionDetails = {
     case_id: '2021' + Math.floor(100000 + Math.random() * 900000),
-    source: 'WEB',
+    source: 'CHATBOT',
     department: '',
     workgroup: '',
     request_type: '',
@@ -73,7 +80,20 @@ const chatbotTheme = {
     userBubbleColor: '#28a745',
     userFontColor: '#FFFFFF',
 };
+function TestCase() {
+    // easily access the Firestore library
+    const burritoRef = useFirestore().collection("cases").doc("test");
 
+    // subscribe to a document for realtime updates. just one line!
+    const { status, data } = useFirestoreDocData(burritoRef);
+
+    // easily check the loading status
+    if (status === "loading") {
+      return <p>Fetching test case...</p>;
+    }
+
+    return <p>The data is {data.content}!</p>;
+  }
 class CurrentLocation extends Component {
     constructor(props) {
         super(props);
@@ -459,7 +479,7 @@ export default class Chatbot extends Component {
         const cols = this.state.cols
         console.log(window.speechSynthesis.getVoices())
         return (
-            <FirestoreProvider {...config} firebase={firebase}>
+            <FirebaseAppProvider firebaseConfig={firebaseConfig}>
                 <div className="page-container overflow">
                     <div className="row">
                         <div className="col-md-6">
@@ -489,6 +509,7 @@ export default class Chatbot extends Component {
                             )}
                         </div>
                     </div>
+                    <TestCase />
                     <hr></hr>
                     <h1 style = {{textAlign: 'center'}}>311 Case Records</h1>
                     <div className = 'row data-table'>
@@ -526,7 +547,7 @@ export default class Chatbot extends Component {
                         </div>
                     </div>
                 </div>
-            </FirestoreProvider>
+            </FirebaseAppProvider>
 
         )
     }
