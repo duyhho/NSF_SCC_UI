@@ -158,8 +158,9 @@ export class MapTotal extends Component {
         const schoolDistrictList = this.state.schoolDistrictList;
         const policeDivisionList = this.state.policeDivisionList;
 
+        var returnedData, colorCount = 0;
         if (selectedCategory === "Block Groups") {
-            var returnedData = Object.keys(blockGroupList[0]).map(item => {
+            returnedData = Object.keys(blockGroupList[0]).map(item => {
                 if (item === "Cluster_Total" || item === 'Cluster_Profiles') {
                     return <div></div>;
                 } else {
@@ -184,7 +185,7 @@ export class MapTotal extends Component {
                 }
             })
         } else if (selectedCategory === "Neighborhoods") {
-            var returnedData = Object.keys(neighborhoodList[0]).map(item => {
+            returnedData = Object.keys(neighborhoodList[0]).map(item => {
                 if (item === "Cluster_Total" || item === 'Cluster_Profiles') {
                     return <div></div>;
                 } else {
@@ -209,8 +210,8 @@ export class MapTotal extends Component {
                 }
             })
         } else if (selectedCategory === "Council Districts") {
-            var colorCount = 0
-            var returnedData = councilDistrictList.map(district => {
+            colorCount = 0
+            returnedData = councilDistrictList.map(district => {
                 var subReturnedData = district.geometry.coordinates[0].map(function(area) {
                     var coordArr = []
                     area.forEach(function(coord) {
@@ -235,8 +236,8 @@ export class MapTotal extends Component {
                 return subReturnedData
             })
         } else if (selectedCategory === "School Districts") {
-            var colorCount = 0
-            var returnedData = schoolDistrictList.map(district => {
+            colorCount = 0
+            returnedData = schoolDistrictList.map(district => {
                 if (district.geometry) {
                     var subReturnedData = district.geometry.coordinates[0].map(function(area) {
                         var coordArr = []
@@ -263,8 +264,8 @@ export class MapTotal extends Component {
                 return subReturnedData
             })
         } else if (selectedCategory === "Police Divisions") {
-            var colorCount = 0
-            var returnedData = policeDivisionList.map(district => {
+            colorCount = 0
+            returnedData = policeDivisionList.map(district => {
                 var subReturnedData = district.geometry.coordinates[0].map(function(area) {
                     var coordArr = []
                     area.forEach(function(coord) {
