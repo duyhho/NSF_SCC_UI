@@ -18,15 +18,15 @@ import { dummyData } from './dummyData.js'
 import axios from 'axios'
 // import { FirestoreProvider } from "@react-firebase/firestore";
 // Firebase Config
-const config = {
-    apiKey: "AIzaSyAuqrJSVK3_RyZkIPGt2nqt2XMM9XvLad8",
-    projectId: "nsfscc-umkc",
-    databaseURL: "DATABASE_URL",
-    authDomain: "AUTH_DOMAIN",
-    // OPTIONAL
-    storageBucket: "STORAGE_BUCKET",
-    messagingSenderId: "MESSAGING_SENDER_ID"
-  };
+// const config = {
+//     apiKey: "AIzaSyAuqrJSVK3_RyZkIPGt2nqt2XMM9XvLad8",
+//     projectId: "nsfscc-umkc",
+//     databaseURL: "DATABASE_URL",
+//     authDomain: "AUTH_DOMAIN",
+//     // OPTIONAL
+//     storageBucket: "STORAGE_BUCKET",
+//     messagingSenderId: "MESSAGING_SENDER_ID"
+//   };
 var submissionDetails = {
     case_id: '2021' + Math.floor(100000 + Math.random() * 900000),
     source: 'WEB',
@@ -459,7 +459,7 @@ export default class Chatbot extends Component {
         const cols = this.state.cols
         console.log(window.speechSynthesis.getVoices())
         return (
-            <FirestoreProvider {...config} firebase={firebase}>
+            // <FirestoreProvider {...config} firebase={firebase}>
                 <div className="page-container overflow">
                     <div className="row">
                         <div className="col-md-6">
@@ -526,7 +526,6 @@ export default class Chatbot extends Component {
                         </div>
                     </div>
                 </div>
-            </FirestoreProvider>
 
         )
     }
