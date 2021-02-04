@@ -1,8 +1,3 @@
-
-// https://dl.dropboxusercontent.com/s/yjd2lxrwvmkc12q/Council%20Districts.geojson?dl=0
-// https://dl.dropboxusercontent.com/s/67xw4zvp2retyah/School%20Districts.geojson?dl=0
-// https://dl.dropboxusercontent.com/s/nnvcad4r0twpij1/Police%20Divisions.geojson?dl=0
-
 import React, { Component } from 'react'
 import ChatBot from 'react-simple-chatbot'
 import PropTypes from 'prop-types'
@@ -16,7 +11,6 @@ import { modal } from '../../utilities/modal.js'
 import { locationProvider } from '../../controllers/LocationProvider.js'
 import { dummyData } from './dummyData.js'
 import axios from 'axios'
-
 
 var submissionDetails = {
     case_id: '2021' + Math.floor(100000 + Math.random() * 900000),
@@ -74,7 +68,7 @@ class CurrentLocation extends Component {
         };
     }
 
-    componentDidMount() {
+    componentWillMount() {
         var self = this;
         const { steps } = this.props;
         const { update_request_location_user_input } = steps;
@@ -114,21 +108,17 @@ class RequestForm extends Component {
         super(props);
 
         this.state = {
-            // request_description: null
+
         };
     }
 
     componentWillMount() {
         var self = this;
         const { steps } = this.props;
-        // console.log(this.props)
-        console.log(steps)
         const { request_description, update_request_location_user_input } = steps;
-        console.log(request_description)
         if (update_request_location_user_input !== undefined) {
             Geocode.fromAddress(update_request_location_user_input.value).then(
                 response => {
-                    console.log(response['results'])
                     response.results[0].address_components.forEach(comp => {
                         if (comp.types[0] === 'postal_code'){
                             submissionDetails.zipcode = comp.long_name
@@ -162,7 +152,6 @@ class RequestForm extends Component {
                 submissionDetails.latLng = locationProvider.getLatLng()
                 submissionDetails.zipcode = locationProvider.getZipcode()
                 submissionDetails.county = locationProvider.getCounty()
-
             })
         }
         const request_time = moment().format('MMMM Do YYYY, h:mm:ss a')
@@ -171,27 +160,21 @@ class RequestForm extends Component {
         const request_hour = moment().format('h:mm A')
         const request_year = moment().format('YYYY')
 
-
-
         this.setState({
             request_description: request_description,
             request_time: request_time
         })
+
         submissionDetails.description = request_description.value
         submissionDetails.time = request_time
         submissionDetails.creation_date = request_date
         submissionDetails.creation_month = request_month
         submissionDetails.creation_time = request_hour
         submissionDetails.creation_year = request_year
-
-
-
-
     }
 
     render() {
         const { request_description, formattedNewLocation, request_time } = this.state;
-        console.log(request_description)
         return (
             <div style={{width: "100%"}}>
                 <h3>311 Request</h3>
@@ -352,18 +335,14 @@ export default class Chatbot extends Component {
         dropZone.setup(this, '311Request', 0); //TODO: Update "0" to be the ID of the request
         var self = this
         dummyData.getData(function(response){
-            console.log(response)
             self.setState({
                 cols: Object.keys(response[0]),
                 dummyData: response
             })
         })
-
     }
 
     submitForm({steps, values}) {
-        // console.log(steps)
-        // console.log(values)
         var self = this
         axios.get(`https://nsfscc-bert.ngrok.io/getPrediction?description=${submissionDetails.description}`)
             .then(function(response) {
@@ -377,8 +356,6 @@ export default class Chatbot extends Component {
                     submissionDetails.council_district = response.data['district']
                     submissionDetails.police_district = response.data['divisionname']
 
-                    console.log(submissionDetails)
-                    console.log(self.state.dummyData)
                     const newRow = {
                         "CASE ID": '2021' + Math.floor(100000 + Math.random() * 900000),
                         "SOURCE": "WEB",
@@ -427,12 +404,9 @@ export default class Chatbot extends Component {
                     console.log(e)
                 })
             })
-
-
             .catch(function(e) {
                 console.log(e)
             })
-
     }
 
     triggerUpload() {
@@ -448,7 +422,6 @@ export default class Chatbot extends Component {
     render() {
         const dummyData = this.state.dummyData
         const cols = this.state.cols
-        console.log(window.speechSynthesis.getVoices())
         return (
             <div className="page-container overflow">
                 <div className="row">
@@ -487,30 +460,29 @@ export default class Chatbot extends Component {
                             <thead>
                                 <tr>
                                     {cols.map(col => {
-                                        // console.log(<th>{col}</th>)
-                                        return  <th>{col}</th>
+                                        return <th>{col}</th>
                                     })}
                                 </tr>
                             </thead>
-
                             <tbody>
-                                {
-                                    dummyData.map(row => {
-                                        // console.log(row['CASE ID'].toString())
-                                        if (row['CASE ID'].toString().includes('2021')){
-                                                return <tr>
-                                                    {Object.values(row).map(val => {
-                                                        return <td class='positive'>{val}</td>
-                                                    })}
-                                                </tr>
-                                            }
-                                        return  <tr>
+                                {dummyData.map(row => {
+                                    if (row['CASE ID'].toString().includes('2021')){
+                                        return (
+                                            <tr>
+                                                {Object.values(row).map(val => {
+                                                    return <td class='positive'>{val}</td>
+                                                })}
+                                            </tr>
+                                        )
+                                    }
+                                    return (
+                                        <tr>
                                             {Object.values(row).map(val => {
                                                 return <td>{val}</td>
                                             })}
                                         </tr>
-                                    })
-                                }
+                                    )
+                                })}
                             </tbody>
                         </table>
                     </div>
