@@ -16,8 +16,17 @@ import { modal } from '../../utilities/modal.js'
 import { locationProvider } from '../../controllers/LocationProvider.js'
 import { dummyData } from './dummyData.js'
 import axios from 'axios'
-
-
+import { FirestoreProvider } from "@react-firebase/firestore";
+// Firebase Config
+const config = {
+    apiKey: "AIzaSyAuqrJSVK3_RyZkIPGt2nqt2XMM9XvLad8",
+    projectId: "nsfscc-umkc",
+    databaseURL: "DATABASE_URL",
+    authDomain: "AUTH_DOMAIN",
+    // OPTIONAL
+    storageBucket: "STORAGE_BUCKET",
+    messagingSenderId: "MESSAGING_SENDER_ID"
+  };
 var submissionDetails = {
     case_id: '2021' + Math.floor(100000 + Math.random() * 900000),
     source: 'WEB',
@@ -450,72 +459,75 @@ export default class Chatbot extends Component {
         const cols = this.state.cols
         console.log(window.speechSynthesis.getVoices())
         return (
-            <div className="page-container overflow">
-                <div className="row">
-                    <div className="col-md-6">
-                        <ThemeProvider theme={chatbotTheme}>
-                            <ChatBot
-                                handleEnd={this.submitForm.bind(this)}
-                                headerTitle="Chatbot"
-                                speechSynthesis={{ enable: true, lang: 'en', voice: this.state.voice }}
-                                steps={this.state.steps}
-                                placeholder="Enter a message"
-                                recognitionEnable={true}
-                                width="100%"
-                                userDelay={0}
-                            />
-                        </ThemeProvider>
-                    </div>
-                    <div className="col-md-5">
-                        {this.state.dropZoneSetup !== undefined && (
-                        <div align="center">
-                            <DropzoneComponent
-                                config={this.state.dropZoneConfig}
-                                eventHandlers={this.state.dropZoneEventHandlers}
-                                djsConfig={this.state.dropZoneJSConfig}
-                            />
-                            <button type="button" className="btn btn-primary" onClick={this.triggerUpload.bind(this)} autoComplete="off">Upload</button>
+            <FirestoreProvider {...config} firebase={firebase}>
+                <div className="page-container overflow">
+                    <div className="row">
+                        <div className="col-md-6">
+                            <ThemeProvider theme={chatbotTheme}>
+                                <ChatBot
+                                    handleEnd={this.submitForm.bind(this)}
+                                    headerTitle="Chatbot"
+                                    speechSynthesis={{ enable: true, lang: 'en', voice: this.state.voice }}
+                                    steps={this.state.steps}
+                                    placeholder="Enter a message"
+                                    recognitionEnable={true}
+                                    width="100%"
+                                    userDelay={0}
+                                />
+                            </ThemeProvider>
                         </div>
-                        )}
+                        <div className="col-md-5">
+                            {this.state.dropZoneSetup !== undefined && (
+                            <div align="center">
+                                <DropzoneComponent
+                                    config={this.state.dropZoneConfig}
+                                    eventHandlers={this.state.dropZoneEventHandlers}
+                                    djsConfig={this.state.dropZoneJSConfig}
+                                />
+                                <button type="button" className="btn btn-primary" onClick={this.triggerUpload.bind(this)} autoComplete="off">Upload</button>
+                            </div>
+                            )}
+                        </div>
                     </div>
-                </div>
-                <hr></hr>
-                <h1 style = {{textAlign: 'center'}}>311 Case Records</h1>
-                <div className = 'row data-table'>
-                    <div className="col-md-6">
-                        <table class="ui sortable celled table " >
-                            <thead>
-                                <tr>
-                                    {cols.map(col => {
-                                        // console.log(<th>{col}</th>)
-                                        return  <th>{col}</th>
-                                    })}
-                                </tr>
-                            </thead>
+                    <hr></hr>
+                    <h1 style = {{textAlign: 'center'}}>311 Case Records</h1>
+                    <div className = 'row data-table'>
+                        <div className="col-md-6">
+                            <table class="ui sortable celled table " >
+                                <thead>
+                                    <tr>
+                                        {cols.map(col => {
+                                            // console.log(<th>{col}</th>)
+                                            return  <th>{col}</th>
+                                        })}
+                                    </tr>
+                                </thead>
 
-                            <tbody>
-                                {
-                                    dummyData.map(row => {
-                                        // console.log(row['CASE ID'].toString())
-                                        if (row['CASE ID'].toString().includes('2021')){
-                                                return <tr>
-                                                    {Object.values(row).map(val => {
-                                                        return <td class='positive'>{val}</td>
-                                                    })}
-                                                </tr>
-                                            }
-                                        return  <tr>
-                                            {Object.values(row).map(val => {
-                                                return <td>{val}</td>
-                                            })}
-                                        </tr>
-                                    })
-                                }
-                            </tbody>
-                        </table>
+                                <tbody>
+                                    {
+                                        dummyData.map(row => {
+                                            // console.log(row['CASE ID'].toString())
+                                            if (row['CASE ID'].toString().includes('2021')){
+                                                    return <tr>
+                                                        {Object.values(row).map(val => {
+                                                            return <td class='positive'>{val}</td>
+                                                        })}
+                                                    </tr>
+                                                }
+                                            return  <tr>
+                                                {Object.values(row).map(val => {
+                                                    return <td>{val}</td>
+                                                })}
+                                            </tr>
+                                        })
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </FirestoreProvider>
+
         )
     }
 }
