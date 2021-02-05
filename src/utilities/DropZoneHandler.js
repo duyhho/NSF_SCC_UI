@@ -16,7 +16,7 @@ class DropZoneHandler {
         };
         this.dropZoneJSConfig = {
             addRemoveLinks: true,
-            autoProcessQueue: false,
+            autoProcessQueue: true,
             uploadMultiple: true,
             withCredentials: true,
             headers: {
@@ -98,6 +98,7 @@ class DropZoneHandler {
 	upload(callback) {
 		this.onSuccessCallback = callback;
         this.dropZone.processQueue();
+
 	}
 
 	setup(context, uploadFor = '311Request', uploadID, dynamicUpdate = false) {
@@ -110,7 +111,8 @@ class DropZoneHandler {
         }
         this.onSuccessCallback = null;
         this.dropZoneConfig.postUrl = process.env.APPLICATION_URL + 'upload/' + uploadFor + '/' + uploadID;
-		context.setState({
+        console.log(this.dropZoneConfig.postUrl)
+        context.setState({
             dropZoneSetup: true,
             dropZoneConfig: this.dropZoneConfig,
             dropZoneJSConfig: this.dropZoneJSConfig,
