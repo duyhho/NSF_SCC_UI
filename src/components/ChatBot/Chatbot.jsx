@@ -365,7 +365,7 @@ export default class Chatbot extends Component {
         this.setState({
             voice: window.speechSynthesis.getVoices()[4]
         })
-        dropZone.setup(this, '311Request', 0); //TODO: Update "0" to be the ID of the request
+        dropZone.setup(this, 'hello', 0); //TODO: Update "0" to be the ID of the request
         var self = this
         dummyData.getData(function(response){
             // console.log(response)
@@ -453,6 +453,8 @@ export default class Chatbot extends Component {
     }
 
     triggerUpload() {
+        console.log(dropZone.getAcceptedFiles())
+
         dropZone.upload(function() {
             if (dropZone.isUploadSuccess() === true) {
                 modal.showInfo("You have uploaded the files successfully!", "success", "top", "center");
@@ -460,6 +462,7 @@ export default class Chatbot extends Component {
                 modal.showInfo("There is no pending file to upload!", "warning", "top", "center");
             }
         });
+
     }
 
     render() {
