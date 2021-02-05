@@ -12,6 +12,7 @@ import MapClusterNBH from "./Map/MapClusterNBH.jsx"
 import Visualization311 from "./Visualization311/Visualization311.jsx"
 import Send311Request from './ChatBot/Send311Request.jsx';
 import Chatbot from './ChatBot/Chatbot.jsx'
+import MapTotal from './Map/MapTotal.jsx'
 
 export default class SideBar extends React.Component {
   constructor(props) {
@@ -54,6 +55,10 @@ export default class SideBar extends React.Component {
     } else if (window.location.pathname === "/chatbot") {
       this.setState({
         currentView: 8
+      })
+    } else if (window.location.pathname === "/allMaps") {
+      this.setState({
+        currentView: 9
       })
     } else { //Default to 0
       this.setState({
@@ -156,6 +161,16 @@ export default class SideBar extends React.Component {
                     Neighborhoods
                   </Menu.Item>
                 </Link>
+                <Link to="/allMaps">
+                  <Menu.Item
+                    name="Chatbot"
+                    onClick={this.handleMenuSelect.bind(this, 9)}
+                    active={currentView === 9}
+                  >
+                    <Icon name="connectdevelop" />
+                    All Maps
+                  </Menu.Item>
+                </Link>
                 <Link to="/visualization311">
                   <Menu.Item
                     name="Visualization 311"
@@ -199,6 +214,7 @@ export default class SideBar extends React.Component {
                 <Route exact path="/visualization311" component={Visualization311} />
                 <Route exact path="/send311Request" component={Send311Request} />
                 <Route exact path="/chatbot" component={Chatbot} />
+                <Route exact path="/allMaps" component={MapTotal} />
                 <Route component={NotFound} />
               </Switch>
 
