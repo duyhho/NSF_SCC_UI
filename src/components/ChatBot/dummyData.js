@@ -7,7 +7,8 @@ class DummyData {
     getData(callback){
         axios.get(`https://dl.dropboxusercontent.com/s/ivq1owg373wjctc/dummy311_data.json?dl=0`)
             .then(function(response) {
-                // console.log(response.data)
+                console.log(response.data)
+                // FireStore()
                 callback(response.data)
             })
             .catch(function(e) {

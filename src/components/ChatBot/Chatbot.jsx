@@ -22,8 +22,9 @@ import {
   FirebaseAppProvider,
   useFirestoreDocData,
   useFirestore,
+  useFirestoreCollectionData,
 } from "reactfire";
-
+import CaseData from './firebaseData.js'
 // Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyAuqrJSVK3_RyZkIPGt2nqt2XMM9XvLad8",
@@ -69,7 +70,6 @@ var submissionDetails = {
     council_district: '',
     police_district: ''
 };
-
 const chatbotTheme = {
     background: '#f5f8fb',
     headerBgColor: '#CD853F',
@@ -80,20 +80,56 @@ const chatbotTheme = {
     userBubbleColor: '#28a745',
     userFontColor: '#FFFFFF',
 };
-function TestCase() {
+function SyncSubmission() {
     // easily access the Firestore library
-    const burritoRef = useFirestore().collection("cases").doc("test");
-
-    // subscribe to a document for realtime updates. just one line!
-    const { status, data } = useFirestoreDocData(burritoRef);
-
-    // easily check the loading status
-    if (status === "loading") {
-      return <p>Fetching test case...</p>;
+    const newRow = {
+        "CASE ID": submissionDetails.case_id,
+        "SOURCE": "CHATBOT",
+        "DEPARTMENT": submissionDetails.department,
+        "WORK GROUP": "",
+        "REQUEST TYPE": "",
+        "CATEGORY": submissionDetails.category,
+        "TYPE": "",
+        "DETAIL": "",
+        "CREATION DATE": submissionDetails.creation_date,
+        "CREATION TIME": submissionDetails.creation_time,
+        "CREATION MONTH": submissionDetails.creation_month,
+        "CREATION YEAR": submissionDetails.creation_year,
+        "STATUS": "OPEN",
+        "EXCEEDED EST TIMEFRAME": "N",
+        "CLOSED DATE": "",
+        "CLOSED MONTH": "",
+        "CLOSED YEAR": "",
+        "DAYS TO CLOSE": "",
+        "STREET ADDRESS": submissionDetails.location,
+        "ADDRESS WITH GEOCODE": submissionDetails.location + ` (${submissionDetails.latLng.lat}, ${submissionDetails.latLng.lng} )`,
+        "ZIP CODE": submissionDetails.zipcode,
+        "NEIGHBORHOOD": submissionDetails.nbh_name,
+        "COUNTY": submissionDetails.county,
+        "COUNCIL DISTRICT": submissionDetails.council_district,
+        "POLICE DISTRICT": submissionDetails.police_district,
+        "PARCEL ID NO": "",
+        "LATITUDE": submissionDetails.latLng.lat,
+        "LONGITUDE": submissionDetails.latLng.lng,
+        "CASE URL": submissionDetails.description,
+        "30-60-90 Days Open Window": "",
+        "nbh_id": submissionDetails.nbh_id,
+        "nbh_name": submissionDetails.nbh_name,
+        "BLOCKGROUP ID": submissionDetails.blockgroup_id
     }
+    console.log(newRow)
+    useFirestore().collection("cases").doc(newRow['CASE ID']).set(newRow)
+        .then(() => {
+            console.log("Document successfully written!");
 
-    return <p>The data is {data.content}!</p>;
+        }).catch((error) => {
+            console.error("Error writing document: ", error);
+        });
+
+
+    return <p>New Record Written Successfully</p>;
   }
+
 class CurrentLocation extends Component {
     constructor(props) {
         super(props);
@@ -260,6 +296,8 @@ export default class Chatbot extends Component {
         this.state = {
             dummyData: [],
             cols: [],
+            submitted: false,
+
             currentStepId: 0,
             steps: [
                 {
@@ -381,7 +419,7 @@ export default class Chatbot extends Component {
         dropZone.setup(this, '311Request', 0); //TODO: Update "0" to be the ID of the request
         var self = this
         dummyData.getData(function(response){
-            console.log(response)
+            // console.log(response)
             self.setState({
                 cols: Object.keys(response[0]),
                 dummyData: response
@@ -400,8 +438,8 @@ export default class Chatbot extends Component {
             submissionDetails.department = response.data['Department']
             axios.get(`https://nsfscc-bert.ngrok.io/getGeoLocations?latitude=${submissionDetails.latLng.lat}&longitude=${submissionDetails.latLng.lng}`)
                 .then(function(response) {
-                    submissionDetails.nbh_id = response.data['nbh_id']
-                    submissionDetails.nbh_name = response.data['nbh_name']
+                    submissionDetails.nbh_id = response.data['nbhid']
+                    submissionDetails.nbh_name = response.data['nbhname']
                     submissionDetails.blockgroup_id = response.data['block_id']
                     submissionDetails.council_district = response.data['district']
                     submissionDetails.police_district = response.data['divisionname']
@@ -409,7 +447,7 @@ export default class Chatbot extends Component {
                     console.log(submissionDetails)
                     console.log(self.state.dummyData)
                     const newRow = {
-                        "CASE ID": '2021' + Math.floor(100000 + Math.random() * 900000),
+                        "CASE ID": submissionDetails.case_id,
                         "SOURCE": "WEB",
                         "DEPARTMENT": submissionDetails.department,
                         "WORK GROUP": "",
@@ -449,6 +487,7 @@ export default class Chatbot extends Component {
                         updatedData.push(data)
                     })
                     self.setState({
+                        submitted: true,
                         dummyData: updatedData
                     })
                 })
@@ -477,6 +516,7 @@ export default class Chatbot extends Component {
     render() {
         const dummyData = this.state.dummyData
         const cols = this.state.cols
+        const submitted = this.state.submitted
         console.log(window.speechSynthesis.getVoices())
         return (
             <FirebaseAppProvider firebaseConfig={firebaseConfig}>
@@ -509,10 +549,12 @@ export default class Chatbot extends Component {
                             )}
                         </div>
                     </div>
-                    <TestCase />
+                    {submitted === true && <SyncSubmission />}
                     <hr></hr>
                     <h1 style = {{textAlign: 'center'}}>311 Case Records</h1>
-                    <div className = 'row data-table'>
+                    <CaseData />
+
+                    {/* <div className = 'row data-table'>
                         <div className="col-md-6">
                             <table class="ui sortable celled table " >
                                 <thead>
@@ -545,7 +587,7 @@ export default class Chatbot extends Component {
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </FirebaseAppProvider>
 
