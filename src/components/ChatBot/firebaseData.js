@@ -179,6 +179,6 @@ export const SyncSubmission = (data) => {
       });
 
 
-  return <p>New Record Written Successfully</p>;
+  return <p>New Record Added To Firebase Successfully!</p>;
 }
 // export default CaseData

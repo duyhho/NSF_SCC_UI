@@ -20,9 +20,6 @@ import axios from 'axios'
 import "firebase/firestore";
 import {
   FirebaseAppProvider,
-  useFirestoreDocData,
-  useFirestore,
-  useFirestoreCollectionData,
 } from "reactfire";
 import {CaseData, SyncSubmission} from './firebaseData.js'
 // Firebase Config
@@ -400,7 +397,7 @@ export default class Chatbot extends Component {
                     console.log(self.state.dummyData)
                     const newRow = {
                         "CASE ID": submissionDetails.case_id,
-                        "SOURCE": "WEB",
+                        "SOURCE": "CHATBOT",
                         "DEPARTMENT": submissionDetails.department,
                         "WORK GROUP": "",
                         "REQUEST TYPE": "",
@@ -466,8 +463,6 @@ export default class Chatbot extends Component {
     }
 
     render() {
-        const dummyData = this.state.dummyData
-        const cols = this.state.cols
         const submitted = this.state.submitted
         console.log(window.speechSynthesis.getVoices())
         return (
