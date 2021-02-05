@@ -17,7 +17,7 @@ import {
   FirebaseAppProvider,
 } from "reactfire";
 import {CaseData, SyncSubmission} from './firebaseData.js'
-import {storage} from 'firebase-storage/storage.js'
+import {storage} from './firebase-storage/storage.js'
 // Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyAuqrJSVK3_RyZkIPGt2nqt2XMM9XvLad8",
@@ -429,15 +429,26 @@ export default class Chatbot extends Component {
     }
 
     triggerUpload() {
-        console.log(dropZone.returnFileList())
-
-        dropZone.upload(function() {
-            if (dropZone.isUploadSuccess() === true) {
-                modal.showInfo("You have uploaded the files successfully!", "success", "top", "center");
-            } else if (dropZone.isFilesAdded() === false) {
-                modal.showInfo("There is no pending file to upload!", "warning", "top", "center");
+        const currentImages = dropZone.returnFileList()
+        const image = currentImages[0]
+        const uploadTask = storage.ref(`images/${submissionDetails.case_id}/${image.name}`).put(image)
+        uploadTask.on('state_changed',
+            snapshot => {},
+            error => {console.log(error)},
+            () => {
+                storage.ref(`images/${submissionDetails.case_id}`)
+                .child(image.name).getDownloadURL().then(url => {
+                    console.log(url)
+                })
             }
-        });
+        )
+        // dropZone.upload(function() {
+        //     if (dropZone.isUploadSuccess() === true) {
+        //         modal.showInfo("You have uploaded the files successfully!", "success", "top", "center");
+        //     } else if (dropZone.isFilesAdded() === false) {
+        //         modal.showInfo("There is no pending file to upload!", "warning", "top", "center");
+        //     }
+        // });
 
     }
 
