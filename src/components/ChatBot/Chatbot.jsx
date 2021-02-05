@@ -24,7 +24,7 @@ import {
   useFirestore,
   useFirestoreCollectionData,
 } from "reactfire";
-import CaseData from './firebaseData.js'
+import {CaseData, SyncSubmission} from './firebaseData.js'
 // Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyAuqrJSVK3_RyZkIPGt2nqt2XMM9XvLad8",
@@ -80,55 +80,7 @@ const chatbotTheme = {
     userBubbleColor: '#28a745',
     userFontColor: '#FFFFFF',
 };
-function SyncSubmission() {
-    // easily access the Firestore library
-    const newRow = {
-        "CASE ID": submissionDetails.case_id,
-        "SOURCE": "CHATBOT",
-        "DEPARTMENT": submissionDetails.department,
-        "WORK GROUP": "",
-        "REQUEST TYPE": "",
-        "CATEGORY": submissionDetails.category,
-        "TYPE": "",
-        "DETAIL": "",
-        "CREATION DATE": submissionDetails.creation_date,
-        "CREATION TIME": submissionDetails.creation_time,
-        "CREATION MONTH": submissionDetails.creation_month,
-        "CREATION YEAR": submissionDetails.creation_year,
-        "STATUS": "OPEN",
-        "EXCEEDED EST TIMEFRAME": "N",
-        "CLOSED DATE": "",
-        "CLOSED MONTH": "",
-        "CLOSED YEAR": "",
-        "DAYS TO CLOSE": "",
-        "STREET ADDRESS": submissionDetails.location,
-        "ADDRESS WITH GEOCODE": submissionDetails.location + ` (${submissionDetails.latLng.lat}, ${submissionDetails.latLng.lng} )`,
-        "ZIP CODE": submissionDetails.zipcode,
-        "NEIGHBORHOOD": submissionDetails.nbh_name,
-        "COUNTY": submissionDetails.county,
-        "COUNCIL DISTRICT": submissionDetails.council_district,
-        "POLICE DISTRICT": submissionDetails.police_district,
-        "PARCEL ID NO": "",
-        "LATITUDE": submissionDetails.latLng.lat,
-        "LONGITUDE": submissionDetails.latLng.lng,
-        "CASE URL": submissionDetails.description,
-        "30-60-90 Days Open Window": "",
-        "nbh_id": submissionDetails.nbh_id,
-        "nbh_name": submissionDetails.nbh_name,
-        "BLOCKGROUP ID": submissionDetails.blockgroup_id
-    }
-    console.log(newRow)
-    useFirestore().collection("cases").doc(newRow['CASE ID']).set(newRow)
-        .then(() => {
-            console.log("Document successfully written!");
 
-        }).catch((error) => {
-            console.error("Error writing document: ", error);
-        });
-
-
-    return <p>New Record Written Successfully</p>;
-  }
 
 class CurrentLocation extends Component {
     constructor(props) {
@@ -549,10 +501,10 @@ export default class Chatbot extends Component {
                             )}
                         </div>
                     </div>
-                    {submitted === true && <SyncSubmission />}
+                    {submitted === true && <SyncSubmission submissionDetails = {submissionDetails}/>}
                     <hr></hr>
                     <h1 style = {{textAlign: 'center'}}>311 Case Records</h1>
-                    <CaseData />
+                    <CaseData status = "hello" />
 
                     {/* <div className = 'row data-table'>
                         <div className="col-md-6">

@@ -17,7 +17,8 @@ const firebaseConfig = {
   appId: "1:1051748532808:web:329f4b10628ab679a38e7d",
   measurementId: "G-3NK4G5XJZM"
 };
-const CaseData = () => {
+export const CaseData = (status) => {
+  console.log(status)
   // easily access the Firestore library
   var [cols, updateCols ] = useState([]);
   var [dummy, updateDummy] = useState([])
@@ -45,7 +46,7 @@ const CaseData = () => {
                       <thead>
                           <tr>
                               {cols.map(col => {
-                                  console.log(col)
+                                  // console.log(col)
                                   return  <th>{col}</th>
                               })}
                           </tr>
@@ -128,4 +129,56 @@ const CaseData = () => {
           </div>
           </FirebaseAppProvider>)
 }
-export default CaseData
+
+export const SyncSubmission = (data) => {
+  console.log(data['submissionDetails'])
+  const submissionDetails = data['submissionDetails']
+  // easily access the Firestore library
+  const newRow = {
+      "CASE ID": submissionDetails.case_id,
+      "SOURCE": "CHATBOT",
+      "DEPARTMENT": submissionDetails.department,
+      "WORK GROUP": "",
+      "REQUEST TYPE": "",
+      "CATEGORY": submissionDetails.category,
+      "TYPE": "",
+      "DETAIL": "",
+      "CREATION DATE": submissionDetails.creation_date,
+      "CREATION TIME": submissionDetails.creation_time,
+      "CREATION MONTH": submissionDetails.creation_month,
+      "CREATION YEAR": submissionDetails.creation_year,
+      "STATUS": "OPEN",
+      "EXCEEDED EST TIMEFRAME": "N",
+      "CLOSED DATE": "",
+      "CLOSED MONTH": "",
+      "CLOSED YEAR": "",
+      "DAYS TO CLOSE": "",
+      "STREET ADDRESS": submissionDetails.location,
+      "ADDRESS WITH GEOCODE": submissionDetails.location + ` (${submissionDetails.latLng.lat}, ${submissionDetails.latLng.lng} )`,
+      "ZIP CODE": submissionDetails.zipcode,
+      "NEIGHBORHOOD": submissionDetails.nbh_name,
+      "COUNTY": submissionDetails.county,
+      "COUNCIL DISTRICT": submissionDetails.council_district,
+      "POLICE DISTRICT": submissionDetails.police_district,
+      "PARCEL ID NO": "",
+      "LATITUDE": submissionDetails.latLng.lat,
+      "LONGITUDE": submissionDetails.latLng.lng,
+      "CASE URL": submissionDetails.description,
+      "30-60-90 Days Open Window": "",
+      "nbh_id": submissionDetails.nbh_id,
+      "nbh_name": submissionDetails.nbh_name,
+      "BLOCKGROUP ID": submissionDetails.blockgroup_id
+  }
+  console.log(newRow)
+  useFirestore().collection("cases").doc(newRow['CASE ID']).set(newRow)
+      .then(() => {
+          console.log("Document successfully written!");
+
+      }).catch((error) => {
+          console.error("Error writing document: ", error);
+      });
+
+
+  return <p>New Record Written Successfully</p>;
+}
+// export default CaseData
