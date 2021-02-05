@@ -7,7 +7,6 @@ import moment from 'moment'
 import DropzoneComponent from 'react-dropzone-component'
 
 import { dropZone } from '../../utilities/DropZoneHandler.js'
-import { modal } from '../../utilities/modal.js'
 import { locationProvider } from '../../controllers/LocationProvider.js'
 import { dummyData } from './dummyData.js'
 import axios from 'axios'
@@ -430,18 +429,20 @@ export default class Chatbot extends Component {
 
     triggerUpload() {
         const currentImages = dropZone.returnFileList()
-        const image = currentImages[0]
-        const uploadTask = storage.ref(`images/${submissionDetails.case_id}/${image.name}`).put(image)
-        uploadTask.on('state_changed',
-            snapshot => {},
-            error => {console.log(error)},
-            () => {
-                storage.ref(`images/${submissionDetails.case_id}`)
-                .child(image.name).getDownloadURL().then(url => {
-                    console.log(url)
-                })
-            }
-        )
+
+        currentImages.forEach(image => {
+            var uploadTask = storage.ref(`images/${submissionDetails.case_id}/${image.name}`).put(image)
+            uploadTask.on('state_changed',
+                snapshot => {},
+                error => {console.log(error)},
+                () => {
+                    storage.ref(`images/${submissionDetails.case_id}`)
+                    .child(image.name).getDownloadURL().then(url => {
+                        console.log(url)
+                    })
+                }
+            )
+        })
         // dropZone.upload(function() {
         //     if (dropZone.isUploadSuccess() === true) {
         //         modal.showInfo("You have uploaded the files successfully!", "success", "top", "center");
