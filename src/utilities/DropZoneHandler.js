@@ -8,6 +8,7 @@ class DropZoneHandler {
         this.dynamicUpdate = false;
         this.onSuccessCallback = null;
         this.filesAdded = false;
+        this.fileList = [];
         this.uploadSuccess = false;
         this.dropZoneConfig = {
             iconFiletypes: ['.jpg', '.png'],
@@ -54,6 +55,7 @@ class DropZoneHandler {
             modal.showInfo("Invalid File Type! You can only upload a file of type .jpg or .png", "warning", "top", "center");
             this.dropZone.removeFile(file);
         }
+        this.fileList.push(file)
     }
 
     processing(file) {
@@ -92,12 +94,21 @@ class DropZoneHandler {
     }
 
     removedfile(file) {
-		this.filesAdded = false;
+        this.filesAdded = false;
+        var newList = []
+        this.fileList.forEach(item => {
+            if (item !== file){
+                newList.push(item)
+            }
+        })
+        this.fileList = newList
+        // console.log(this.fileList)
 	}
 
 	upload(callback) {
-		this.onSuccessCallback = callback;
+        this.onSuccessCallback = callback;
         this.dropZone.processQueue();
+
 	}
 
 	setup(context, uploadFor = '311Request', uploadID, dynamicUpdate = false) {
@@ -110,7 +121,8 @@ class DropZoneHandler {
         }
         this.onSuccessCallback = null;
         this.dropZoneConfig.postUrl = process.env.APPLICATION_URL + 'upload/' + uploadFor + '/' + uploadID;
-		context.setState({
+        console.log(this.dropZoneConfig.postUrl)
+        context.setState({
             dropZoneSetup: true,
             dropZoneConfig: this.dropZoneConfig,
             dropZoneJSConfig: this.dropZoneJSConfig,
@@ -124,6 +136,9 @@ class DropZoneHandler {
 
     isFilesAdded() {
         return this.filesAdded
+    }
+    returnFileList() {
+        return this.fileList
     }
 };
 

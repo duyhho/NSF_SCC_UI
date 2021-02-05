@@ -18,7 +18,7 @@ const firebaseConfig = {
   measurementId: "G-3NK4G5XJZM"
 };
 export const CaseData = (status) => {
-  console.log(status)
+  // console.log(status)
   // easily access the Firestore library
   var [cols, updateCols ] = useState([]);
   var [dummy, updateDummy] = useState([])
@@ -27,7 +27,7 @@ export const CaseData = (status) => {
   // console.log(caseData)
   useEffect(() => {
       dummyData.getData(function(response){
-          console.log(response)
+          // console.log(response)
           updateDummy(response)
           updateCols(Object.keys(response[0]))
       });
