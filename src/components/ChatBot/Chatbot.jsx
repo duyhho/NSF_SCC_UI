@@ -16,20 +16,25 @@ import { modal } from '../../utilities/modal.js'
 import { locationProvider } from '../../controllers/LocationProvider.js'
 import { dummyData } from './dummyData.js'
 import axios from 'axios'
-// import { FirestoreProvider } from "@react-firebase/firestore";
+
+import "firebase/firestore";
+import {
+  FirebaseAppProvider,
+} from "reactfire";
+import {CaseData, SyncSubmission} from './firebaseData.js'
 // Firebase Config
-// const config = {
-//     apiKey: "AIzaSyAuqrJSVK3_RyZkIPGt2nqt2XMM9XvLad8",
-//     projectId: "nsfscc-umkc",
-//     databaseURL: "DATABASE_URL",
-//     authDomain: "AUTH_DOMAIN",
-//     // OPTIONAL
-//     storageBucket: "STORAGE_BUCKET",
-//     messagingSenderId: "MESSAGING_SENDER_ID"
-//   };
+const firebaseConfig = {
+    apiKey: "AIzaSyAuqrJSVK3_RyZkIPGt2nqt2XMM9XvLad8",
+    authDomain: "nsfscc-umkc.firebaseapp.com",
+    projectId: "nsfscc-umkc",
+    storageBucket: "nsfscc-umkc.appspot.com",
+    messagingSenderId: "1051748532808",
+    appId: "1:1051748532808:web:329f4b10628ab679a38e7d",
+    measurementId: "G-3NK4G5XJZM"
+  };
 var submissionDetails = {
     case_id: '2021' + Math.floor(100000 + Math.random() * 900000),
-    source: 'WEB',
+    source: 'CHATBOT',
     department: '',
     workgroup: '',
     request_type: '',
@@ -62,7 +67,6 @@ var submissionDetails = {
     council_district: '',
     police_district: ''
 };
-
 const chatbotTheme = {
     background: '#f5f8fb',
     headerBgColor: '#CD853F',
@@ -73,6 +77,7 @@ const chatbotTheme = {
     userBubbleColor: '#28a745',
     userFontColor: '#FFFFFF',
 };
+
 
 class CurrentLocation extends Component {
     constructor(props) {
@@ -240,6 +245,8 @@ export default class Chatbot extends Component {
         this.state = {
             dummyData: [],
             cols: [],
+            submitted: false,
+
             currentStepId: 0,
             steps: [
                 {
@@ -361,7 +368,7 @@ export default class Chatbot extends Component {
         dropZone.setup(this, '311Request', 0); //TODO: Update "0" to be the ID of the request
         var self = this
         dummyData.getData(function(response){
-            console.log(response)
+            // console.log(response)
             self.setState({
                 cols: Object.keys(response[0]),
                 dummyData: response
@@ -380,8 +387,8 @@ export default class Chatbot extends Component {
             submissionDetails.department = response.data['Department']
             axios.get(`https://nsfscc-bert.ngrok.io/getGeoLocations?latitude=${submissionDetails.latLng.lat}&longitude=${submissionDetails.latLng.lng}`)
                 .then(function(response) {
-                    submissionDetails.nbh_id = response.data['nbh_id']
-                    submissionDetails.nbh_name = response.data['nbh_name']
+                    submissionDetails.nbh_id = response.data['nbhid']
+                    submissionDetails.nbh_name = response.data['nbhname']
                     submissionDetails.blockgroup_id = response.data['block_id']
                     submissionDetails.council_district = response.data['district']
                     submissionDetails.police_district = response.data['divisionname']
@@ -389,8 +396,8 @@ export default class Chatbot extends Component {
                     console.log(submissionDetails)
                     console.log(self.state.dummyData)
                     const newRow = {
-                        "CASE ID": '2021' + Math.floor(100000 + Math.random() * 900000),
-                        "SOURCE": "WEB",
+                        "CASE ID": submissionDetails.case_id,
+                        "SOURCE": "CHATBOT",
                         "DEPARTMENT": submissionDetails.department,
                         "WORK GROUP": "",
                         "REQUEST TYPE": "",
@@ -429,6 +436,7 @@ export default class Chatbot extends Component {
                         updatedData.push(data)
                     })
                     self.setState({
+                        submitted: true,
                         dummyData: updatedData
                     })
                 })
@@ -455,11 +463,10 @@ export default class Chatbot extends Component {
     }
 
     render() {
-        const dummyData = this.state.dummyData
-        const cols = this.state.cols
+        const submitted = this.state.submitted
         console.log(window.speechSynthesis.getVoices())
         return (
-            // <FirestoreProvider {...config} firebase={firebase}>
+            <FirebaseAppProvider firebaseConfig={firebaseConfig}>
                 <div className="page-container overflow">
                     <div className="row">
                         <div className="col-md-6">
@@ -489,9 +496,12 @@ export default class Chatbot extends Component {
                             )}
                         </div>
                     </div>
+                    {submitted === true && <SyncSubmission submissionDetails = {submissionDetails}/>}
                     <hr></hr>
                     <h1 style = {{textAlign: 'center'}}>311 Case Records</h1>
-                    <div className = 'row data-table'>
+                    <CaseData status = "hello" />
+
+                    {/* <div className = 'row data-table'>
                         <div className="col-md-6">
                             <table class="ui sortable celled table " >
                                 <thead>
@@ -524,8 +534,9 @@ export default class Chatbot extends Component {
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
+            </FirebaseAppProvider>
 
         )
     }
