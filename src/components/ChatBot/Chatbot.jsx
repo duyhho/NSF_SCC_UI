@@ -22,6 +22,7 @@ import {
   FirebaseAppProvider,
 } from "reactfire";
 import {CaseData, SyncSubmission} from './firebaseData.js'
+import {storage} from 'firebase-storage/storage.js'
 // Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyAuqrJSVK3_RyZkIPGt2nqt2XMM9XvLad8",
