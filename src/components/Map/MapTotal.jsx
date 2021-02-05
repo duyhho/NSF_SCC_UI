@@ -22,8 +22,8 @@ export class MapTotal extends Component {
             currentPosition: {lat: 39.0410436302915, lng: -94.5876739197085},
             colorArray: ['#FF8C00', '#FFFF00', '#00BCF2', '#00B294',
                         '#FFB6C1', '#68217A', '#00188F', '#BAD80A', '#E81123', '#009E49' ],
-            categoryList: [],
-            selectedCategory: "Block Groups",
+            categoryList: ['Council Districts', 'Police Districts', 'Neighborhoods', 'Block Groups', 'School Districts'],
+            selectedCategory: "Council Districts",
             blockGroupList: [[]],
             neighborhoodList: [[]],
             councilDistrictList: [[]],
@@ -53,9 +53,6 @@ export class MapTotal extends Component {
             self.setState({
                 blockGroupList: blockGroupData,
                 loadingBlockGroup: false,
-                categoryList: update(self.state.categoryList,
-                    {$push: ["Block Groups"]}
-                )
             })
         })
         .catch(function(e) {
@@ -72,9 +69,6 @@ export class MapTotal extends Component {
             self.setState({
                 neighborhoodList: neighborhoodData,
                 loadingNeighborhood: false,
-                categoryList: update(self.state.categoryList,
-                    {$push: ["Neighborhoods"]}
-                )
             })
         })
         .catch(function(e) {
@@ -90,9 +84,6 @@ export class MapTotal extends Component {
             self.setState({
                 councilDistrictList: response.data.features,
                 loadingCouncilDistrict: false,
-                categoryList: update(self.state.categoryList,
-                    {$push: ["Council Districts"]}
-                )
             })
         })
         .catch(function(e) {
@@ -108,9 +99,6 @@ export class MapTotal extends Component {
             self.setState({
                 schoolDistrictList: response.data.features,
                 loadingSchoolDistrict: false,
-                categoryList: update(self.state.categoryList,
-                    {$push: ["School Districts"]}
-                )
             })
         })
         .catch(function(e) {
@@ -126,16 +114,13 @@ export class MapTotal extends Component {
             self.setState({
                 policeDivisionList: response.data.features,
                 loadingPoliceDivision: false,
-                categoryList: update(self.state.categoryList,
-                    {$push: ["Police Divisions"]}
-                )
             })
         })
         .catch(function(e) {
             self.setState({
                 loadingPoliceDivision: false
             })
-            modal.showInfo("Cannot load the police division data!", "danger", "top", "center");
+            modal.showInfo("Cannot load the police district data!", "danger", "top", "center");
         })
     }
 
@@ -212,32 +197,6 @@ export class MapTotal extends Component {
         } else if (selectedCategory === "Council Districts") {
             colorCount = 0
             returnedData = councilDistrictList.map(district => {
-                var subReturnedData = district.geometry.coordinates[0].map(function(area) {
-                    var coordArr = []
-                    area.forEach(function(coord) {
-                        coordArr.push({
-                            lat: coord[1], lng: coord[0]
-                        });
-                    })
-                    return (
-                        <Polygon
-                            ref={self.polygonRef}
-                            paths={coordArr}
-                            strokeColor={self.state.colorArray[colorCount]}
-                            strokeOpacity={1}
-                            strokeWeight={3}
-                            fillColor={self.state.colorArray[colorCount]}
-                            fillOpacity={0.75}
-                        />
-                    )
-                })
-
-                colorCount += 1
-                return subReturnedData
-            })
-        } else if (selectedCategory === "School Districts") {
-            colorCount = 0
-            returnedData = schoolDistrictList.map(district => {
                 if (district.geometry) {
                     var subReturnedData = district.geometry.coordinates[0].map(function(area) {
                         var coordArr = []
@@ -258,12 +217,46 @@ export class MapTotal extends Component {
                             />
                         )
                     })
+                    colorCount += 1
+
                 }
 
-                colorCount += 1
+
                 return subReturnedData
             })
-        } else if (selectedCategory === "Police Divisions") {
+        } else if (selectedCategory === "School Districts") {
+            colorCount = 0
+            returnedData = schoolDistrictList.map(district => {
+                if (district.geometry) {
+                    var randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+                    var subReturnedData = district.geometry.coordinates[0].map(function(area) {
+                        var coordArr = []
+                        area.forEach(function(coord) {
+                            coordArr.push({
+                                lat: coord[1], lng: coord[0]
+                            });
+                        })
+
+                        return (
+                            <Polygon
+                                ref={self.polygonRef}
+                                paths={coordArr}
+                                strokeColor={randomColor}
+                                strokeOpacity={1}
+                                strokeWeight={3}
+                                fillColor={randomColor}
+                                fillOpacity={0.75}
+                            />
+                        )
+                    })
+                    colorCount += 1
+                    console.log(randomColor)
+                }
+
+
+                return subReturnedData
+            })
+        } else if (selectedCategory === "Police Districts") {
             colorCount = 0
             returnedData = policeDivisionList.map(district => {
                 var subReturnedData = district.geometry.coordinates[0].map(function(area) {
@@ -308,11 +301,10 @@ export class MapTotal extends Component {
 
         return (
         <div className="page-container">
-            {finishedLoadingData === true ? (
             <div className="row">
                 <div className="col-md-6 map-view-container" style = {{height: "95vh"}}>
                     <div className="map-top-center">
-                        <select defaultValue="Block Groups" onChange={this.handleCategoryChange.bind(this)}>
+                        <select defaultValue="Council Districts" onChange={this.handleCategoryChange.bind(this)}>
                             {this.state.categoryList.map(function(item){
                                 return <option key={item} value={item}>{item}</option>
                             })}
@@ -330,11 +322,6 @@ export class MapTotal extends Component {
                     </div>
                 </div>
             </div>
-            ) : (
-            <div align="center">
-                {this.state.initialMessage}
-            </div>
-            )}
         </div>
         );
     }
