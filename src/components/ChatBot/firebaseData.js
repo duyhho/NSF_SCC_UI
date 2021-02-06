@@ -71,7 +71,7 @@ export const CaseData = (status) => {
                                           "CREATION TIME": row["CREATION TIME"],
                                           "CREATION MONTH": row["CREATION MONTH"],
                                           "CREATION YEAR": row["CREATION YEAR"],
-                                          "STATUS": row["CREATION YEAR"],
+                                          "STATUS": row["STATUS"],
                                           "EXCEEDED EST TIMEFRAME": row["EXCEEDED EST TIMEFRAME"],
                                           "CLOSED DATE": row["CLOSED DATE"],
                                           "CLOSED MONTH": row["CLOSED MONTH"],
