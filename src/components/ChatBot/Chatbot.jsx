@@ -10,6 +10,7 @@ import { dropZone } from '../../utilities/DropZoneHandler.js'
 import { locationProvider } from '../../controllers/LocationProvider.js'
 import { dummyData } from './dummyData.js'
 import axios from 'axios'
+import { modal } from '../../utilities/modal.js'
 
 import "firebase/firestore";
 import { FirebaseAppProvider } from "reactfire"
@@ -228,6 +229,7 @@ export default class Chatbot extends Component {
             dummyData: [],
             cols: [],
             submitted: false,
+            uploading: false,
 
             currentStepId: 0,
             steps: [
@@ -347,7 +349,7 @@ export default class Chatbot extends Component {
         this.setState({
             voice: window.speechSynthesis.getVoices()[4]
         })
-        dropZone.setup(this, '311Request', 0); //TODO: Update "0" to be the ID of the request
+        dropZone.setup(this);
         var self = this
         dummyData.getData(function(response){
             self.setState({
@@ -426,6 +428,10 @@ export default class Chatbot extends Component {
     }
 
     triggerUpload() {
+        var self = this
+        this.setState({
+            uploading: true
+        })
         const currentImages = dropZone.returnFileList()
 
         currentImages.forEach(image => {
@@ -436,24 +442,22 @@ export default class Chatbot extends Component {
                 () => {
                     storage.ref(`images/${submissionDetails.case_id}`)
                     .child(image.name).getDownloadURL().then(url => {
-                        console.log(url)
+                        dropZone.dropZone.removeFile(image)
+                        console.log(dropZone.returnFileList())
+                        if (dropZone.returnFileList().length === 0) {
+                            modal.showInfo("Successfully uploading all files!", "success", "top", "center");
+                            self.setState({
+                                uploading: false
+                            })
+                        }
                     })
                 }
             )
         })
-        // dropZone.upload(function() {
-        //     if (dropZone.isUploadSuccess() === true) {
-        //         modal.showInfo("You have uploaded the files successfully!", "success", "top", "center");
-        //     } else if (dropZone.isFilesAdded() === false) {
-        //         modal.showInfo("There is no pending file to upload!", "warning", "top", "center");
-        //     }
-        // });
-
     }
 
     render() {
         const submitted = this.state.submitted
-        console.log(window.speechSynthesis.getVoices())
         return (
             <FirebaseAppProvider firebaseConfig={firebaseConfig}>
                 <div className="page-container overflow">
@@ -472,61 +476,32 @@ export default class Chatbot extends Component {
                                 />
                             </ThemeProvider>
                         </div>
-                        <div className="col-md-5">
-                            {this.state.dropZoneSetup !== undefined && (
-                            <div align="center">
-                                <DropzoneComponent
-                                    config={this.state.dropZoneConfig}
-                                    eventHandlers={this.state.dropZoneEventHandlers}
-                                    djsConfig={this.state.dropZoneJSConfig}
-                                />
-                                <button type="button" className="btn btn-primary" onClick={this.triggerUpload.bind(this)} autoComplete="off">Upload</button>
+                        <div className="col-md-5" style={{textAlign: "center"}}>
+                            <div>
+                                {this.state.dropZoneSetup !== undefined && (
+                                <div align="center">
+                                    <DropzoneComponent
+                                        config={this.state.dropZoneConfig}
+                                        eventHandlers={this.state.dropZoneEventHandlers}
+                                        djsConfig={this.state.dropZoneJSConfig}
+                                    />
+                                    <button type="button" className="btn btn-primary" onClick={this.triggerUpload.bind(this)} autoComplete="off">Upload</button>
+                                </div>
+                                )}
+                            </div>
+                            {this.state.uploading === true && (
+                            <div className="loading-indicator">
+                                LOADING IMAGE HERE
                             </div>
                             )}
                         </div>
                     </div>
-                <hr></hr>
-                <h1 style = {{textAlign: 'center'}}>311 Case Records</h1>
-                {submitted === true && <SyncSubmission submissionDetails = {submissionDetails}/>}
-                <CaseData status = "hello" />
-
-                    {/* <div className = 'row data-table'>
-                        <div className="col-md-6">
-                            <table class="ui sortable celled table " >
-                                <thead>
-                                    <tr>
-                                        {cols.map(col => {
-                                            // console.log(<th>{col}</th>)
-                                            return  <th>{col}</th>
-                                        })}
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    {
-                                        dummyData.map(row => {
-                                            // console.log(row['CASE ID'].toString())
-                                            if (row['CASE ID'].toString().includes('2021')){
-                                                    return <tr>
-                                                        {Object.values(row).map(val => {
-                                                            return <td class='positive'>{val}</td>
-                                                        })}
-                                                    </tr>
-                                                }
-                                            return  <tr>
-                                                {Object.values(row).map(val => {
-                                                    return <td>{val}</td>
-                                                })}
-                                            </tr>
-                                        })
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div> */}
-                 </div>
+                    <hr></hr>
+                    <h1 style = {{textAlign: 'center'}}>311 Case Records</h1>
+                    {submitted === true && <SyncSubmission submissionDetails = {submissionDetails}/>}
+                    <CaseData status = "hello" />
+                </div>
             </FirebaseAppProvider>
-
         )
     }
 }
