@@ -1,6 +1,5 @@
 import React, { Component } from "react"
 import { Map, GoogleApiWrapper, Polygon } from "google-maps-react"
-import update from 'immutability-helper'
 import axios from 'axios'
 
 import { server } from '../../controllers/Server.js'
@@ -289,11 +288,6 @@ export class MapTotal extends Component {
 
     render() {
         const currentPosition = this.state.currentPosition;
-
-        var finishedLoadingData = false;
-        if (this.state.loadingBlockGroup === false && this.state.loadingNeighborhood === false && this.state.loadingCouncilDistrict === false && this.state.loadingSchoolDistrict === false && this.state.loadingPoliceDivision === false) {
-            finishedLoadingData = true
-        }
 
         if (!this.props.google) {
             return <div>Loading...</div>;

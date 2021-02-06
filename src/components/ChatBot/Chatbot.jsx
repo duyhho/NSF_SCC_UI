@@ -12,11 +12,9 @@ import { dummyData } from './dummyData.js'
 import axios from 'axios'
 
 import "firebase/firestore";
-import {
-  FirebaseAppProvider,
-} from "reactfire";
-import {CaseData, SyncSubmission} from './firebaseData.js'
-import {storage} from './firebase-storage/storage.js'
+import { FirebaseAppProvider } from "reactfire"
+import { CaseData, SyncSubmission } from './firebaseData.js'
+import { storage } from './firebase-storage/storage.js'
 // Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyAuqrJSVK3_RyZkIPGt2nqt2XMM9XvLad8",
