@@ -561,7 +561,7 @@ export class Map311 extends Component {
                         {(firstImageReturned === true && serverError === false) && (
                         <div>
                             <br />
-                            <ProgressBar bgcolor={"#00695c"} completed={returnedPercent} />
+                            <ProgressBar bgcolor={"#00695c"} completed={returnedPercent} inProgressText={"Streaming"} completeText={"Stream Completed!"}/>
                         </div>
                         )}
                     </div>

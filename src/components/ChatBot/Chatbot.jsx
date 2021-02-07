@@ -11,6 +11,7 @@ import { locationProvider } from '../../controllers/LocationProvider.js'
 import { dummyData } from './dummyData.js'
 import axios from 'axios'
 import { modal } from '../../utilities/modal.js'
+import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 
 import "firebase/firestore";
 import { FirebaseAppProvider } from "reactfire"
@@ -229,7 +230,8 @@ export default class Chatbot extends Component {
             dummyData: [],
             cols: [],
             submitted: false,
-            uploading: false,
+            firstUploaded: false,
+            uploadPercent: 0,
 
             currentStepId: 0,
             steps: [
@@ -429,10 +431,19 @@ export default class Chatbot extends Component {
 
     triggerUpload() {
         var self = this
-        this.setState({
-            uploading: true
-        })
         const currentImages = dropZone.returnFileList()
+
+        if (currentImages.length === 0) {
+            modal.showInfo("There are no files to upload!", "danger", "top", "center");
+            return;
+        }
+
+        this.setState({
+            firstUploaded: true,
+            uploadPercent: 0
+        })
+
+        const originalFileListLength = dropZone.returnFileList().length
 
         currentImages.forEach(image => {
             var uploadTask = storage.ref(`images/${submissionDetails.case_id}/${image.name}`).put(image)
@@ -443,12 +454,11 @@ export default class Chatbot extends Component {
                     storage.ref(`images/${submissionDetails.case_id}`)
                     .child(image.name).getDownloadURL().then(url => {
                         dropZone.dropZone.removeFile(image)
-                        console.log(dropZone.returnFileList())
+                        self.setState({
+                            uploadPercent: 100 / originalFileListLength * (originalFileListLength - dropZone.returnFileList().length)
+                        })
                         if (dropZone.returnFileList().length === 0) {
                             modal.showInfo("Successfully uploading all files!", "success", "top", "center");
-                            self.setState({
-                                uploading: false
-                            })
                         }
                     })
                 }
@@ -458,6 +468,8 @@ export default class Chatbot extends Component {
 
     render() {
         const submitted = this.state.submitted
+        const uploadPercent = this.state.uploadPercent
+
         return (
             <FirebaseAppProvider firebaseConfig={firebaseConfig}>
                 <div className="page-container overflow">
@@ -489,10 +501,8 @@ export default class Chatbot extends Component {
                                 </div>
                                 )}
                             </div>
-                            {this.state.uploading === true && (
-                            <div className="loading-indicator">
-                                LOADING IMAGE HERE
-                            </div>
+                            {this.state.firstUploaded === true && (
+                            <ProgressBar bgcolor={"#00695c"} completed={uploadPercent} inProgressText={"Uploading"} completeText={"Upload Completed!"}/>
                             )}
                         </div>
                     </div>

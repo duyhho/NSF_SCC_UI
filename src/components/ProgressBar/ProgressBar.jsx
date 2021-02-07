@@ -1,7 +1,7 @@
 import React from "react";
 
 const ProgressBar = (props) => {
-    const { bgcolor, completed } = props;
+    const { bgcolor, completed, inProgressText, completeText } = props;
   
     const containerStyles = {
       height: 20,
@@ -28,19 +28,19 @@ const ProgressBar = (props) => {
       fontWeight: 'bold'
     }
 
-    var completeText = ""
+    var percentText = ""
     if (completed === 100) {
-      completeText = `Stream Completed!`
+      percentText = completeText
     } else if (completed > 25) {
-      completeText = `Streaming ${completed}%`
+      percentText = `${inProgressText} ${completed}%`
     } else {
-      completeText = `${completed}%`
+      percentText = `${completed}%`
     }
   
     return (
       <div style={containerStyles}>
         <div style={fillerStyles}>
-          <span style={labelStyles}>{completeText}</span>
+          <span style={labelStyles}>{percentText}</span>
         </div>
       </div>
     );

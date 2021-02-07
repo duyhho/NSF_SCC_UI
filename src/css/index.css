@@ -428,12 +428,3 @@ div.filepicker {
   display: none;
 }
 /* End DropZone style */
-
-.loading-indicator {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  z-index: 9999;
-}

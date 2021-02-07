@@ -316,7 +316,7 @@ export class VirtualTour extends Component {
                         )}
                         {(firstImageReturned === true && serverError === false) && (
                         <div>
-                            <ProgressBar bgcolor={"#00695c"} completed={returnedPercent} />
+                            <ProgressBar bgcolor={"#00695c"} completed={returnedPercent} inProgressText={"Streaming"} completeText={"Stream Completed!"}/>
                         </div>
                         )}
                     </div>
