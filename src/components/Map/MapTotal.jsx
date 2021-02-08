@@ -28,6 +28,7 @@ export class MapTotal extends Component {
             councilDistrictList: [[]],
             schoolDistrictList: [[]],
             policeDivisionList: [[]],
+            tempColor: '#FFFF00'
         };
     }
 
@@ -64,7 +65,8 @@ export class MapTotal extends Component {
         //Load Neighborhoods
         axios.get('https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0')
         .then(function(response) {
-            const neighborhoodData = response.data.slice(1, response.data.length)
+            const neighborhoodData = response.data.slice(2, response.data.length)
+            console.log(neighborhoodData)
             self.setState({
                 neighborhoodList: neighborhoodData,
                 loadingNeighborhood: false,
@@ -122,17 +124,26 @@ export class MapTotal extends Component {
             modal.showInfo("Cannot load the police district data!", "danger", "top", "center");
         })
     }
-
-    setPolygonOptions = (options) => {
-        this.polygonRef.current.polygon.setOptions(options);
-    };
-
     handleCategoryChange(e) {
         this.setState({
             selectedCategory: e.target.value
         })
     }
+    handleClick(props,polygon,e) {
+        console.log(props)
 
+    };
+    handleMouseOver(props,polygon,e) {
+        console.log(props)
+        this.setState({
+            tempColor: props.fillColor
+        })
+        polygon.setOptions({ fillColor: "#1E90FF", strokeColor: "#1E90FF"});
+
+    };
+    handleMouseOut(props,polygon,e) {
+        polygon.setOptions({ fillColor: this.state.tempColor, strokeColor: this.state.tempColor});
+    };
     renderPolygons() {
         var self = this;
         const selectedCategory = this.state.selectedCategory;
@@ -197,6 +208,7 @@ export class MapTotal extends Component {
             colorCount = 0
             returnedData = councilDistrictList.map(district => {
                 if (district.geometry) {
+                    // console.log(district.properties.district)
                     var subReturnedData = district.geometry.coordinates[0].map(function(area) {
                         var coordArr = []
                         area.forEach(function(coord) {
@@ -208,11 +220,17 @@ export class MapTotal extends Component {
                             <Polygon
                                 ref={self.polygonRef}
                                 paths={coordArr}
+                                item = {district.properties.district}
                                 strokeColor={self.state.colorArray[colorCount]}
                                 strokeOpacity={1}
                                 strokeWeight={3}
                                 fillColor={self.state.colorArray[colorCount]}
                                 fillOpacity={0.75}
+                                onClick = {self.handleClick.bind(self)}
+                                onMouseover = {self.handleMouseOver.bind(self)}
+                                onMouseout = {self.handleMouseOut.bind(self)}
+
+
                             />
                         )
                     })
@@ -226,7 +244,8 @@ export class MapTotal extends Component {
         } else if (selectedCategory === "School Districts") {
             colorCount = 0
             returnedData = schoolDistrictList.map(district => {
-                if (district.geometry) {
+                if (district.geometry && (district.properties['district_name'].includes('KANSAS CITY MISSOURI') || district.properties['district_name'].includes('NORTH KANSAS CITY'))) {
+                    // console.log(district.properties)
                     var randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
                     var subReturnedData = district.geometry.coordinates[0].map(function(area) {
                         var coordArr = []
@@ -240,24 +259,29 @@ export class MapTotal extends Component {
                             <Polygon
                                 ref={self.polygonRef}
                                 paths={coordArr}
+                                item = {district.properties['district_name']}
                                 strokeColor={randomColor}
                                 strokeOpacity={1}
                                 strokeWeight={3}
                                 fillColor={randomColor}
                                 fillOpacity={0.75}
+                                onClick = {self.handleClick.bind(self)}
+                                onMouseover = {self.handleMouseOver.bind(self)}
+                                onMouseout = {self.handleMouseOut.bind(self)}
                             />
                         )
                     })
                     colorCount += 1
-                    console.log(randomColor)
+                    // console.log(randomColor)
                 }
 
-
+                // console.log(colorCount)
                 return subReturnedData
             })
         } else if (selectedCategory === "Police Districts") {
             colorCount = 0
             returnedData = policeDivisionList.map(district => {
+                // console.log(district)
                 var subReturnedData = district.geometry.coordinates[0].map(function(area) {
                     var coordArr = []
                     area.forEach(function(coord) {
@@ -269,11 +293,17 @@ export class MapTotal extends Component {
                         <Polygon
                             ref={self.polygonRef}
                             paths={coordArr}
+                            item = {district.properties.divisionname}
+
                             strokeColor={self.state.colorArray[colorCount]}
                             strokeOpacity={1}
                             strokeWeight={3}
                             fillColor={self.state.colorArray[colorCount]}
                             fillOpacity={0.75}
+                            onClick = {self.handleClick.bind(self)}
+                            onMouseover = {self.handleMouseOver.bind(self)}
+                            onMouseout = {self.handleMouseOut.bind(self)}
+
                         />
                     )
                 })
