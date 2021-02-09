@@ -130,7 +130,7 @@ class RequestForm extends Component {
     componentWillMount() {
         var self = this;
         const { steps } = this.props;
-        const { request_description, update_request_location_user_input } = steps;
+        const { request_description, update_request_location_user_input, request_user_name, request_user_phone, request_user_email } = steps;
         if (update_request_location_user_input !== undefined) {
             Geocode.fromAddress(update_request_location_user_input.value).then(
                 response => {
@@ -177,7 +177,10 @@ class RequestForm extends Component {
 
         this.setState({
             request_description: request_description,
-            request_time: request_time
+            request_time: request_time,
+            request_user_name: request_user_name,
+            request_user_phone: request_user_phone,
+            request_user_email: request_user_email,
         })
 
         submissionDetails.description = request_description.value
@@ -189,7 +192,8 @@ class RequestForm extends Component {
     }
 
     render() {
-        const { request_description, formattedNewLocation, request_time } = this.state;
+        const { request_description, formattedNewLocation, request_time, request_user_name, request_user_phone, request_user_email } = this.state;
+        console.log(request_user_name)
         return (
             <div style={{width: "100%"}}>
                 <h3>311 Request</h3>
@@ -207,6 +211,24 @@ class RequestForm extends Component {
                             <td>Description: </td>
                             <td>{request_description.value}</td>
                         </tr>
+                        {request_user_name !== undefined && (
+                        <tr>
+                            <td>Your Name: </td>
+                            <td>{request_user_name.value}</td>
+                        </tr>
+                        )}
+                        {request_user_phone !== undefined && (
+                        <tr>
+                            <td>Your Phone Number: </td>
+                            <td>{request_user_phone.value}</td>
+                        </tr>
+                        )}
+                        {request_user_email !== undefined && (
+                        <tr>
+                            <td>Your Email Address: </td>
+                            <td>{request_user_email.value}</td>
+                        </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -254,6 +276,66 @@ export default class Chatbot extends Component {
                 },
                 {
                     id: "request_description",
+                    user: true,
+                    validator: (value) => {
+                        if (value === "") {
+                            return "You must enter something!";
+                        }
+                        return true;
+                    },
+                    trigger: "ask_contact_details"
+                },
+                {
+                    id: "ask_contact_details",
+                    message: "Do you want to leave your contact details so we can update you with the latest progress?",
+                    trigger: "confirm_ask_contact_details"
+                },
+                {
+                    id: "confirm_ask_contact_details",
+                    options: [
+                        { value: "Yes", label: "Yes", trigger: "ask_user_name" },
+                        { value: "No", label: "No", trigger: "request_location" },
+                    ],
+                },
+                {
+                    id: "ask_user_name",
+                    message: "Please enter your name!",
+                    trigger: "request_user_name"
+                },
+                {
+                    id: "request_user_name",
+                    user: true,
+                    validator: (value) => {
+                        if (value === "") {
+                            return "You must enter something!";
+                        }
+                        return true;
+                    },
+                    trigger: "ask_user_phone"
+                },
+                {
+                    id: "ask_user_phone",
+                    message: "Please enter your phone number!",
+                    trigger: "request_user_phone"
+                },
+                {
+                    id: "request_user_phone",
+                    user: true,
+                    validator: (value) => {
+                        if (value === "") {
+                            return "You must enter something!";
+                        }
+                        return true;
+                    },
+                    trigger: "ask_user_email"
+                },
+                {
+                    id: "ask_user_email",
+                    message: "Please enter your email address!",
+                    trigger: "request_user_email"
+                },
+                {
+                    id: "request_user_email",
                     user: true,
                     validator: (value) => {
                         if (value === "") {
@@ -320,6 +402,7 @@ export default class Chatbot extends Component {
                     options: [
                         { value: "Edit Location", label: "Edit Location", trigger: "edit_location" },
                         { value: "Edit Description", label: "Edit Description", trigger: "edit_description_message" },
+                        { value: "Edit Contact Details", label: "Edit Contact Details", trigger: "ask_user_name" },
                         { value: "End", label: "Submit!", trigger: "submit_form" },
                     ],
                 },
