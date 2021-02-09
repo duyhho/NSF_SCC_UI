@@ -159,6 +159,7 @@ export class MapTotal extends Component {
                 if (item === "Cluster_Total" || item === 'Cluster_Profiles') {
                     return <div></div>;
                 } else {
+                    var randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
                     const coords = blockGroupList[0][item]["Boundaries"]
                     var coordArr = []
                     coords.forEach(function(coord) {
@@ -170,10 +171,10 @@ export class MapTotal extends Component {
                         <Polygon
                             ref={self.polygonRef}
                             paths={coordArr}
-                            strokeColor={self.state.colorArray[blockGroupList[0][item]["Cluster by All Factors"] - 1]}
+                            strokeColor={randomColor}
                             strokeOpacity={1}
                             strokeWeight={3}
-                            fillColor={self.state.colorArray[blockGroupList[0][item]["Cluster by All Factors"] - 1]}
+                            fillColor={randomColor}
                             fillOpacity={0.75}
                         />
                     )
