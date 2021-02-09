@@ -467,6 +467,7 @@ export default class Chatbot extends Component {
 
                     const newRow = {
                         "CASE ID": submissionDetails.case_id,
+                        "CASE DESCRIPTION": submissionDetails.description,
                         "SOURCE": "CHATBOT",
                         "DEPARTMENT": submissionDetails.department,
                         "WORK GROUP": "",
@@ -494,7 +495,6 @@ export default class Chatbot extends Component {
                         "PARCEL ID NO": "",
                         "LATITUDE": submissionDetails.latLng.lat,
                         "LONGITUDE": submissionDetails.latLng.lng,
-                        "CASE URL": submissionDetails.description,
                         "30-60-90 Days Open Window": "",
                         "nbh_id": submissionDetails.nbh_id,
                         "nbh_name": submissionDetails.nbh_name,

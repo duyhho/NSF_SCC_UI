@@ -30,7 +30,7 @@ export const CaseData = (status) => {
             updateDummy(response)
             updateCols(Object.keys(response[0]))
         });
-        }, []);
+    }, []);
 
     // allData = caseData.concat(dummy)
     // console.log(allData)
@@ -50,88 +50,90 @@ export const CaseData = (status) => {
 
                         <tbody>
                             {
-                                (caseData !== undefined) && caseData.map(row => {
-                                    // console.log(row['CASE ID'].toString())
+                            (caseData !== undefined) && caseData.map(row => {
+                                // console.log(row['CASE ID'].toString())
 
-                                    if (row['CASE ID'].toString().includes('2021')){
-                                        const newRow = {
-                                            "CASE ID": row['CASE ID'],
-                                            "SOURCE": row['SOURCE'],
-                                            "DEPARTMENT": row['DEPARTMENT'],
-                                            "WORK GROUP": row['WORK GROUP'],
-                                            "REQUEST TYPE": row["REQUEST TYPE"],
-                                            "CATEGORY": row['CATEGORY'],
-                                            "TYPE": row["TYPE"],
-                                            "DETAIL": row["DETAIL"],
-                                            "CREATION DATE": row['CREATION DATE'],
-                                            "CREATION TIME": row["CREATION TIME"],
-                                            "CREATION MONTH": row["CREATION MONTH"],
-                                            "CREATION YEAR": row["CREATION YEAR"],
-                                            "STATUS": row["STATUS"],
-                                            "EXCEEDED EST TIMEFRAME": row["EXCEEDED EST TIMEFRAME"],
-                                            "CLOSED DATE": row["CLOSED DATE"],
-                                            "CLOSED MONTH": row["CLOSED MONTH"],
-                                            "CLOSED YEAR": row["CLOSED YEAR"],
-                                            "DAYS TO CLOSE": row["DAYS TO CLOSE"],
-                                            "STREET ADDRESS": row["STREET ADDRESS"],
-                                            "ADDRESS WITH GEOCODE": row["ADDRESS WITH GEOCODE"],
-                                            "ZIP CODE": row["ZIP CODE"],
-                                            "NEIGHBORHOOD": row["NEIGHBORHOOD"],
-                                            "COUNTY": row["COUNTY"],
-                                            "COUNCIL DISTRICT": row["COUNCIL DISTRICT"],
-                                            "POLICE DISTRICT": row["POLICE DISTRICT"],
-                                            "PARCEL ID NO": row["PARCEL ID NO"],
-                                            "LATITUDE": row["LATITUDE"],
-                                            "LONGITUDE": row["LONGITUDE"],
-                                            "CASE URL": row["CASE URL"],
-                                            "30-60-90 Days Open Window": row["30-60-90 Days Open Window"],
-                                            "nbh_id": row["nbh_id"],
-                                            "nbh_name": row["nbh_name"],
-                                            "BLOCKGROUP ID": row["BLOCKGROUP ID"]
-                                        }
-                                            return <tr>
-                                                {Object.values(newRow).map(val => {
-                                                    return <td class='positive'>{val}</td>
-                                                })}
-                                            </tr>
-                                        }
-                                    return  <tr>
-                                        {Object.values(row).map(val => {
-                                            return <td>{val}</td>
-                                        })}
-                                    </tr>
-                                })
+                                if (row['CASE ID'].toString().includes('2021')){
+                                    const newRow = {
+                                        "CASE ID": row['CASE ID'],
+                                        "CASE DESCRIPTION": row["CASE URL"],
+                                        "SOURCE": row['SOURCE'],
+                                        "DEPARTMENT": row['DEPARTMENT'],
+                                        "WORK GROUP": row['WORK GROUP'],
+                                        "REQUEST TYPE": row["REQUEST TYPE"],
+                                        "CATEGORY": row['CATEGORY'],
+                                        "TYPE": row["TYPE"],
+                                        "DETAIL": row["DETAIL"],
+                                        "CREATION DATE": row['CREATION DATE'],
+                                        "CREATION TIME": row["CREATION TIME"],
+                                        "CREATION MONTH": row["CREATION MONTH"],
+                                        "CREATION YEAR": row["CREATION YEAR"],
+                                        "STATUS": row["STATUS"],
+                                        "EXCEEDED EST TIMEFRAME": row["EXCEEDED EST TIMEFRAME"],
+                                        "CLOSED DATE": row["CLOSED DATE"],
+                                        "CLOSED MONTH": row["CLOSED MONTH"],
+                                        "CLOSED YEAR": row["CLOSED YEAR"],
+                                        "DAYS TO CLOSE": row["DAYS TO CLOSE"],
+                                        "STREET ADDRESS": row["STREET ADDRESS"],
+                                        "ADDRESS WITH GEOCODE": row["ADDRESS WITH GEOCODE"],
+                                        "ZIP CODE": row["ZIP CODE"],
+                                        "NEIGHBORHOOD": row["NEIGHBORHOOD"],
+                                        "COUNTY": row["COUNTY"],
+                                        "COUNCIL DISTRICT": row["COUNCIL DISTRICT"],
+                                        "POLICE DISTRICT": row["POLICE DISTRICT"],
+                                        "PARCEL ID NO": row["PARCEL ID NO"],
+                                        "LATITUDE": row["LATITUDE"],
+                                        "LONGITUDE": row["LONGITUDE"],
+                                        "30-60-90 Days Open Window": row["30-60-90 Days Open Window"],
+                                        "nbh_id": row["nbh_id"],
+                                        "nbh_name": row["nbh_name"],
+                                        "BLOCKGROUP ID": row["BLOCKGROUP ID"]
+                                    }
+                                        return <tr>
+                                            {Object.values(newRow).map(val => {
+                                                return <td class='positive'>{val}</td>
+                                            })}
+                                        </tr>
+                                    }
+                                return  <tr>
+                                    {Object.values(row).map(val => {
+                                        return <td>{val}</td>
+                                    })}
+                                </tr>
+                            })
                             }
                             {
-                                (dummy !== undefined) && dummy.map(row => {
-                                    // console.log(row['CASE ID'].toString())
-                                    if (row['CASE ID'].toString().includes('2021')){
-                                            return <tr>
-                                                {Object.values(row).map(val => {
-                                                    return <td class='positive'>{val}</td>
-                                                })}
-                                            </tr>
-                                        }
-                                    return  <tr>
-                                        {Object.values(row).map(val => {
-                                            return <td>{val}</td>
-                                        })}
-                                    </tr>
-                                })
+                            (dummy !== undefined) && dummy.map(row => {
+                                // console.log(row['CASE ID'].toString())
+                                if (row['CASE ID'].toString().includes('2021')){
+                                        return <tr>
+                                            {Object.values(row).map(val => {
+                                                return <td class='positive'>{val}</td>
+                                            })}
+                                        </tr>
+                                    }
+                                return  <tr>
+                                    {Object.values(row).map(val => {
+                                        return <td>{val}</td>
+                                    })}
+                                </tr>
+                            })
                             }
                         </tbody>
                     </table>
                 </div>
             </div>
-        </FirebaseAppProvider>)
-    }
+        </FirebaseAppProvider>
+    )
+}
 
-    export const SyncSubmission = (data) => {
+export const SyncSubmission = (data) => {
     console.log(data['submissionDetails'])
     const submissionDetails = data['submissionDetails']
     // easily access the Firestore library
     const newRow = {
         "CASE ID": submissionDetails.case_id,
+        "CASE DESCRIPTION": submissionDetails.description,
         "SOURCE": "CHATBOT",
         "DEPARTMENT": submissionDetails.department,
         "WORK GROUP": "",
@@ -159,7 +161,6 @@ export const CaseData = (status) => {
         "PARCEL ID NO": "",
         "LATITUDE": submissionDetails.latLng.lat,
         "LONGITUDE": submissionDetails.latLng.lng,
-        "CASE URL": submissionDetails.description,
         "30-60-90 Days Open Window": "",
         "nbh_id": submissionDetails.nbh_id,
         "nbh_name": submissionDetails.nbh_name,
