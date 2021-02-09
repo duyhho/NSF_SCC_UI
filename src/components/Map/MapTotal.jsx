@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import { Map, GoogleApiWrapper, Polygon } from "google-maps-react"
 import axios from 'axios'
+import randomColor from 'randomcolor'
 
 import { server } from '../../controllers/Server.js'
 import { modal } from '../../utilities/modal.js'
@@ -66,7 +67,6 @@ export class MapTotal extends Component {
         axios.get('https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0')
         .then(function(response) {
             const neighborhoodData = response.data.slice(2, response.data.length)
-            console.log(neighborhoodData)
             self.setState({
                 neighborhoodList: neighborhoodData,
                 loadingNeighborhood: false,
@@ -155,13 +155,24 @@ export class MapTotal extends Component {
         const schoolDistrictList = this.state.schoolDistrictList;
         const policeDivisionList = this.state.policeDivisionList;
 
-        var returnedData, colorCount = 0;
+        var returnedData, randomColorArr, colorCount = 0, colorIndex = -1;
         if (selectedCategory === "Block Groups") {
+            randomColorArr = randomColor({
+                count: Object.keys(blockGroupList[0]).length,
+            })
+            colorIndex = -1
+
+            //This function is to check how many times a value appears in this color array
+            randomColorArr.map(item => {
+                var count = 0
+                randomColorArr.forEach((color) => (color === item && count++))
+                console.log(count)
+            })
+
             returnedData = Object.keys(blockGroupList[0]).map(item => {
                 if (item === "Cluster_Total" || item === 'Cluster_Profiles') {
                     return <div></div>;
                 } else {
-                    var randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
                     const coords = blockGroupList[0][item]["Boundaries"]
                     var coordArr = []
                     coords.forEach(function(coord) {
@@ -169,21 +180,27 @@ export class MapTotal extends Component {
                             lat: coord[0], lng: coord[1]
                         });
                     })
+                    colorIndex += 1
 
                     return (
                         <Polygon
                             ref={self.polygonRef}
                             paths={coordArr}
-                            strokeColor={randomColor}
+                            strokeColor={randomColorArr[colorIndex]}
                             strokeOpacity={1}
                             strokeWeight={3}
-                            fillColor={randomColor}
+                            fillColor={randomColorArr[colorIndex]}
                             fillOpacity={0.75}
                         />
                     )
                 }
             })
         } else if (selectedCategory === "Neighborhoods") {
+            randomColorArr = randomColor({
+                count: Object.keys(neighborhoodList[0]).length,
+            })
+            colorIndex = -1
+
             returnedData = Object.keys(neighborhoodList[0]).map(item => {
                 if (item === "Cluster_Total" || item === 'Cluster_Profiles') {
                     return <div></div>;
@@ -195,15 +212,16 @@ export class MapTotal extends Component {
                             lat: coord[1], lng: coord[0]
                         });
                     })
+                    colorIndex += 1
 
                     return (
                         <Polygon
                             ref={self.polygonRef}
                             paths={coordArr}
-                            strokeColor={self.state.colorArray[neighborhoodList[0][item]["Cluster by All Factors"] - 1]}
+                            strokeColor={randomColorArr[colorIndex]}
                             strokeOpacity={1}
                             strokeWeight={3}
-                            fillColor={self.state.colorArray[neighborhoodList[0][item]["Cluster by All Factors"] - 1]}
+                            fillColor={randomColorArr[colorIndex]}
                             fillOpacity={0.75}
                         />
                     )
