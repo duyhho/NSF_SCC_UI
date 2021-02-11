@@ -56,7 +56,7 @@ export const CaseData = (status) => {
                                 if (row['CASE ID'].toString().includes('2021')){
                                     const newRow = {
                                         "CASE ID": row['CASE ID'],
-                                        "CASE DESCRIPTION": row["CASE URL"],
+                                        "CASE DESCRIPTION": (row["CASE DESCRIPTION"]) ? row['CASE DESCRIPTION']: row['CASE URL'],
                                         "SOURCE": row['SOURCE'],
                                         "DEPARTMENT": row['DEPARTMENT'],
                                         "WORK GROUP": row['WORK GROUP'],
