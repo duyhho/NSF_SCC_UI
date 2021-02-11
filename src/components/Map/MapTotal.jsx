@@ -163,7 +163,7 @@ export class MapTotal extends Component {
             colorIndex = -1
 
             //This function is to check how many times a value appears in this color array
-            randomColorArr.map(item => {
+            randomColorArr.forEach(item => {
                 var count = 0
                 randomColorArr.forEach((color) => (color === item && count++))
                 console.log(count)
