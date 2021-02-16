@@ -4,7 +4,7 @@ import update from 'immutability-helper'
 import axios from 'axios'
 import Slider from '@material-ui/core/Slider'
 import { BarChart, Cell, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
-
+import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 import { server } from '../../controllers/Server.js'
 import { modal } from '../../utilities/modal.js'
 
@@ -69,10 +69,21 @@ export class MapClusterNBH extends Component {
 
         // axios.get(this.state.serverDomain + "/api/blockgroups/clusters/get")
         // axios.get('https://dl.dropboxusercontent.com/s/5dyq70p4l5ptkah/230BG-Clusters.json?dl=0')
+        const client = axios.create({
+            baseURL: 'https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0',
+            timeout: 20000
+          })
 
-        axios.get('https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0')
-
-        .then(function(response) {
+        client.get('https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0', {
+            onDownloadProgress: progressEvent => {
+              const percentCompleted = Math.floor(progressEvent.loaded / 31699183  * 100)
+              self.setState({
+                  downloadPercent:percentCompleted
+              })
+              console.log('completed: ', percentCompleted)
+            }
+          })
+          .then(function(response) {
             for (var i = 2; i <= response.data.length; i++) {
                 self.setState({
                     sliderLabels: update(self.state.sliderLabels, {$push: [{
@@ -113,6 +124,9 @@ export class MapClusterNBH extends Component {
             })
             modal.showInfo("Cannot load the block groups!", "danger", "top", "center");
         })
+        // axios.get('https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0')
+
+
     }
 
     setPolygonOptions = (options) => {
@@ -227,6 +241,7 @@ export class MapClusterNBH extends Component {
         const currentClusterID = this.state.currentClusterID;
         const selectedChartCategory = e.target.value
         const colorArray = this.state.colorArray2
+
         var self = this
         if (!e.target.value.includes('Cluster')){
             var chartData = []
@@ -560,6 +575,7 @@ export class MapClusterNBH extends Component {
         const selectedCluster = this.state.selected
         var currentChartData = [];
         const clusterProfiles = currentCluster["Cluster_Profiles"];
+        const downloadPercent = this.state.downloadPercent
         if (selectedNeighborhood !== null && currentChartData != null) {
             currentChartData = this.state.currentChartData
         }
@@ -1102,6 +1118,7 @@ export class MapClusterNBH extends Component {
             ) : (
             <div align="center">
                 {this.state.initialMessage}
+                <ProgressBar bgcolor={"#00695c"} completed={downloadPercent} inProgressText={"Downloading"} completeText={"Downloading Completed"}/>
             </div>
             )}
         </div>
