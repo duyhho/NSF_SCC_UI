@@ -83,10 +83,18 @@ export class MapClusterNBH extends Component {
 
         // axios.get(this.state.serverDomain + "/api/blockgroups/clusters/get")
         // axios.get('https://dl.dropboxusercontent.com/s/5dyq70p4l5ptkah/230BG-Clusters.json?dl=0')
+        const client = axios.create({
+            baseURL: 'https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0',
+            timeout: 20000
+          })
 
-        axios.get('https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0')
-
-        .then(function(response) {
+        client.get('https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0', {
+            onDownloadProgress: progressEvent => {
+              let percentCompleted = Math.floor(progressEvent.loaded / 31699183  * 100)
+              console.log('completed: ', percentCompleted)
+            }
+          })
+          .then(function(response) {
             for (var i = 2; i <= response.data.length; i++) {
                 self.setState({
                     sliderLabels: update(self.state.sliderLabels, {$push: [{
@@ -127,6 +135,9 @@ export class MapClusterNBH extends Component {
             })
             modal.showInfo("Cannot load the block groups!", "danger", "top", "center");
         })
+        // axios.get('https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0')
+
+
     }
 
     setPolygonOptions = (options) => {
