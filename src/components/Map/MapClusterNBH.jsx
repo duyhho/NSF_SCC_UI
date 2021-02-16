@@ -4,7 +4,7 @@ import update from 'immutability-helper'
 import axios from 'axios'
 import Slider from '@material-ui/core/Slider'
 import { BarChart, Cell, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
-
+import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 import { server } from '../../controllers/Server.js'
 import { modal } from '../../utilities/modal.js'
 
@@ -90,7 +90,10 @@ export class MapClusterNBH extends Component {
 
         client.get('https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0', {
             onDownloadProgress: progressEvent => {
-              let percentCompleted = Math.floor(progressEvent.loaded / 31699183  * 100)
+              const percentCompleted = Math.floor(progressEvent.loaded / 31699183  * 100)
+              self.setState({
+                  downloadPercent:percentCompleted
+              })
               console.log('completed: ', percentCompleted)
             }
           })
@@ -255,6 +258,7 @@ export class MapClusterNBH extends Component {
         const currentClusterID = this.state.currentClusterID;
         const selectedChartCategory = e.target.value
         const colorArray = this.state.colorArray2
+
         var self = this
         if (!e.target.value.includes('Cluster')){
             var chartData = []
@@ -578,6 +582,7 @@ export class MapClusterNBH extends Component {
         const selectedCluster = this.state.selected
         var currentChartData = [];
         const clusterProfiles = currentCluster["Cluster_Profiles"];
+        const downloadPercent = this.state.downloadPercent
         if (selectedNeighborhood !== null && currentChartData != null) {
             currentChartData = this.state.currentChartData
         }
@@ -1120,6 +1125,7 @@ export class MapClusterNBH extends Component {
             ) : (
             <div align="center">
                 {this.state.initialMessage}
+                <ProgressBar bgcolor={"#00695c"} completed={downloadPercent} inProgressText={"Downloading"} completeText={"Downloading Completed"}/>
             </div>
             )}
         </div>
