@@ -342,7 +342,7 @@ export default class Chatbot extends Component {
                     id: "request_user_email",
                     user: true,
                     validator: (value) => {
-                        const emailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+                        const emailFormat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
                         if (value === "") {
                             return "You must enter something!";
                         } else if (emailFormat.test(value) === false) {
