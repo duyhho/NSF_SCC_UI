@@ -37,6 +37,7 @@ export class MapClusterNBH extends Component {
                 {cat: "311 Response Time"},
                 {cat: "311 Call Frequency"},
                 {cat: "Census Socioeconomic Metrics"},
+                {cat: "311 Crime Data"},
                 {cat: "All Factors"}
             ],
             currentCategory: "Cluster by Socioeconomic Metrics",
@@ -61,21 +62,6 @@ export class MapClusterNBH extends Component {
 
         })
         this.loadNeighborhoodList()
-
-        // this.setState({
-        //     panorama: new window.google.maps.StreetViewPanorama(
-        //         this.pano.current,
-        //         {
-        //             position: {lat: 39.0410436302915, lng: -94.5876739197085},
-        //             pov: {
-        //                 heading: 50,
-        //                 pitch: 0,
-        //             },
-        //             addressControl: false,
-        //             visible: true
-        //         }
-        //     )
-        // })
     }
 
     loadNeighborhoodList() {
@@ -101,10 +87,7 @@ export class MapClusterNBH extends Component {
             allMetrics.forEach(function(item){
                 chartFilterList.push({cat: item })
             })
-            self.setState({
-                clusterMetadata: response.data[0],
-                chartFilterList: chartFilterList
-            })
+
             const bgClusterLists = response.data.slice(1,response.data.length)
             bgClusterLists.forEach(function(item) {
                 if (item.Cluster_Total === 2) {
@@ -118,6 +101,8 @@ export class MapClusterNBH extends Component {
                 neighborhoodList: bgClusterLists,
                 loadingData: false,
                 showArrowGif: true,
+                clusterMetadata: response.data[0],
+                chartFilterList: chartFilterList
             })
             modal.showInfo("Click on a neighborhood on the map to view more information!", "success", "top", "center")
         })
@@ -154,15 +139,6 @@ export class MapClusterNBH extends Component {
                     selectedNeighborhood: null,
                     showArrowGif: true,
                 })
-                // self.setState({
-                //     currentCluster: []
-                // }, function() {
-                //     self.setState({
-                //         currentCluster: item,
-                //         selectedNeighborhood: null,
-                //         showArrowGif: true,
-                //     })
-                // })               
             }
         })
 
@@ -223,6 +199,12 @@ export class MapClusterNBH extends Component {
                 currentChartCategory: this.state.clusterMetadata['Socioeconomic Metrics'][0]
             })
             this.renderChartList("Cluster by Socioeconomic Metrics")
+        } else if (selectedValue === "311 Crime Data") {
+            this.setState({
+                currentCategory: "Cluster by Crime Frequency",
+                currentChartCategory: this.state.clusterMetadata['Crime'][0]
+            })
+            this.renderChartList("Cluster by Crime Frequency")
         } else if (selectedValue === "All Factors") {
             this.setState({
                 currentCategory: "Cluster by All Factors"
@@ -373,6 +355,11 @@ export class MapClusterNBH extends Component {
             allFreqs.forEach(function(item){
                 chartFilterList.push({cat: item })
             })
+        } else if (category === "Cluster by Crime Frequency") {
+            const allFreqs = this.state.clusterMetadata['Crime']
+            allFreqs.forEach(function(item){
+                chartFilterList.push({cat: item })
+            })
         } else if (category === "Cluster by All Factors") {
 
         }
@@ -484,6 +471,9 @@ export class MapClusterNBH extends Component {
                         yLabel = 'Cluster Mean (% of All Categories)'
                     } else if (currentCategory === "Cluster by Call Frequency") {
                         bgClusterID = currentCluster[bg]['Cluster by Call Frequency'] //Where this BG belongs to
+                        yLabel = 'Cluster Mean (% of Total Calls)'
+                    } else if (currentCategory === "Cluster by Crime Frequency") {
+                        bgClusterID = currentCluster[bg]['Cluster by Crime Frequency'] //Where this BG belongs to
                         yLabel = 'Cluster Mean (% of Total Calls)'
                     } else if (currentCategory === "Cluster by All Factors") {
                         bgClusterID = currentCluster[bg]['Cluster by All Factors'] //Where this BG belongs to
