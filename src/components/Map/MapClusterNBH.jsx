@@ -37,7 +37,7 @@ export class MapClusterNBH extends Component {
                 {cat: "311 Response Time"},
                 {cat: "311 Call Frequency"},
                 {cat: "Census Socioeconomic Metrics"},
-                {cat: "311 Crime Data"},
+                {cat: "KCPD Crime Data"},
                 {cat: "All Factors"}
             ],
             currentCategory: "Cluster by Socioeconomic Metrics",
@@ -104,6 +104,7 @@ export class MapClusterNBH extends Component {
                 clusterMetadata: response.data[0],
                 chartFilterList: chartFilterList
             })
+            console.log(bgClusterLists)
             modal.showInfo("Click on a neighborhood on the map to view more information!", "success", "top", "center")
         })
         .catch(function(e) {
@@ -199,10 +200,10 @@ export class MapClusterNBH extends Component {
                 currentChartCategory: this.state.clusterMetadata['Socioeconomic Metrics'][0]
             })
             this.renderChartList("Cluster by Socioeconomic Metrics")
-        } else if (selectedValue === "311 Crime Data") {
+        } else if (selectedValue === "KCPD Crime Data") {
             this.setState({
                 currentCategory: "Cluster by Crime Frequency",
-                currentChartCategory: this.state.clusterMetadata['Crime'][0]
+                currentChartCategory: this.state.clusterMetadata['Crime Frequency'][0]
             })
             this.renderChartList("Cluster by Crime Frequency")
         } else if (selectedValue === "All Factors") {
@@ -356,7 +357,7 @@ export class MapClusterNBH extends Component {
                 chartFilterList.push({cat: item })
             })
         } else if (category === "Cluster by Crime Frequency") {
-            const allFreqs = this.state.clusterMetadata['Crime']
+            const allFreqs = this.state.clusterMetadata['Crime Frequency']
             allFreqs.forEach(function(item){
                 chartFilterList.push({cat: item })
             })
@@ -478,6 +479,8 @@ export class MapClusterNBH extends Component {
                     } else if (currentCategory === "Cluster by All Factors") {
                         bgClusterID = currentCluster[bg]['Cluster by All Factors'] //Where this BG belongs to
                     }
+                    console.log(currentCategory)
+                    console.log(self.state.currentChartCategory)
 
                     for (var i = 0; i < clusterProfiles[currentCategory].length; i++) {
                         const clusterID = clusterProfiles[currentCategory][i]["Cluster_ID"]
