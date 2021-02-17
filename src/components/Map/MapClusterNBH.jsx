@@ -98,12 +98,82 @@ export class MapClusterNBH extends Component {
                 chartFilterList.push({cat: item })
             })
 
+            var currentCluster = null
             const bgClusterLists = response.data.slice(1,response.data.length)
             bgClusterLists.forEach(function(item) {
                 if (item.Cluster_Total === 2) {
+                    currentCluster = item
                     self.setState({
                         currentCluster: item,
                     })
+                }
+            })
+
+            //Set default neighborhood data
+            const currentCategory = "Cluster by Socioeconomic Metrics";
+            const clusterProfiles = currentCluster["Cluster_Profiles"];
+            var bgClusterID = null;
+            var chartData = [];
+            const polygonCenter = {lat: 39.0591695731819, lng: -94.55760721471178}
+            self.setState({
+                currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+                panorama: new window.google.maps.StreetViewPanorama(
+                    self.pano.current,
+                    {
+                        position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+                        pov: {
+                            heading: 50,
+                            pitch: 0,
+                        },
+                        addressControl: false,
+                        visible: true
+                    }
+                ),
+            }, function(){
+                self.initPositionListener()
+            })
+            Object.keys(currentCluster).forEach(bg => {
+                if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
+                    //SKIP
+                } else {
+                    var yLabel = 'Cluster Mean Value'
+                    if (currentCluster[bg]["NBH_NAME"] === "Ivanhoe Northeast") {
+                        self.setState({
+                            selectedNeighborhood: currentCluster[bg]
+                        });
+
+                        bgClusterID = currentCluster[bg][currentCategory]
+
+                        for (var i = 0; i < clusterProfiles[currentCategory].length; i++) {
+                            const clusterID = clusterProfiles[currentCategory][i]["Cluster_ID"]
+                            if (bgClusterID === clusterID){
+                                chartData.unshift({
+                                    id: clusterID,
+                                    name: clusterID + ' (Current)' ,
+                                    Mean: clusterProfiles[currentCategory][i][self.state.currentChartCategory].mean,
+                                })
+                            }
+                            else {
+                                chartData.push({
+                                    id: clusterID,
+                                    name: clusterID ,
+                                    Mean: clusterProfiles[currentCategory][i][self.state.currentChartCategory].mean,
+                                })
+                            }
+                        }
+
+                        self.setState({
+                            legendName: yLabel,
+                            currentChartData: chartData,
+                            currentClusterID: bgClusterID,
+                            selected: 'Cluster ' + bgClusterID + " (Current)"
+                        })
+                        self.handleChartCategoryChange({
+                            target: {
+                                value: 'Cluster ' + bgClusterID
+                            }
+                        })
+                    }
                 }
             })
 
@@ -116,6 +186,7 @@ export class MapClusterNBH extends Component {
             modal.showInfo("Click on a neighborhood on the map to view more information!", "success", "top", "center")
         })
         .catch(function(e) {
+            console.log(e)
             self.setState({
                 initialMessage: "Cannot load the block groups!"
             })
@@ -599,10 +670,10 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (CATEGORY)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-7" >
+                        <div className="col-md-9" >
                             <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-5">
+                        <div className="col-md-3">
                             {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
@@ -654,10 +725,10 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (DEPARTMENT)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-7" >
+                        <div className="col-md-9" >
                             <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-5">
+                        <div className="col-md-3">
                             {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
@@ -708,10 +779,10 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (RESPONSE TIME)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-7" >
+                        <div className="col-md-9" >
                             <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-5">
+                        <div className="col-md-3">
                             {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
@@ -759,10 +830,10 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (FREQUENCY)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-7" >
+                        <div className="col-md-9" >
                             <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-5">
+                        <div className="col-md-3">
                             {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
@@ -802,10 +873,10 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (SOCIOECONOMIC)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-7">
+                        <div className="col-md-9">
                             <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-5">
+                        <div className="col-md-3">
                             {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
