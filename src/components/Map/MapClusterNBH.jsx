@@ -867,6 +867,53 @@ export class MapClusterNBH extends Component {
                 </div>
                 )
             }
+            else if (currentCategory.includes('Crime Frequency')){
+                const freq = [{
+                    name: selectedNeighborhood["NBH_ID"],
+                    value: selectedNeighborhood['Frequency']
+                }]
+                bgProfileContent = (
+                <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
+                    <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (FREQUENCY)</div>
+                    <br />
+                    <div className="row bgrow">
+                        <div className="col-md-9" >
+                            <b>Neighborhood Name:</b>
+                        </div>
+                        <div className="col-md-3">
+                            {selectedNeighborhood["NBH_NAME"]}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <BarChart
+                            width={700}
+                            height={300}
+                            data={freq}
+                            margin={{top: 5, right: 30, left: 20, bottom: 5}}
+                            maxBarSize={70}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                                dataKey="name"
+                                label={{value: 'Neighborhood ID', position: "insideBottom", offset: -5}}
+                                interval = {0}
+                            />
+                            <YAxis
+                                label={{value: 'Frequency', angle: -90, position: "insideLeft", dy: this.state.legendName.length+55, offset: -10}}
+                            />
+                            <Tooltip />
+                            <Bar dataKey='value' fill="#8884D8">
+                                {
+                                    bgColorArray.map(function(color, index) {
+                                        return <Cell key={`cell-${index}`} fill={color} />;
+                                    })
+                                }
+                            </Bar>
+                        </BarChart>
+                    </div>
+                </div>
+                )
+            }
             else if (currentCategory.includes('Socioeconomic')){
                 bgProfileContent = (
                 <div className="col-md-12" align="left" style = {{fontSize: "120%"}}>
