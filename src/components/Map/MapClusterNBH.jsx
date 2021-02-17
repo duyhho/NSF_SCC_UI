@@ -52,7 +52,7 @@ export class MapClusterNBH extends Component {
             currentClusterProfileContent:null,
             selected: '',
             panorama: null,
-            showArrowGif: true,
+            downloadPercent: 0,
         };
     }
 
@@ -78,9 +78,8 @@ export class MapClusterNBH extends Component {
             onDownloadProgress: progressEvent => {
               const percentCompleted = Math.floor(progressEvent.loaded / 15892899  * 100)
               self.setState({
-                  downloadPercent:percentCompleted
+                  downloadPercent: percentCompleted
               })
-              console.log('completed: ', percentCompleted)
             }
           })
           .then(function(response) {
@@ -111,11 +110,9 @@ export class MapClusterNBH extends Component {
             self.setState({
                 neighborhoodList: bgClusterLists,
                 loadingData: false,
-                showArrowGif: true,
                 clusterMetadata: response.data[0],
                 chartFilterList: chartFilterList
             })
-            console.log(bgClusterLists)
             modal.showInfo("Click on a neighborhood on the map to view more information!", "success", "top", "center")
         })
         .catch(function(e) {
@@ -152,7 +149,6 @@ export class MapClusterNBH extends Component {
                 self.setState({
                     currentCluster: oldCluster,
                     selectedNeighborhood: null,
-                    showArrowGif: true,
                 })
             }
         })
@@ -229,7 +225,6 @@ export class MapClusterNBH extends Component {
 
         this.setState({
             selectedNeighborhood: null,
-            showArrowGif: true,
         })
         modal.showInfo("Click on a neighborhood on the map to view more information!", "success", "top", "center")
     }
@@ -420,9 +415,7 @@ export class MapClusterNBH extends Component {
     }
 
     onMapClicked() {
-        this.setState({
-            showArrowGif: false,
-        })
+
     }
 
     onPolygonMouseOver(props, polygon, e){
@@ -459,7 +452,6 @@ export class MapClusterNBH extends Component {
                     visible: true
                 }
             ),
-            showArrowGif: false,
         }, function(){
             this.initPositionListener()
         })
@@ -494,8 +486,6 @@ export class MapClusterNBH extends Component {
                     } else if (currentCategory === "Cluster by All Factors") {
                         bgClusterID = currentCluster[bg]['Cluster by All Factors'] //Where this BG belongs to
                     }
-                    console.log(currentCategory)
-                    console.log(self.state.currentChartCategory)
 
                     for (var i = 0; i < clusterProfiles[currentCategory].length; i++) {
                         const clusterID = clusterProfiles[currentCategory][i]["Cluster_ID"]
@@ -573,9 +563,10 @@ export class MapClusterNBH extends Component {
         const clusterMetadata = this.state.clusterMetadata
         const bgColorArray = this.state.colorArray2
         const selectedCluster = this.state.selected
+        const downloadPercent = this.state.downloadPercent
+
         var currentChartData = [];
         const clusterProfiles = currentCluster["Cluster_Profiles"];
-        const downloadPercent = this.state.downloadPercent
         if (selectedNeighborhood !== null && currentChartData != null) {
             currentChartData = this.state.currentChartData
         }
@@ -997,10 +988,6 @@ export class MapClusterNBH extends Component {
                         })
                         }
                         </div>
-                        
-                        {this.state.showArrowGif === true && (
-                        <img className = 'arrow' src="https://media.giphy.com/media/bqb0oWQTUIlB21rvnS/giphy.gif" alt="Neighborhood Arrow" />
-                        )}
                     </div>
                     {this.state.panorama !== null && (
                     <div className="pano-view-container" align="center">
@@ -1116,7 +1103,7 @@ export class MapClusterNBH extends Component {
                 </div>
             </div>
             ) : (
-            <div align="center">
+            <div className="col-md-6 offset-md-3" align="center">
                 {this.state.initialMessage}
                 <ProgressBar bgcolor={"#00695c"} completed={downloadPercent} inProgressText={"Downloading"} completeText={"Downloading Completed"}/>
             </div>
