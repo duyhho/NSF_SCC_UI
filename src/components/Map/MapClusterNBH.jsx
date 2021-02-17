@@ -76,7 +76,7 @@ export class MapClusterNBH extends Component {
 
         client.get('https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0', {
             onDownloadProgress: progressEvent => {
-              const percentCompleted = Math.floor(progressEvent.loaded / 31699183  * 100)
+              const percentCompleted = Math.floor(progressEvent.loaded / 15892899  * 100)
               self.setState({
                   downloadPercent:percentCompleted
               })
@@ -608,11 +608,11 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (CATEGORY)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9" >
-                            <b>Neighborhood ID:</b>
+                        <div className="col-md-7" >
+                            <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
-                            {selectedNeighborhood["NBH_ID"]}
+                        <div className="col-md-5">
+                            {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
                     <div className="row bgrow">
@@ -663,11 +663,11 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (DEPARTMENT)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9" >
-                            <b>Neighborhood ID:</b>
+                        <div className="col-md-7" >
+                            <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
-                            {selectedNeighborhood["NBH_ID"]}
+                        <div className="col-md-5">
+                            {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
                     <div className="row bgrow">
@@ -717,11 +717,11 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (RESPONSE TIME)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9" >
-                            <b>Neighborhood ID:</b>
+                        <div className="col-md-7" >
+                            <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
-                            {selectedNeighborhood["NBH_ID"]}
+                        <div className="col-md-5">
+                            {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
                     <div className="row bgrow">
@@ -758,7 +758,7 @@ export class MapClusterNBH extends Component {
                 </div>
                 )
             }
-            else if (currentCategory.includes('Frequency')){
+            else if (currentCategory.includes('Call Frequency')){
                 const freq = [{
                     name: selectedNeighborhood["NBH_ID"],
                     value: selectedNeighborhood['Frequency']
@@ -768,11 +768,11 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (FREQUENCY)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9" >
-                            <b>Neighborhood ID:</b>
+                        <div className="col-md-7" >
+                            <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
-                            {selectedNeighborhood["NBH_ID"]}
+                        <div className="col-md-5">
+                            {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
                     <div className="row bgrow">
@@ -811,11 +811,11 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (SOCIOECONOMIC)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9">
-                            <b>Neighborhood ID:</b>
+                        <div className="col-md-7">
+                            <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
-                            {selectedNeighborhood["NBH_ID"]}
+                        <div className="col-md-5">
+                            {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
                     <div className="row bgrow">
