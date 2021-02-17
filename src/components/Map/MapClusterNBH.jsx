@@ -592,6 +592,109 @@ export class MapClusterNBH extends Component {
         })
     }
 
+    handleNeighborhoodChange (e){
+        var self = this;
+        const currentCluster = this.state.currentCluster;
+        const currentCategory = this.state.currentCategory;
+        const clusterProfiles = currentCluster["Cluster_Profiles"];
+        var bgClusterID = null;
+        var chartData = [];
+
+        {Object.keys(currentCluster).forEach(bg => {
+            if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
+                //SKIP
+            } else {
+                const coords = currentCluster[bg]["Boundaries"]
+                var x_coords = []
+                var y_coords = []
+                coords.forEach(function(coord) {
+                    x_coords.push(coord[0]);
+                    y_coords.push(coord[1]);
+                })
+                const x_min = Math.min(...x_coords);
+                const y_min = Math.min(...y_coords);
+                const x_max = Math.max(...x_coords);
+                const y_max = Math.max(...y_coords);
+                const polygonCenter = {
+                    lat: y_min + ((y_max - y_min) / 2),
+                    lng: x_min + ((x_max - x_min) / 2),
+                }
+                self.setState({
+                    currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+                    panorama: new window.google.maps.StreetViewPanorama(
+                        this.pano.current,
+                        {
+                            position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+                            pov: {
+                                heading: 50,
+                                pitch: 0,
+                            },
+                            addressControl: false,
+                            visible: true
+                        }
+                    ),
+                }, function(){
+                    this.initPositionListener()
+                })
+                var yLabel = 'Cluster Mean Value'
+                if (currentCluster[bg]["NBH_NAME"] === e.target.value) {
+                    if (currentCategory === "Cluster by Socioeconomic Metrics") {
+                        bgClusterID = currentCluster[bg]['Cluster by Socioeconomic Metrics']
+                    } else if (currentCategory === "Cluster by Response Time") {
+                        bgClusterID = currentCluster[bg]['Cluster by Response Time']
+                        yLabel = 'Cluster Mean (% of Cases)'
+                    }
+                    else if (currentCategory === "Cluster by Department") {
+                        bgClusterID = currentCluster[bg]['Cluster by Department']
+                        yLabel = 'Cluster Mean (% of Total Depts)'
+                    } else if (currentCategory === "Cluster by Call Category") {
+                        bgClusterID = currentCluster[bg]['Cluster by Call Category']
+                        yLabel = 'Cluster Mean (% of All Categories)'
+                    } else if (currentCategory === "Cluster by Call Frequency") {
+                        bgClusterID = currentCluster[bg]['Cluster by Call Frequency']
+                        yLabel = 'Cluster Mean (% of Total Calls)'
+                    } else if (currentCategory === "Cluster by Crime Frequency") {
+                        bgClusterID = currentCluster[bg]['Cluster by Crime Frequency']
+                        yLabel = 'Cluster Mean (% of Total Calls)'
+                    } else if (currentCategory === "Cluster by All Factors") {
+                        bgClusterID = currentCluster[bg]['Cluster by All Factors']
+                    }
+
+                    for (var i = 0; i < clusterProfiles[currentCategory].length; i++) {
+                        const clusterID = clusterProfiles[currentCategory][i]["Cluster_ID"]
+                        if (bgClusterID === clusterID){
+                            chartData.unshift({
+                                id: clusterID,
+                                name: clusterID + ' (Current)' ,
+                                Mean: clusterProfiles[currentCategory][i][self.state.currentChartCategory].mean,
+                            })
+                        }
+                        else {
+                            chartData.push({
+                                id: clusterID,
+                                name: clusterID ,
+                                Mean: clusterProfiles[currentCategory][i][self.state.currentChartCategory].mean,
+                            })
+                        }
+                    }
+
+                    self.setState({
+                        selectedNeighborhood: currentCluster[bg],
+                        legendName: yLabel,
+                        currentChartData: chartData,
+                        currentClusterID: bgClusterID,
+                        selected: 'Cluster ' + bgClusterID + " (Current)"
+                    })
+                    self.handleChartCategoryChange({
+                        target: {
+                            value: 'Cluster ' + bgClusterID
+                        }
+                    })
+                }
+            }
+        })}
+    }
+
     sortObject(obj) {
         var items = Object.keys(obj).map(function(key) {
             return [key, obj[key]];
@@ -1032,6 +1135,15 @@ export class MapClusterNBH extends Component {
             {loadingData === false ? (
             <div className="row">
                 <div className="col-md-6 map-view-container" style = {{height: "95vh"}}>
+                    {this.state.neighborhoodList.length > 0 && (
+                    <div className="map-top-center">
+                        <select defaultValue="Ivanhoe Northeast" onChange={this.handleNeighborhoodChange.bind(this)}>
+                            {Object.keys(this.state.neighborhoodList[0]).map(item => {
+                                return <option key={this.state.neighborhoodList[0][item]["NBH_NAME"]} value={this.state.neighborhoodList[0][item]["NBH_NAME"]}>{this.state.neighborhoodList[0][item]["NBH_NAME"]}</option>
+                            })}
+                        </select>
+                    </div>
+                    )}
                     <div className="map-container">
                         <Map
                             google={this.props.google}
