@@ -22,6 +22,7 @@ export class MapClusterNBH extends Component {
             loadingData: false,
             initialMessage: "Loading the neighborhoods. Please wait...",
             currentPosition: {lat: 39.0410436302915, lng: -94.5876739197085},
+            neighborhoodNames: [],
             neighborhoodList:[],
             sliderLabels: [],
             currentCluster: [],
@@ -100,10 +101,16 @@ export class MapClusterNBH extends Component {
 
             var currentCluster = null
             const bgClusterLists = response.data.slice(1,response.data.length)
+            var nbh_names = []
             bgClusterLists.forEach(function(item) {
                 if (item.Cluster_Total === 2) {
                     currentCluster = item
+                    Object.keys(item).forEach(x => {
+                        nbh_names.push(item[x]['NBH_NAME'])
+                    })
+                    nbh_names.sort()
                     self.setState({
+                        neighborhoodNames: nbh_names,
                         currentCluster: item,
                     })
                 }
@@ -114,24 +121,24 @@ export class MapClusterNBH extends Component {
             const clusterProfiles = currentCluster["Cluster_Profiles"];
             var bgClusterID = null;
             var chartData = [];
-            const polygonCenter = {lat: 39.0591695731819, lng: -94.55760721471178}
-            self.setState({
-                currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
-                panorama: new window.google.maps.StreetViewPanorama(
-                    self.pano.current,
-                    {
-                        position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
-                        pov: {
-                            heading: 50,
-                            pitch: 0,
-                        },
-                        addressControl: false,
-                        visible: true
-                    }
-                ),
-            }, function(){
-                self.initPositionListener()
-            })
+            // const polygonCenter = {lat: 39.0591695731819, lng: -94.55760721471178}
+            // self.setState({
+            //     currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+            //     panorama: new window.google.maps.StreetViewPanorama(
+            //         self.pano.current,
+            //         {
+            //             position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+            //             pov: {
+            //                 heading: 50,
+            //                 pitch: 0,
+            //             },
+            //             addressControl: false,
+            //             visible: true
+            //         }
+            //     ),
+            // }, function(){
+            //     self.initPositionListener()
+            // })
             Object.keys(currentCluster).forEach(bg => {
                 if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
                     //SKIP
@@ -452,37 +459,37 @@ export class MapClusterNBH extends Component {
     }
 
     initPositionListener(){
-        if (this.state.panorama != null) {
-            this.state.panorama.addListener("position_changed", () => {
-                const location = this.state.panorama.getPosition()
-                const new_location = {lat: location.lat(), lng: location.lng()}
-                if (new_location !== this.state.currentPosition){
-                    this.setState({
-                        currentPosition: new_location
-                    })
-                }
-            });   
-        }
+        // if (this.state.panorama != null) {
+        //     this.state.panorama.addListener("position_changed", () => {
+        //         const location = this.state.panorama.getPosition()
+        //         const new_location = {lat: location.lat(), lng: location.lng()}
+        //         if (new_location !== this.state.currentPosition){
+        //             this.setState({
+        //                 currentPosition: new_location
+        //             })
+        //         }
+        //     });
+        // }
     }
     
     onMarkerDrag(coord, map) {
-        this.setState({
-            currentPosition: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
-            panorama: new window.google.maps.StreetViewPanorama(
-                this.pano.current,
-                {
-                    position: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
-                    pov: {
-                        heading: 50,
-                        pitch: 16,
-                    },
-                    addressControl: false,
-                    visible: true
-                }
-            )
-        }, function(){
-            this.initPositionListener()
-        })
+        // this.setState({
+        //     currentPosition: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
+        //     panorama: new window.google.maps.StreetViewPanorama(
+        //         this.pano.current,
+        //         {
+        //             position: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
+        //             pov: {
+        //                 heading: 50,
+        //                 pitch: 16,
+        //             },
+        //             addressControl: false,
+        //             visible: true
+        //         }
+        //     )
+        // }, function(){
+        //     this.initPositionListener()
+        // })
     }
 
     onMapClicked() {
@@ -509,23 +516,23 @@ export class MapClusterNBH extends Component {
         var bgClusterID = null;
         var chartData = [];
         const polygonCenter = props.centerCoord
-        self.setState({
-            currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
-            panorama: new window.google.maps.StreetViewPanorama(
-                this.pano.current,
-                {
-                    position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
-                    pov: {
-                        heading: 50,
-                        pitch: 0,
-                    },
-                    addressControl: false,
-                    visible: true
-                }
-            ),
-        }, function(){
-            this.initPositionListener()
-        })
+        // self.setState({
+        //     currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+        //     panorama: new window.google.maps.StreetViewPanorama(
+        //         this.pano.current,
+        //         {
+        //             position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+        //             pov: {
+        //                 heading: 50,
+        //                 pitch: 0,
+        //             },
+        //             addressControl: false,
+        //             visible: true
+        //         }
+        //     ),
+        // }, function(){
+        //     this.initPositionListener()
+        // })
         Object.keys(currentCluster).forEach(bg => {
             if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
                 //SKIP
@@ -619,23 +626,23 @@ export class MapClusterNBH extends Component {
                     lat: y_min + ((y_max - y_min) / 2),
                     lng: x_min + ((x_max - x_min) / 2),
                 }
-                self.setState({
-                    currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
-                    panorama: new window.google.maps.StreetViewPanorama(
-                        this.pano.current,
-                        {
-                            position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
-                            pov: {
-                                heading: 50,
-                                pitch: 0,
-                            },
-                            addressControl: false,
-                            visible: true
-                        }
-                    ),
-                }, function(){
-                    this.initPositionListener()
-                })
+                // self.setState({
+                //     currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+                //     panorama: new window.google.maps.StreetViewPanorama(
+                //         this.pano.current,
+                //         {
+                //             position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+                //             pov: {
+                //                 heading: 50,
+                //                 pitch: 0,
+                //             },
+                //             addressControl: false,
+                //             visible: true
+                //         }
+                //     ),
+                // }, function(){
+                //     this.initPositionListener()
+                // })
                 var yLabel = 'Cluster Mean Value'
                 if (currentCluster[bg]["NBH_NAME"] === e.target.value) {
                     if (currentCategory === "Cluster by Socioeconomic Metrics") {
@@ -1138,8 +1145,8 @@ export class MapClusterNBH extends Component {
                     {this.state.neighborhoodList.length > 0 && (
                     <div className="map-top-center">
                         <select defaultValue="Ivanhoe Northeast" onChange={this.handleNeighborhoodChange.bind(this)}>
-                            {Object.keys(this.state.neighborhoodList[0]).map(item => {
-                                return <option key={this.state.neighborhoodList[0][item]["NBH_NAME"]} value={this.state.neighborhoodList[0][item]["NBH_NAME"]}>{this.state.neighborhoodList[0][item]["NBH_NAME"]}</option>
+                            {this.state.neighborhoodNames.map(item => {
+                                return <option key={item}>{item}</option>
                             })}
                         </select>
                     </div>
