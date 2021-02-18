@@ -773,10 +773,10 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (CATEGORY)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9" >
+                        <div className="col-md-7" >
                             <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
+                        <div className="col-md-5">
                             {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
@@ -828,10 +828,10 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (DEPARTMENT)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9" >
+                        <div className="col-md-7" >
                             <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
+                        <div className="col-md-5">
                             {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
@@ -882,10 +882,10 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (RESPONSE TIME)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9" >
+                        <div className="col-md-7" >
                             <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
+                        <div className="col-md-5">
                             {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
@@ -933,10 +933,10 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (FREQUENCY)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9" >
+                        <div className="col-md-7" >
                             <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
+                        <div className="col-md-5">
                             {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
@@ -980,10 +980,10 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (FREQUENCY)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9" >
+                        <div className="col-md-7" >
                             <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
+                        <div className="col-md-5">
                             {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
@@ -1023,10 +1023,10 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (SOCIOECONOMIC)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9">
+                        <div className="col-md-7" >
                             <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
+                        <div className="col-md-5">
                             {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
