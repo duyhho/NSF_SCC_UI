@@ -605,7 +605,7 @@ export class MapClusterNBH extends Component {
         var bgClusterID = null;
         var chartData = [];
 
-        {Object.keys(currentCluster).forEach(bg => {
+        Object.keys(currentCluster).forEach(bg => {
             if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
                 //SKIP
             } else {
@@ -697,7 +697,7 @@ export class MapClusterNBH extends Component {
                     })
                 }
             }
-        })}
+        })
     }
 
     sortObject(obj) {
