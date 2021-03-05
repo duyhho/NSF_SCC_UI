@@ -22,6 +22,7 @@ export class MapClusterNBH extends Component {
             loadingData: false,
             initialMessage: "Loading the neighborhoods. Please wait...",
             currentPosition: {lat: 39.0410436302915, lng: -94.5876739197085},
+            neighborhoodNames: [],
             neighborhoodList:[],
             sliderLabels: [],
             currentCluster: [],
@@ -37,6 +38,7 @@ export class MapClusterNBH extends Component {
                 {cat: "311 Response Time"},
                 {cat: "311 Call Frequency"},
                 {cat: "Census Socioeconomic Metrics"},
+                {cat: "KCPD Crime Data"},
                 {cat: "All Factors"}
             ],
             currentCategory: "Cluster by Socioeconomic Metrics",
@@ -51,7 +53,7 @@ export class MapClusterNBH extends Component {
             currentClusterProfileContent:null,
             selected: '',
             panorama: null,
-            showArrowGif: true,
+            downloadPercent: 0,
         };
     }
 
@@ -61,21 +63,6 @@ export class MapClusterNBH extends Component {
 
         })
         this.loadNeighborhoodList()
-
-        // this.setState({
-        //     panorama: new window.google.maps.StreetViewPanorama(
-        //         this.pano.current,
-        //         {
-        //             position: {lat: 39.0410436302915, lng: -94.5876739197085},
-        //             pov: {
-        //                 heading: 50,
-        //                 pitch: 0,
-        //             },
-        //             addressControl: false,
-        //             visible: true
-        //         }
-        //     )
-        // })
     }
 
     loadNeighborhoodList() {
@@ -90,14 +77,13 @@ export class MapClusterNBH extends Component {
 
         client.get('https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0', {
             onDownloadProgress: progressEvent => {
-              const percentCompleted = Math.floor(progressEvent.loaded / 31699183  * 100)
+              const percentCompleted = Math.floor(progressEvent.loaded / 15892899  * 100)
               self.setState({
-                  downloadPercent:percentCompleted
+                  downloadPercent: percentCompleted
               })
-              console.log('completed: ', percentCompleted)
             }
-          })
-          .then(function(response) {
+        })
+        .then(function(response) {
             for (var i = 2; i <= response.data.length; i++) {
                 self.setState({
                     sliderLabels: update(self.state.sliderLabels, {$push: [{
@@ -112,35 +98,108 @@ export class MapClusterNBH extends Component {
             allMetrics.forEach(function(item){
                 chartFilterList.push({cat: item })
             })
-            self.setState({
-                clusterMetadata: response.data[0],
-                chartFilterList: chartFilterList
-            })
+
+            var currentCluster = null
             const bgClusterLists = response.data.slice(1,response.data.length)
+            var nbh_names = []
             bgClusterLists.forEach(function(item) {
                 if (item.Cluster_Total === 2) {
+                    currentCluster = item
+                    Object.keys(item).forEach(x => {
+                        nbh_names.push(item[x]['NBH_NAME'])
+                    })
+                    nbh_names.sort()
                     self.setState({
+                        neighborhoodNames: nbh_names,
                         currentCluster: item,
                     })
+                }
+            })
+
+            //Set default neighborhood data
+            const currentCategory = "Cluster by Socioeconomic Metrics";
+            const clusterProfiles = currentCluster["Cluster_Profiles"];
+            var bgClusterID = null;
+            var chartData = [];
+            const polygonCenter = {lat: 39.0591695731819, lng: -94.55760721471178} //Ivanhoe Northeast
+            self.setState({
+                currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+                panorama: new window.google.maps.StreetViewPanorama(
+                    self.pano.current,
+                    {
+                        position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+                        pov: {
+                            heading: 50,
+                            pitch: 0,
+                        },
+                        addressControl: false,
+                        visible: true
+                    }
+                ),
+            }, function(){
+                self.initPositionListener()
+            })
+            Object.keys(currentCluster).forEach(bg => {
+                if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
+                    //SKIP
+                } else {
+                    var yLabel = 'Cluster Mean Value'
+                    if (currentCluster[bg]["NBH_NAME"] === "Ivanhoe Northeast") {
+                        self.setState({
+                            selectedNeighborhood: currentCluster[bg]
+                        });
+
+                        bgClusterID = currentCluster[bg][currentCategory]
+
+                        for (var i = 0; i < clusterProfiles[currentCategory].length; i++) {
+                            const clusterID = clusterProfiles[currentCategory][i]["Cluster_ID"]
+                            if (bgClusterID === clusterID){
+                                chartData.unshift({
+                                    id: clusterID,
+                                    name: clusterID + ' (Current)' ,
+                                    Mean: clusterProfiles[currentCategory][i][self.state.currentChartCategory].mean,
+                                })
+                            }
+                            else {
+                                chartData.push({
+                                    id: clusterID,
+                                    name: clusterID ,
+                                    Mean: clusterProfiles[currentCategory][i][self.state.currentChartCategory].mean,
+                                })
+                            }
+                        }
+
+                        self.setState({
+                            legendName: yLabel,
+                            currentChartData: chartData,
+                            currentClusterID: bgClusterID,
+                            selected: 'Cluster ' + bgClusterID + " (Current)"
+                        })
+                        self.handleChartCategoryChange({
+                            target: {
+                                value: 'Cluster ' + bgClusterID
+                            }
+                        })
+                    }
                 }
             })
 
             self.setState({
                 neighborhoodList: bgClusterLists,
                 loadingData: false,
-                showArrowGif: true,
+                clusterMetadata: response.data[0],
+                chartFilterList: chartFilterList
             })
             modal.showInfo("Click on a neighborhood on the map to view more information!", "success", "top", "center")
         })
         .catch(function(e) {
+            console.log(e)
             self.setState({
                 initialMessage: "Cannot load the block groups!"
             })
             modal.showInfo("Cannot load the block groups!", "danger", "top", "center");
         })
         // axios.get('https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0')
-
-
     }
 
     setPolygonOptions = (options) => {
@@ -166,17 +225,7 @@ export class MapClusterNBH extends Component {
                 self.setState({
                     currentCluster: oldCluster,
                     selectedNeighborhood: null,
-                    showArrowGif: true,
                 })
-                // self.setState({
-                //     currentCluster: []
-                // }, function() {
-                //     self.setState({
-                //         currentCluster: item,
-                //         selectedNeighborhood: null,
-                //         showArrowGif: true,
-                //     })
-                // })               
             }
         })
 
@@ -237,6 +286,12 @@ export class MapClusterNBH extends Component {
                 currentChartCategory: this.state.clusterMetadata['Socioeconomic Metrics'][0]
             })
             this.renderChartList("Cluster by Socioeconomic Metrics")
+        } else if (selectedValue === "KCPD Crime Data") {
+            this.setState({
+                currentCategory: "Cluster by Crime Frequency",
+                currentChartCategory: this.state.clusterMetadata['Crime Frequency'][0]
+            })
+            this.renderChartList("Cluster by Crime Frequency")
         } else if (selectedValue === "All Factors") {
             this.setState({
                 currentCategory: "Cluster by All Factors"
@@ -246,7 +301,6 @@ export class MapClusterNBH extends Component {
 
         this.setState({
             selectedNeighborhood: null,
-            showArrowGif: true,
         })
         modal.showInfo("Click on a neighborhood on the map to view more information!", "success", "top", "center")
     }
@@ -388,6 +442,11 @@ export class MapClusterNBH extends Component {
             allFreqs.forEach(function(item){
                 chartFilterList.push({cat: item })
             })
+        } else if (category === "Cluster by Crime Frequency") {
+            const allFreqs = this.state.clusterMetadata['Crime Frequency']
+            allFreqs.forEach(function(item){
+                chartFilterList.push({cat: item })
+            })
         } else if (category === "Cluster by All Factors") {
 
         }
@@ -407,7 +466,7 @@ export class MapClusterNBH extends Component {
                         currentPosition: new_location
                     })
                 }
-            });   
+            });
         }
     }
     
@@ -432,9 +491,7 @@ export class MapClusterNBH extends Component {
     }
 
     onMapClicked() {
-        this.setState({
-            showArrowGif: false,
-        })
+
     }
 
     onPolygonMouseOver(props, polygon, e){
@@ -471,7 +528,6 @@ export class MapClusterNBH extends Component {
                     visible: true
                 }
             ),
-            showArrowGif: false,
         }, function(){
             this.initPositionListener()
         })
@@ -500,6 +556,9 @@ export class MapClusterNBH extends Component {
                     } else if (currentCategory === "Cluster by Call Frequency") {
                         bgClusterID = currentCluster[bg]['Cluster by Call Frequency'] //Where this BG belongs to
                         yLabel = 'Cluster Mean (% of Total Calls)'
+                    } else if (currentCategory === "Cluster by Crime Frequency") {
+                        bgClusterID = currentCluster[bg]['Cluster by Crime Frequency'] //Where this BG belongs to
+                        yLabel = 'Cluster Mean (% of Total Calls)'
                     } else if (currentCategory === "Cluster by All Factors") {
                         bgClusterID = currentCluster[bg]['Cluster by All Factors'] //Where this BG belongs to
                     }
@@ -523,6 +582,109 @@ export class MapClusterNBH extends Component {
                     }
 
                     self.setState({
+                        legendName: yLabel,
+                        currentChartData: chartData,
+                        currentClusterID: bgClusterID,
+                        selected: 'Cluster ' + bgClusterID + " (Current)"
+                    })
+                    self.handleChartCategoryChange({
+                        target: {
+                            value: 'Cluster ' + bgClusterID
+                        }
+                    })
+                }
+            }
+        })
+    }
+
+    handleNeighborhoodChange (e){
+        var self = this;
+        const currentCluster = this.state.currentCluster;
+        const currentCategory = this.state.currentCategory;
+        const clusterProfiles = currentCluster["Cluster_Profiles"];
+        var bgClusterID = null;
+        var chartData = [];
+
+        Object.keys(currentCluster).forEach(bg => {
+            if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
+                //SKIP
+            } else {
+                if (currentCluster[bg]["NBH_NAME"] === e.target.value) {
+                    const coords = currentCluster[bg]["Boundaries"]
+                    var x_coords = []
+                    var y_coords = []
+                    coords.forEach(function(coord) {
+                        x_coords.push(coord[0]);
+                        y_coords.push(coord[1]);
+                    })
+                    const x_min = Math.min(...x_coords);
+                    const y_min = Math.min(...y_coords);
+                    const x_max = Math.max(...x_coords);
+                    const y_max = Math.max(...y_coords);
+                    const polygonCenter = {
+                        lat: y_min + ((y_max - y_min) / 2),
+                        lng: x_min + ((x_max - x_min) / 2),
+                    }
+                    self.setState({
+                        currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+                        panorama: new window.google.maps.StreetViewPanorama(
+                            this.pano.current,
+                            {
+                                position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+                                pov: {
+                                    heading: 50,
+                                    pitch: 0,
+                                },
+                                addressControl: false,
+                                visible: true
+                            }
+                        ),
+                    }, function(){
+                        this.initPositionListener()
+                    })
+                    var yLabel = 'Cluster Mean Value'
+                    if (currentCategory === "Cluster by Socioeconomic Metrics") {
+                        bgClusterID = currentCluster[bg]['Cluster by Socioeconomic Metrics']
+                    } else if (currentCategory === "Cluster by Response Time") {
+                        bgClusterID = currentCluster[bg]['Cluster by Response Time']
+                        yLabel = 'Cluster Mean (% of Cases)'
+                    }
+                    else if (currentCategory === "Cluster by Department") {
+                        bgClusterID = currentCluster[bg]['Cluster by Department']
+                        yLabel = 'Cluster Mean (% of Total Depts)'
+                    } else if (currentCategory === "Cluster by Call Category") {
+                        bgClusterID = currentCluster[bg]['Cluster by Call Category']
+                        yLabel = 'Cluster Mean (% of All Categories)'
+                    } else if (currentCategory === "Cluster by Call Frequency") {
+                        bgClusterID = currentCluster[bg]['Cluster by Call Frequency']
+                        yLabel = 'Cluster Mean (% of Total Calls)'
+                    } else if (currentCategory === "Cluster by Crime Frequency") {
+                        bgClusterID = currentCluster[bg]['Cluster by Crime Frequency']
+                        yLabel = 'Cluster Mean (% of Total Calls)'
+                    } else if (currentCategory === "Cluster by All Factors") {
+                        bgClusterID = currentCluster[bg]['Cluster by All Factors']
+                    }
+
+                    for (var i = 0; i < clusterProfiles[currentCategory].length; i++) {
+                        const clusterID = clusterProfiles[currentCategory][i]["Cluster_ID"]
+                        if (bgClusterID === clusterID){
+                            chartData.unshift({
+                                id: clusterID,
+                                name: clusterID + ' (Current)' ,
+                                Mean: clusterProfiles[currentCategory][i][self.state.currentChartCategory].mean,
+                            })
+                        }
+                        else {
+                            chartData.push({
+                                id: clusterID,
+                                name: clusterID ,
+                                Mean: clusterProfiles[currentCategory][i][self.state.currentChartCategory].mean,
+                            })
+                        }
+                    }
+
+                    self.setState({
+                        selectedNeighborhood: currentCluster[bg],
                         legendName: yLabel,
                         currentChartData: chartData,
                         currentClusterID: bgClusterID,
@@ -580,9 +742,10 @@ export class MapClusterNBH extends Component {
         const clusterMetadata = this.state.clusterMetadata
         const bgColorArray = this.state.colorArray2
         const selectedCluster = this.state.selected
+        const downloadPercent = this.state.downloadPercent
+
         var currentChartData = [];
         const clusterProfiles = currentCluster["Cluster_Profiles"];
-        const downloadPercent = this.state.downloadPercent
         if (selectedNeighborhood !== null && currentChartData != null) {
             currentChartData = this.state.currentChartData
         }
@@ -615,11 +778,11 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (CATEGORY)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9" >
-                            <b>Neighborhood ID:</b>
+                        <div className="col-md-7" >
+                            <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
-                            {selectedNeighborhood["NBH_ID"]}
+                        <div className="col-md-5">
+                            {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
                     <div className="row bgrow">
@@ -670,11 +833,11 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (DEPARTMENT)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9" >
-                            <b>Neighborhood ID:</b>
+                        <div className="col-md-7" >
+                            <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
-                            {selectedNeighborhood["NBH_ID"]}
+                        <div className="col-md-5">
+                            {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
                     <div className="row bgrow">
@@ -724,11 +887,11 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (RESPONSE TIME)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9" >
-                            <b>Neighborhood ID:</b>
+                        <div className="col-md-7" >
+                            <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
-                            {selectedNeighborhood["NBH_ID"]}
+                        <div className="col-md-5">
+                            {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
                     <div className="row bgrow">
@@ -765,7 +928,7 @@ export class MapClusterNBH extends Component {
                 </div>
                 )
             }
-            else if (currentCategory.includes('Frequency')){
+            else if (currentCategory.includes('Call Frequency')){
                 const freq = [{
                     name: selectedNeighborhood["NBH_ID"],
                     value: selectedNeighborhood['Frequency']
@@ -775,11 +938,58 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (FREQUENCY)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9" >
-                            <b>Neighborhood ID:</b>
+                        <div className="col-md-7" >
+                            <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
-                            {selectedNeighborhood["NBH_ID"]}
+                        <div className="col-md-5">
+                            {selectedNeighborhood["NBH_NAME"]}
+                        </div>
+                    </div>
+                    <div className="row bgrow">
+                        <BarChart
+                            width={700}
+                            height={300}
+                            data={freq}
+                            margin={{top: 5, right: 30, left: 20, bottom: 5}}
+                            maxBarSize={70}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                                dataKey="name"
+                                label={{value: 'Neighborhood ID', position: "insideBottom", offset: -5}}
+                                interval = {0}
+                            />
+                            <YAxis
+                                label={{value: 'Frequency', angle: -90, position: "insideLeft", dy: this.state.legendName.length+55, offset: -10}}
+                            />
+                            <Tooltip />
+                            <Bar dataKey='value' fill="#8884D8">
+                                {
+                                    bgColorArray.map(function(color, index) {
+                                        return <Cell key={`cell-${index}`} fill={color} />;
+                                    })
+                                }
+                            </Bar>
+                        </BarChart>
+                    </div>
+                </div>
+                )
+            }
+            else if (currentCategory.includes('Crime Frequency')){
+                const freq = [{
+                    name: selectedNeighborhood["NBH_ID"],
+                    value: selectedNeighborhood['Frequency']
+                }]
+                bgProfileContent = (
+                <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
+                    <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (FREQUENCY)</div>
+                    <br />
+                    <div className="row bgrow">
+                        <div className="col-md-7" >
+                            <b>Neighborhood Name:</b>
+                        </div>
+                        <div className="col-md-5">
+                            {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
                     <div className="row bgrow">
@@ -818,11 +1028,11 @@ export class MapClusterNBH extends Component {
                     <div align="center" style={{fontWeight: 'bold'}}>CURRENT SELECTED NEIGHBORHOOD PROFILE (SOCIOECONOMIC)</div>
                     <br />
                     <div className="row bgrow">
-                        <div className="col-md-9">
-                            <b>Neighborhood ID:</b>
+                        <div className="col-md-7" >
+                            <b>Neighborhood Name:</b>
                         </div>
-                        <div className="col-md-3">
-                            {selectedNeighborhood["NBH_ID"]}
+                        <div className="col-md-5">
+                            {selectedNeighborhood["NBH_NAME"]}
                         </div>
                     </div>
                     <div className="row bgrow">
@@ -930,6 +1140,15 @@ export class MapClusterNBH extends Component {
             {loadingData === false ? (
             <div className="row">
                 <div className="col-md-6 map-view-container" style = {{height: "95vh"}}>
+                    {this.state.neighborhoodList.length > 0 && (
+                    <div className="map-top-center">
+                        <select defaultValue="Ivanhoe Northeast" onChange={this.handleNeighborhoodChange.bind(this)}>
+                            {this.state.neighborhoodNames.map(item => {
+                                return <option key={item} value={item}>{item}</option>
+                            })}
+                        </select>
+                    </div>
+                    )}
                     <div className="map-container">
                         <Map
                             google={this.props.google}
@@ -1004,10 +1223,6 @@ export class MapClusterNBH extends Component {
                         })
                         }
                         </div>
-                        
-                        {this.state.showArrowGif === true && (
-                        <img className = 'arrow' src="https://media.giphy.com/media/bqb0oWQTUIlB21rvnS/giphy.gif" alt="Neighborhood Arrow" />
-                        )}
                     </div>
                     {this.state.panorama !== null && (
                     <div className="pano-view-container" align="center">
@@ -1123,7 +1338,7 @@ export class MapClusterNBH extends Component {
                 </div>
             </div>
             ) : (
-            <div align="center">
+            <div className="col-md-6 offset-md-3" align="center">
                 {this.state.initialMessage}
                 <ProgressBar bgcolor={"#00695c"} completed={downloadPercent} inProgressText={"Downloading"} completeText={"Downloading Completed"}/>
             </div>
