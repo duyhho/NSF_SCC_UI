@@ -13,6 +13,7 @@ import Visualization311 from "./Visualization311/Visualization311.jsx"
 import Send311Request from './ChatBot/Send311Request.jsx';
 import Chatbot from './ChatBot/Chatbot.jsx'
 import MapTotal from './Map/MapTotal.jsx'
+import MapBlockGroupDP from './Map/MapBlockGroupDP.jsx'
 
 export default class SideBar extends React.Component {
   constructor(props) {
@@ -59,6 +60,10 @@ export default class SideBar extends React.Component {
     } else if (window.location.pathname === "/allMaps") {
       this.setState({
         currentView: 9
+      })
+    } else if (window.location.pathname === "/blockgroupsDP") {
+      this.setState({
+        currentView: 10
       })
     } else { //Default to 0
       this.setState({
@@ -151,6 +156,16 @@ export default class SideBar extends React.Component {
                     Block Groups
                   </Menu.Item>
                 </Link>
+                <Link to="/blockgroupsDP">
+                  <Menu.Item
+                    name="Block Group Cluster With DP"
+                    onClick={this.handleMenuSelect.bind(this, 10)}
+                    active={currentView === 10}
+                  >
+                    <Icon name="connectdevelop" />
+                    Block Groups DP
+                  </Menu.Item>
+                </Link>
                 <Link to="/neighborhoods">
                   <Menu.Item
                     name="Neighborhood Cluster"
@@ -210,6 +225,7 @@ export default class SideBar extends React.Component {
                 <Route exact path="/call311" component={Map311} />
                 <Route exact path="/virtualTour" component={VirtualTour} />
                 <Route exact path="/blockgroups" component={MapCluster} />
+                <Route exact path="/blockgroupsDP" component={MapBlockGroupDP} />
                 <Route exact path="/neighborhoods" component={MapClusterNBH} />
                 <Route exact path="/visualization311" component={Visualization311} />
                 <Route exact path="/send311Request" component={Send311Request} />
