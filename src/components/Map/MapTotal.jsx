@@ -350,7 +350,7 @@ export class MapTotal extends Component {
                             google={this.props.google}
                             initialCenter={currentPosition}
                             zoom={11}
-                            stretViewControl = {false}
+                            streetViewControl = {false}
                         >
                             {this.renderPolygons()}
                         </Map>

@@ -195,9 +195,9 @@ export class MapClusterNBH extends Component {
         .catch(function(e) {
             console.log(e)
             self.setState({
-                initialMessage: "Cannot load the block groups!"
+                initialMessage: "Cannot load the neighborhoods!"
             })
-            modal.showInfo("Cannot load the block groups!", "danger", "top", "center");
+            modal.showInfo("Cannot load the neighborhoods!", "danger", "top", "center");
         })
         // axios.get('https://dl.dropboxusercontent.com/s/n9nn5pk2ym7wxcl/246NBH-Clusters.json?dl=0?dl=0')
     }
@@ -1155,7 +1155,7 @@ export class MapClusterNBH extends Component {
                             initialCenter={currentPosition}
                             zoom={11}
                             onClick={this.onMapClicked.bind(this)}
-                            stretViewControl = {false}
+                            streetViewControl = {false}
                         >
                             {Object.keys(currentCluster).map(bg => {
                                 if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
