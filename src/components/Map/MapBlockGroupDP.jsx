@@ -1,6 +1,5 @@
 import React, { Component } from "react"
 import { Map, GoogleApiWrapper, Polygon, Marker } from "google-maps-react"
-import update from 'immutability-helper'
 import axios from 'axios'
 import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 import { server } from '../../controllers/Server.js'
@@ -24,11 +23,10 @@ export class MapClusterNBH extends Component {
             epsilonList: [],
             currentCategory: "Total population", //Default
             currentEpsilon: "DP-Epsilon=1", //Default
-            currentHighest: 0,
-            currentLowest: 0,
             differenceList: {},
             colorArray: ["#7e0025", "#a60f16", "#cb181c", "#ef3b2c", "#fb6a4b", "#fd9272", "#ffd1c1", "#feece2", "#bcd6e5", "#6aaed5", "#2070b4"],
             percentArr: [70, 48, 34, 20, 7, 1.4, 0.7, 0, 20, 40, 0],
+            legendBreakPointsList: [],
         };
     }
 
@@ -72,12 +70,12 @@ export class MapClusterNBH extends Component {
                     epsList.push(item)
                 }
 
-                if (item == "DP-Epsilon=1") {
+                if (item === "DP-Epsilon=1") {
                     Object.keys(response.data.data[item]).forEach(group => {
                         epsNumArr[group] = response.data.data[item][group]["Total population"]
                     })
                 }
-                if (item == "Standard") {
+                if (item === "Standard") {
                     Object.keys(response.data.data[item]).forEach(group => {
                         standardNumArr[group] = response.data.data[item][group]["Total population"]
                     })
@@ -92,13 +90,13 @@ export class MapClusterNBH extends Component {
             var curHighest = Math.max(...tempList)
             var curLowest = Math.min(...tempList)
 
+            self.setLegendBreakPoints(curLowest, curHighest)
+
             self.setState({
                 blockGroupList: response.data,
                 loadingData: false,
                 categoryList: catList,
                 epsilonList: epsList,
-                currentHighest: curHighest,
-                currentLowest: curLowest,
                 differenceList: difList,
             })
         })
@@ -132,34 +130,34 @@ export class MapClusterNBH extends Component {
     }
 
     renderLegend() {
-        const currentLowest = this.state.currentLowest;
-        const currentHighest = this.state.currentHighest;
-        const percentArr = this.state.percentArr;
+        const legendBreakPointsList = this.state.legendBreakPointsList
         var legendLabel = []
 
-        //Start Positive
-        legendLabel.push(Math.ceil((currentHighest * percentArr[0] / 100) + 1).toString() + " or more")
-        legendLabel.push(Math.ceil((currentHighest * percentArr[1] / 100) + 1).toString() + " to " + Math.ceil((currentHighest * percentArr[0] / 100)).toString())
-        legendLabel.push(Math.ceil((currentHighest * percentArr[2] / 100) + 1).toString() + " to " + Math.ceil((currentHighest * percentArr[1] / 100)).toString())
-        legendLabel.push(Math.ceil((currentHighest * percentArr[3] / 100) + 1).toString() + " to " + Math.ceil((currentHighest * percentArr[2] / 100)).toString())
-        legendLabel.push(Math.ceil((currentHighest * percentArr[4] / 100) + 1).toString() + " to " + Math.ceil((currentHighest * percentArr[3] / 100)).toString())
-        legendLabel.push(Math.ceil((currentHighest * percentArr[5] / 100) + 1).toString() + " to " + Math.ceil((currentHighest * percentArr[4] / 100)).toString())
-        legendLabel.push(Math.ceil((currentHighest * percentArr[6] / 100) + 1).toString() + " to " + Math.ceil((currentHighest * percentArr[5] / 100)).toString())
-        legendLabel.push("1 to " + Math.ceil((currentHighest * percentArr[6] / 100)).toString())
+        if (legendBreakPointsList.length > 0) {
+            //Start Positive
+            legendLabel.push(legendBreakPointsList[0].toString() + " or more")
+            legendLabel.push(legendBreakPointsList[1].toString() + " to " + (legendBreakPointsList[0] - 1).toString())
+            legendLabel.push(legendBreakPointsList[2].toString() + " to " + (legendBreakPointsList[1] - 1).toString())
+            legendLabel.push(legendBreakPointsList[3].toString() + " to " + (legendBreakPointsList[2] - 1).toString())
+            legendLabel.push(legendBreakPointsList[4].toString() + " to " + (legendBreakPointsList[3] - 1).toString())
+            legendLabel.push(legendBreakPointsList[5].toString() + " to " + (legendBreakPointsList[4] - 1).toString())
+            legendLabel.push(legendBreakPointsList[6].toString() + " to " + (legendBreakPointsList[5] - 1).toString())
+            legendLabel.push("1 to " + (legendBreakPointsList[6] - 1).toString())
 
-        //Start negative
-        legendLabel.push(Math.ceil((currentLowest * percentArr[8] / 100)).toString() + " to 0")
-        legendLabel.push(Math.ceil((currentLowest * percentArr[9] / 100)).toString() + " to " + Math.ceil((currentLowest * percentArr[8] / 100) - 1).toString())
-        legendLabel.push(Math.ceil((currentLowest * percentArr[9] / 100) - 1).toString() + " or less")
+            //Start negative
+            legendLabel.push(legendBreakPointsList[8].toString() + " to 0")
+            legendLabel.push(legendBreakPointsList[9].toString() + " to " + (legendBreakPointsList[8] - 1).toString())
+            legendLabel.push((legendBreakPointsList[9] - 1).toString() + " or less")
 
-        return this.state.colorArray.map(function(color, index) {
-            return (
-                <div className="legend-item">
-                    <div className="legend-color" style={{backgroundColor: color}}></div>
-                    <div>{legendLabel[index]}</div>
-                </div>
-            )
-        })
+            return this.state.colorArray.map(function(color, index) {
+                return (
+                    <div className="legend-item">
+                        <div className="legend-color" style={{backgroundColor: color}}></div>
+                        <div>{legendLabel[index]}</div>
+                    </div>
+                )
+            })
+        }
     }
 
     reconfigureData(newCat, newEps) {
@@ -181,12 +179,12 @@ export class MapClusterNBH extends Component {
         var epsNumArr = {}
         var standardNumArr = {}
         Object.keys(blockGroupList.data).forEach(item => {
-            if (item == currentEpsilon) {
+            if (item === currentEpsilon) {
                 Object.keys(blockGroupList.data[item]).forEach(group => {
                     epsNumArr[group] = blockGroupList.data[item][group][currentCategory]
                 })
             }
-            if (item == "Standard") {
+            if (item === "Standard") {
                 Object.keys(blockGroupList.data[item]).forEach(group => {
                     standardNumArr[group] = blockGroupList.data[item][group][currentCategory]
                 })
@@ -202,10 +200,34 @@ export class MapClusterNBH extends Component {
         var curHighest = Math.max(...tempList)
         var curLowest = Math.min(...tempList)
 
+        this.setLegendBreakPoints(curLowest, curHighest)
+
         this.setState({
-            currentHighest: curHighest,
-            currentLowest: curLowest,
             differenceList: difList,
+        })
+    }
+
+    setLegendBreakPoints(curLowest, curHighest) {
+        const percentArr = this.state.percentArr;
+        var legendBreakPoints = []
+
+        //Start Positive
+        legendBreakPoints.push(Math.ceil(curHighest * percentArr[0] / 100) + 1)
+        legendBreakPoints.push(Math.ceil(curHighest * percentArr[1] / 100) + 1)
+        legendBreakPoints.push(Math.ceil(curHighest * percentArr[2] / 100) + 1)
+        legendBreakPoints.push(Math.ceil(curHighest * percentArr[3] / 100) + 1)
+        legendBreakPoints.push(Math.ceil(curHighest * percentArr[4] / 100) + 1)
+        legendBreakPoints.push(Math.ceil(curHighest * percentArr[5] / 100) + 1)
+        legendBreakPoints.push(Math.ceil(curHighest * percentArr[6] / 100) + 1)
+        legendBreakPoints.push(1)
+
+        //Start negative
+        legendBreakPoints.push(Math.ceil(curLowest * percentArr[8] / 100))
+        legendBreakPoints.push(Math.ceil(curLowest * percentArr[9] / 100))
+        legendBreakPoints.push(Math.ceil(curLowest * percentArr[9] / 100) - 1)
+
+        this.setState({
+            legendBreakPointsList: legendBreakPoints,
         })
     }
 
@@ -218,9 +240,9 @@ export class MapClusterNBH extends Component {
         const blockGroupListCoords = blockGroupList.geometry;
         const categoryList = this.state.categoryList;
         const epsilonList = this.state.epsilonList;
-        const currentCategory = this.state.currentCategory;
-        const currentEpsilon = this.state.currentEpsilon;
         const differenceList = this.state.differenceList;
+        const legendBreakPointsList = this.state.legendBreakPointsList;
+        const colorArray = this.state.colorArray;
 
         if (!this.props.google) {
             return <div>Loading...</div>;
@@ -279,15 +301,32 @@ export class MapClusterNBH extends Component {
                                         lng: y_min + ((y_max - y_min) / 2),
                                     }
 
+                                    var renderColor = ""
+                                    Object.keys(differenceList).forEach(group => {
+                                        if (group === bg) {
+                                            for (var i = 0; i < legendBreakPointsList.length; i++) {
+                                                if (differenceList[group] >= legendBreakPointsList[i]) {
+                                                    renderColor = colorArray[i]
+                                                    break
+                                                } else if (differenceList[group] < legendBreakPointsList[i] && differenceList[group] >= legendBreakPointsList[i + 1]) {
+                                                    renderColor = colorArray[i + 1]
+                                                    break
+                                                } else {
+                                                    //SKIP
+                                                }
+                                            }
+                                        }
+                                    })
+
                                     return (
                                         <Polygon
                                             ref={self.polygonRef}
                                             paths={coordArr}
                                             center={center}
-                                            strokeColor={"green"}
+                                            strokeColor={renderColor}
                                             strokeOpacity={1}
                                             strokeWeight={3}
-                                            fillColor={"green"}
+                                            fillColor={renderColor}
                                             fillOpacity={0.75}
                                         />
                                     )
@@ -312,8 +351,8 @@ export class MapClusterNBH extends Component {
                                     }
 
                                     var markerLabel = ""
-                                    Object.keys(differenceList).map(group => {
-                                        if (group == bg) {
+                                    Object.keys(differenceList).forEach(group => {
+                                        if (group === bg) {
                                             markerLabel = differenceList[group].toString()
                                         }
                                     })
@@ -323,7 +362,6 @@ export class MapClusterNBH extends Component {
                                             label={markerLabel}
                                             position={center}
                                             name={"ASD"}
-                                            style={{display: "none"}}
                                         />
                                     )
                                 })}
