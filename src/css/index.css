@@ -355,6 +355,11 @@ code {
   display: flex;
   flex-direction: row;
 }
+.stats-legend-item {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 5px;
+}
 .legend-color {
   height: 30px;
   width: 30px;

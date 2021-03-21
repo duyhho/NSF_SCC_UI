@@ -195,15 +195,15 @@ export class MapBlockGroupDP extends Component {
 
         return (
             <div>
-                <div className="legend-item">
+                <div className="stats-legend-item">
                     <div>Before DP:</div>
                     <div style={{marginLeft: "auto"}}>{curDataStandard}</div>
                 </div>
-                <div className="legend-item">
+                <div className="stats-legend-item">
                     <div>After DP ({currentEpsilon.substring(3, currentEpsilon.length)}):   </div>
                     <div style={{marginLeft: "auto"}}>{curDataEpsilon}</div>
                 </div>
-                <div className="legend-item">
+                <div className="stats-legend-item">
                     <div>Difference: </div>
                     <div style={{marginLeft: "auto", color: curDataEpsilon - curDataStandard < 0 ? "red" : "green"}}>{curDataEpsilon - curDataStandard}</div>
                 </div>
