@@ -445,6 +445,7 @@ export class MapCluster extends Component {
     }
 
     render() {
+        console.log('render')
         const loadingData = this.state.loadingData;
         const currentCluster = this.state.currentCluster;
         const categoryList = this.state.categoryList;
