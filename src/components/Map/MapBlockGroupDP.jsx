@@ -5,7 +5,7 @@ import ProgressBar from '../ProgressBar/ProgressBar.jsx'
 import { server } from '../../controllers/Server.js'
 import { modal } from '../../utilities/modal.js'
 
-export class MapClusterDP extends Component {
+export class MapBlockGroupDP extends Component {
     constructor(props) {
         super(props);
         this.polygonRef = React.createRef();
@@ -34,14 +34,12 @@ export class MapClusterDP extends Component {
     componentDidMount() {
         this.setState({
             loadingData: true
-
         })
         this.loadBlockGroupList()
     }
 
     loadBlockGroupList() {
         var self = this;
-        // console.log('here')
         const client = axios.create({
             baseURL: 'https://dl.dropboxusercontent.com/s/33149z4kcf91s29/Census_validBG_withDP.json?dl=0',
             timeout: 20000
@@ -82,20 +80,17 @@ export class MapClusterDP extends Component {
                     })
                 }
             })
-            var tempList = []
+
             var difList = {}
             var diffListPercent = {}
 
             Object.keys(epsNumArr).forEach(group => {
-                tempList.push(epsNumArr[group] - standardNumArr[group])
                 difList[group] = epsNumArr[group] - standardNumArr[group]
                 diffListPercent[group] = (difList[group]/standardNumArr[group])*100
                 if (diffListPercent[group] == null){
                     console.log('here')
                 }
             })
-            var curHighest = Math.max(...tempList)
-            var curLowest = Math.min(...tempList)
 
             self.setLegendBreakPoints()
 
@@ -108,8 +103,6 @@ export class MapClusterDP extends Component {
                 diffListPercent: diffListPercent
 
             })
-            console.log(diffListPercent)
-
         })
         .catch(function(e) {
             console.log(e)
@@ -205,27 +198,22 @@ export class MapClusterDP extends Component {
             }
         })
 
-        var tempList = []
         var difList = {}
         var diffListPercent = {}
         Object.keys(epsNumArr).forEach(group => {
-            tempList.push(epsNumArr[group] - standardNumArr[group])
             difList[group] = epsNumArr[group] - standardNumArr[group]
             diffListPercent[group] = (difList[group]/standardNumArr[group])*100
             if (isNaN(diffListPercent[group])){
                 diffListPercent[group] = 0
             }
         })
-        var curHighest = Math.max(...tempList)
-        var curLowest = Math.min(...tempList)
 
-        this.setLegendBreakPoints(curLowest, curHighest)
+        this.setLegendBreakPoints()
 
         this.setState({
             differenceList: difList,
             diffListPercent: diffListPercent
         })
-        console.log(diffListPercent)
     }
 
     setLegendBreakPoints() {
@@ -248,11 +236,12 @@ export class MapClusterDP extends Component {
         legendBreakPoints.push(Math.ceil(percentArr[9]))
         legendBreakPoints.push(Math.ceil(percentArr[10]))
         legendBreakPoints.push(Math.ceil(percentArr[10]) - 1)
-        console.log(legendBreakPoints)
+
         this.setState({
             legendBreakPointsList: legendBreakPoints,
         })
     }
+
     onPolygonClick(props, polygon, e){
         console.log(props)
     }
@@ -312,9 +301,7 @@ export class MapClusterDP extends Component {
                                     var x_coords = []
                                     var y_coords = []
                                     var noise = (Math.random() * (0.0000000001 - 0.0000000002) + 0.0000000002)
-                                    // console.log(noise)
                                     coords.forEach(function(coord) {
-                                        // console.log(coord[0])
                                         coordArr.push({
                                             lat: coord[0] + noise, lng: coord[1]
                                         });
@@ -343,21 +330,9 @@ export class MapClusterDP extends Component {
                                                     renderColor = colorArray[i]
                                                     break
                                                 }
-                                                // else if (differenceList[group] < legendBreakPointsList[i] && differenceList[group] >= legendBreakPointsList[i + 1]) {
-                                                //     renderColor = colorArray[i + 1]
-                                                //     break
-                                                // } else {
-                                                //     console.log(differenceList[group])
-                                                //     renderColor = "blue"
-                                                // }
                                             }
                                             if (diffListPercent[group] <= legendBreakPointsList[legendBreakPointsList.length-1]){
                                                 renderColor = colorArray[legendBreakPointsList.length-1]
-                                            }
-                                            if (renderColor == 'yellow'){
-                                                console.log(diffListPercent[group])
-                                                console.log(differenceList[group])
-                                                console.log(legendBreakPointsList[legendBreakPointsList.length-1])
                                             }
                                         }
                                     })
@@ -438,4 +413,4 @@ export class MapClusterDP extends Component {
 export default GoogleApiWrapper({
     apiKey: "AIzaSyAAKEUHaLzR2U_-XBdTwPE_VZ39ZPh6hb8",
     v: "3.30"
-})(MapClusterDP);
+})(MapBlockGroupDP);
