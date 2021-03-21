@@ -77,7 +77,6 @@ export class MapCluster extends Component {
                 })
             }
             var chartFilterList = [];
-            console.log(response.data)
             const allMetrics = response.data[0][self.state.defaultCategoryMetadata]
             allMetrics.forEach(function(item){
                 chartFilterList.push({cat: item })
@@ -219,8 +218,7 @@ export class MapCluster extends Component {
         }
         else if (e.target.value.includes('Cluster')){
             const selectedCluster = e.target.value
-            
-            console.log(selectedCluster)
+
             clusterProfiles[currentCategory].forEach(function(profile) {        
                 if (selectedCluster.includes(profile['Cluster_ID'])){
                     var tempDict = {}
@@ -270,7 +268,6 @@ export class MapCluster extends Component {
                             currentClusterProfileContent: chartData,
                             selected: selectedCluster
                         })
-                        console.log(self.state.currentClusterProfileContent)
                     }
                     else {
                         var content = Object.keys(tempDict).map(function(key) {
@@ -445,7 +442,6 @@ export class MapCluster extends Component {
     }
 
     render() {
-        console.log('render')
         const loadingData = this.state.loadingData;
         const currentCluster = this.state.currentCluster;
         const categoryList = this.state.categoryList;
