@@ -28,6 +28,7 @@ export class MapBlockGroupDP extends Component {
             colorArray: ["#7e0025", "#a60f16", "#cb181c", "#ef3b2c", "#fb6a4b", "#fd9272", "#feece2", "#bcd6e5", "#6aaed5", "#2070b4", '#1c4966', '#0e2433'],
             percentArr: [50, 25, 10, 5, 2, 0, -2, -5, -10, -25, -50],
             legendBreakPointsList: [],
+            currentGroupId: 0,
         };
     }
 
@@ -167,6 +168,49 @@ export class MapBlockGroupDP extends Component {
         }
     }
 
+    renderStatsLegend() {
+        const currentGroupId = this.state.currentGroupId;
+        const blockGroupList = this.state.blockGroupList;
+        const currentCategory = this.state.currentCategory;
+        const currentEpsilon = this.state.currentEpsilon;
+        var curDataStandard = 0
+        var curDataEpsilon = 0
+
+        Object.keys(blockGroupList.data).forEach(item => {
+            if (item === currentEpsilon) {
+                Object.keys(blockGroupList.data[item]).forEach(group => {
+                    if (group === currentGroupId) {
+                        curDataEpsilon = blockGroupList.data[item][group][currentCategory]
+                    }
+                })
+            }
+            if (item === "Standard") {
+                Object.keys(blockGroupList.data[item]).forEach(group => {
+                    if (group === currentGroupId) {
+                        curDataStandard = blockGroupList.data[item][group][currentCategory]
+                    }
+                })
+            }
+        })
+
+        return (
+            <div>
+                <div className="legend-item">
+                    <div>Before DP:</div>
+                    <div style={{marginLeft: "auto"}}>{curDataStandard}</div>
+                </div>
+                <div className="legend-item">
+                    <div>After DP ({currentEpsilon.substring(3, currentEpsilon.length)}):   </div>
+                    <div style={{marginLeft: "auto"}}>{curDataEpsilon}</div>
+                </div>
+                <div className="legend-item">
+                    <div>Difference: </div>
+                    <div style={{marginLeft: "auto", color: curDataEpsilon - curDataStandard < 0 ? "red" : "green"}}>{curDataEpsilon - curDataStandard}</div>
+                </div>
+            </div>
+        )
+    }
+
     reconfigureData(newCat, newEps) {
         const blockGroupList = this.state.blockGroupList;
         var currentCategory = "";
@@ -243,7 +287,9 @@ export class MapBlockGroupDP extends Component {
     }
 
     onPolygonClick(props, polygon, e){
-        console.log(props)
+        this.setState({
+            currentGroupId: props.groupId
+        })
     }
 
     render() {
@@ -252,7 +298,6 @@ export class MapBlockGroupDP extends Component {
         const loadingData = this.state.loadingData;
         const downloadPercent = this.state.downloadPercent;
         const blockGroupList = this.state.blockGroupList;
-        const blockGroupListCoords = blockGroupList.geometry;
         const categoryList = this.state.categoryList;
         const epsilonList = this.state.epsilonList;
         const differenceList = this.state.differenceList;
@@ -295,8 +340,8 @@ export class MapBlockGroupDP extends Component {
                                 zoom={11}
                                 streetViewControl = {false}
                             >
-                                {Object.keys(blockGroupListCoords).map(bg => {
-                                    const coords = blockGroupListCoords[bg]["boundaries"]
+                                {Object.keys(blockGroupList.geometry).map(bg => {
+                                    const coords = blockGroupList.geometry[bg]["boundaries"]
                                     var coordArr = []
                                     var x_coords = []
                                     var y_coords = []
@@ -323,7 +368,6 @@ export class MapBlockGroupDP extends Component {
                                     var randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
                                     Object.keys(differenceList).forEach(group => {
                                         if (group === bg) {
-
                                             for (var i = 0; i < legendBreakPointsList.length; i++) {
                                                 diff = diffListPercent[group]
                                                 if (diffListPercent[group] >= legendBreakPointsList[i]) {
@@ -340,7 +384,8 @@ export class MapBlockGroupDP extends Component {
                                     return (
                                         <Polygon
                                             ref={self.polygonRef}
-                                            diff = {diff}
+                                            diff={diff}
+                                            groupId={bg}
                                             paths={coordArr}
                                             center={center}
                                             strokeColor={renderColor}
@@ -348,13 +393,13 @@ export class MapBlockGroupDP extends Component {
                                             strokeWeight={3}
                                             fillColor={renderColor}
                                             fillOpacity={0.8}
-                                            onClick = {this.onPolygonClick}
+                                            onClick = {this.onPolygonClick.bind(this)}
                                         />
                                     )
                                 })}
 
-                                {Object.keys(blockGroupListCoords).map(bg => {
-                                    const coords = blockGroupListCoords[bg]["boundaries"]
+                                {Object.keys(blockGroupList.geometry).map(bg => {
+                                    const coords = blockGroupList.geometry[bg]["boundaries"]
                                     var x_coords = []
                                     var y_coords = []
                                     coords.forEach(function(coord) {
@@ -395,6 +440,10 @@ export class MapBlockGroupDP extends Component {
                             <div className="legend" align="center">
                                 <h3>Legend</h3>
                                 {this.renderLegend()}
+                            </div>
+                            <div className="stats-legend" align="center">
+                                <h3>{this.state.currentCategory}</h3>
+                                {this.renderStatsLegend()}
                             </div>
                         </div>
                     </div>

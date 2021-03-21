@@ -342,6 +342,15 @@ code {
   border: 2px solid #000;
   background-color: bisque;
 }
+.stats-legend {
+  position: absolute;
+  bottom: 0px;
+  right: 45px;
+  padding: 10px;
+  margin: 10px;
+  border: 2px solid #000;
+  background-color: bisque;
+}
 .legend-item {
   display: flex;
   flex-direction: row;
