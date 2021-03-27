@@ -25,7 +25,7 @@ export class MapBlockGroupDP extends Component {
             currentEpsilon: "DP-Epsilon=1", //Default
             differenceList: {},
             diffListPercent: {},
-            colorArray: ["#7e0025", "#a60f16", "#cb181c", "#ef3b2c", "#fb6a4b", "#fd9272", "#feece2", "#bcd6e5", "#6aaed5", "#2070b4", '#1c4966', '#0e2433'],
+            colorArray: ["#7e0025", "#a60f16", "#cb181c", "#ef3b2c", "#fb6a4b", "#fd9272", "#feece2", "#bcd6e5", "#6aaed5", "#2070b4", '#0f52ba', '#072f5f'],
             percentArr: [50, 25, 10, 5, 2, 0, -2, -5, -10, -25, -50],
             legendBreakPointsList: [],
             currentGroupId: 0,
@@ -72,12 +72,16 @@ export class MapBlockGroupDP extends Component {
 
                 if (item === "DP-Epsilon=1") {
                     Object.keys(response.data.data[item]).forEach(group => {
+                        if (group == '290950142042'){
                         epsNumArr[group] = response.data.data[item][group]["Total population"]
+                        }
                     })
                 }
                 if (item === "Standard") {
                     Object.keys(response.data.data[item]).forEach(group => {
+                        if (group == '290950142042'){
                         standardNumArr[group] = response.data.data[item][group]["Total population"]
+                        }
                     })
                 }
             })
@@ -175,7 +179,8 @@ export class MapBlockGroupDP extends Component {
         const currentEpsilon = this.state.currentEpsilon;
         var curDataStandard = 0
         var curDataEpsilon = 0
-
+        var diff = 0;
+        var diffPercent = 0;
         Object.keys(blockGroupList.data).forEach(item => {
             if (item === currentEpsilon) {
                 Object.keys(blockGroupList.data[item]).forEach(group => {
@@ -192,20 +197,22 @@ export class MapBlockGroupDP extends Component {
                 })
             }
         })
-
+        diff = curDataEpsilon - curDataStandard;
+        console.log(diff)
+        diffPercent = curDataStandard > 0 ? ((diff/curDataStandard)*100).toFixed(2) : 0;
         return (
             <div>
                 <div className="stats-legend-item">
                     <div>Before DP:</div>
-                    <div style={{marginLeft: "auto"}}>{curDataStandard}</div>
+                    <div style={{marginLeft: "auto"}}>{this.numberWithCommas(curDataStandard)}</div>
                 </div>
                 <div className="stats-legend-item">
                     <div>After DP ({currentEpsilon.substring(3, currentEpsilon.length)}):   </div>
-                    <div style={{marginLeft: "auto"}}>{curDataEpsilon}</div>
+                    <div style={{marginLeft: "auto"}}>{this.numberWithCommas(curDataEpsilon)}</div>
                 </div>
                 <div className="stats-legend-item">
                     <div>Difference: </div>
-                    <div style={{marginLeft: "auto", color: curDataEpsilon - curDataStandard < 0 ? "red" : "green"}}>{curDataEpsilon - curDataStandard}</div>
+                    <div style={{marginLeft: "auto", color: diff == 0 ? 'black' : ( diff > 0 ? "red" : "blue")}}>{this.numberWithCommas(diff)} ({diffPercent}%) </div>
                 </div>
             </div>
         )
@@ -290,8 +297,11 @@ export class MapBlockGroupDP extends Component {
         this.setState({
             currentGroupId: props.groupId
         })
+        console.log(props)
     }
-
+    numberWithCommas(x) {
+        return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+    }
     render() {
         var self = this;
         const currentPosition = this.state.currentPosition;
@@ -332,7 +342,7 @@ export class MapBlockGroupDP extends Component {
                     </select>
                 </div>
                 <div className="row">
-                    <div className="col-md-12 map-view-container" style = {{height: "95vh"}}>
+                    <div className="col-md-7 map-view-container" style = {{height: "95vh"}}>
                         <div className="map-container">
                             <Map
                                 google={this.props.google}
@@ -341,6 +351,7 @@ export class MapBlockGroupDP extends Component {
                                 streetViewControl = {false}
                             >
                                 {Object.keys(blockGroupList.geometry).map(bg => {
+                                    if (bg == '290950142042'){
                                     const coords = blockGroupList.geometry[bg]["boundaries"]
                                     var coordArr = []
                                     var x_coords = []
@@ -392,10 +403,11 @@ export class MapBlockGroupDP extends Component {
                                             strokeOpacity={1}
                                             strokeWeight={3}
                                             fillColor={renderColor}
-                                            fillOpacity={0.8}
+                                            fillOpacity={1}
                                             onClick = {this.onPolygonClick.bind(this)}
                                         />
                                     )
+                                    }
                                 })}
 
                                 {Object.keys(blockGroupList.geometry).map(bg => {
@@ -442,7 +454,7 @@ export class MapBlockGroupDP extends Component {
                                 {this.renderLegend()}
                             </div>
                             <div className="stats-legend" align="center">
-                                <h3>{this.state.currentCategory}</h3>
+                                <h2>{this.state.currentCategory}</h2>
                                 {this.renderStatsLegend()}
                             </div>
                         </div>

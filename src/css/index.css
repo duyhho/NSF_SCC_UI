@@ -358,7 +358,8 @@ code {
 .stats-legend-item {
   display: flex;
   flex-direction: row;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
+  font-size:150%;
 }
 .legend-color {
   height: 30px;
