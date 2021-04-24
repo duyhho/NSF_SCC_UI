@@ -123,18 +123,18 @@ export class MapClusterNBH extends Component {
             const polygonCenter = {lat: 39.0591695731819, lng: -94.55760721471178} //Ivanhoe Northeast
             self.setState({
                 currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
-                panorama: new window.google.maps.StreetViewPanorama(
-                    self.pano.current,
-                    {
-                        position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
-                        pov: {
-                            heading: 50,
-                            pitch: 0,
-                        },
-                        addressControl: false,
-                        visible: true
-                    }
-                ),
+                // panorama: new window.google.maps.StreetViewPanorama(
+                //     self.pano.current,
+                //     {
+                //         position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+                //         pov: {
+                //             heading: 50,
+                //             pitch: 0,
+                //         },
+                //         addressControl: false,
+                //         visible: true
+                //     }
+                // ),
             }, function(){
                 self.initPositionListener()
             })
@@ -351,7 +351,7 @@ export class MapClusterNBH extends Component {
                     if (!currentCategory.includes('Socioeconomic')){
                         const sortedDict = self.sortObject(tempDict)
                         var chartData = (
-                            <div className="col-md-12" align="left" style = {{fontSize: "130%"}}>
+                            <div className="col-md-12" align="left" style = {{fontSize: "130%", marginBottom: '20px'}}>
                                 <br />
                                 <div className="row bgrow">
                                     <BarChart
@@ -366,7 +366,7 @@ export class MapClusterNBH extends Component {
                                             dataKey="name"
                                             label={{value: currentCategory, position: "insideBottom", offset: -5}}
                                             style={{
-                                                fontSize: '9px',
+                                                fontSize: '10px',
                                             }}
                                             interval = {0}
                                         />
@@ -456,37 +456,37 @@ export class MapClusterNBH extends Component {
     }
 
     initPositionListener(){
-        if (this.state.panorama != null) {
-            this.state.panorama.addListener("position_changed", () => {
-                const location = this.state.panorama.getPosition()
-                const new_location = {lat: location.lat(), lng: location.lng()}
-                if (new_location !== this.state.currentPosition){
-                    this.setState({
-                        currentPosition: new_location
-                    })
-                }
-            });
-        }
+        // if (this.state.panorama != null) {
+        //     this.state.panorama.addListener("position_changed", () => {
+        //         const location = this.state.panorama.getPosition()
+        //         const new_location = {lat: location.lat(), lng: location.lng()}
+        //         if (new_location !== this.state.currentPosition){
+        //             this.setState({
+        //                 currentPosition: new_location
+        //             })
+        //         }
+        //     });
+        // }
     }
     
     onMarkerDrag(coord, map) {
-        this.setState({
-            currentPosition: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
-            panorama: new window.google.maps.StreetViewPanorama(
-                this.pano.current,
-                {
-                    position: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
-                    pov: {
-                        heading: 50,
-                        pitch: 16,
-                    },
-                    addressControl: false,
-                    visible: true
-                }
-            )
-        }, function(){
-            this.initPositionListener()
-        })
+        // this.setState({
+        //     currentPosition: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
+        //     panorama: new window.google.maps.StreetViewPanorama(
+        //         this.pano.current,
+        //         {
+        //             position: {lat: coord.latLng.lat(), lng: coord.latLng.lng()},
+        //             pov: {
+        //                 heading: 50,
+        //                 pitch: 16,
+        //             },
+        //             addressControl: false,
+        //             visible: true
+        //         }
+        //     )
+        // }, function(){
+        //     this.initPositionListener()
+        // })
     }
 
     onMapClicked() {
@@ -513,23 +513,23 @@ export class MapClusterNBH extends Component {
         var bgClusterID = null;
         var chartData = [];
         const polygonCenter = props.centerCoord
-        self.setState({
-            currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
-            panorama: new window.google.maps.StreetViewPanorama(
-                this.pano.current,
-                {
-                    position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
-                    pov: {
-                        heading: 50,
-                        pitch: 0,
-                    },
-                    addressControl: false,
-                    visible: true
-                }
-            ),
-        }, function(){
-            this.initPositionListener()
-        })
+        // self.setState({
+        //     currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+        //     panorama: new window.google.maps.StreetViewPanorama(
+        //         this.pano.current,
+        //         {
+        //             position: {lat: polygonCenter.lat, lng: polygonCenter.lng},
+        //             pov: {
+        //                 heading: 50,
+        //                 pitch: 0,
+        //             },
+        //             addressControl: false,
+        //             visible: true
+        //         }
+        //     ),
+        // }, function(){
+        //     this.initPositionListener()
+        // })
         Object.keys(currentCluster).forEach(bg => {
             if (bg === "Cluster_Total" || bg === 'Cluster_Profiles') {
                 //SKIP
@@ -709,7 +709,7 @@ export class MapClusterNBH extends Component {
         const top10items = items.slice(0,10);
         var finalList = []
         top10items.forEach(function(item) {
-            var name = (item[0].length<=10) ? item[0] : item[0].substring(0,7) + '...';
+            var name = (item[0].length<=10) ? item[0] : item[0].substring(0,9) + '...';
             finalList.push({
                 name: name,
                 value: item[1]
@@ -797,7 +797,7 @@ export class MapClusterNBH extends Component {
                                 dataKey="name"
                                 label={{value: "Category", position: "insideBottom", offset: -5}}
                                 style={{
-                                    fontSize: '9px',
+                                    fontSize: '10px',
                                 }}
                                 interval = {0}
                             />
@@ -852,7 +852,7 @@ export class MapClusterNBH extends Component {
                                 dataKey="name"
                                 label={{value: "Department", position: "insideBottom", offset: -5}}
                                 style={{
-                                    fontSize: '9px',
+                                    fontSize: '10px',
                                     // fontFamily: 'Times New Roman',
                                 }}
                                 interval = {0}
@@ -906,7 +906,7 @@ export class MapClusterNBH extends Component {
                                 dataKey="name"
                                 label={{value: "Time Window", position: "insideBottom", offset: -5}}
                                 style={{
-                                    fontSize: '9px',
+                                    fontSize: '10px',
                                     // fontFamily: 'Times New Roman',
                                 }}
                                 interval = {0}
@@ -1288,7 +1288,7 @@ export class MapClusterNBH extends Component {
                             })
                             }
                         </div>
-                        <div align="left" style = {{fontSize: "120%"}}>
+                        <div align="left" style = {{fontSize: "120%", marginBottom: '10px'}}>
                             {clusterProfileContent}
                         </div>
 
