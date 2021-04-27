@@ -512,7 +512,7 @@ export class MapClusterNBH extends Component {
         const clusterProfiles = currentCluster["Cluster_Profiles"];
         var bgClusterID = null;
         var chartData = [];
-        const polygonCenter = props.centerCoord
+        // const polygonCenter = props.centerCoord
         // self.setState({
         //     currentPosition: {lat: polygonCenter.lat, lng: polygonCenter.lng},
         //     panorama: new window.google.maps.StreetViewPanorama(
