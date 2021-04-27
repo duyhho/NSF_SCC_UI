@@ -15,7 +15,7 @@ export default class Visualization311 extends Component {
     render() {
         return (
             <div className="page-container">
-                <iframe title="KC311 311 Visualization" src="http://ec2-3-93-220-250.compute-1.amazonaws.com:8000/" style={{width: "100%", height: "100%"}}></iframe>
+                <iframe title="KC311 311 Visualization" src="https://ec2-3-93-220-250.compute-1.amazonaws.com:8000/" style={{width: "100%", height: "100%"}}></iframe>
             </div>
         )
     }

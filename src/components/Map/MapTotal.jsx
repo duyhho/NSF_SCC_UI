@@ -20,8 +20,26 @@ export class MapTotal extends Component {
             loadingPoliceDivision: false,
             initialMessage: "Loading the data. Please wait...",
             currentPosition: {lat: 39.0410436302915, lng: -94.5876739197085},
-            colorArray: ['#FF8C00', '#FFFF00', '#00BCF2', '#00B294',
-                        '#FFB6C1', '#68217A', '#00188F', '#BAD80A', '#E81123', '#009E49' ],
+            colorArray: ["#52bf6f",
+            "#a955c2",
+            "#62b83b",
+            "#d74086",
+            "#aab539",
+            "#666bc5",
+            "#d19e34",
+            "#6c99d4",
+            "#d36a2a",
+            "#4bc3b7",
+            "#d34143",
+            "#3c8963",
+            "#d082c5",
+            "#54802f",
+            "#9e486d",
+            "#9cb36c",
+            "#e07d87",
+            "#816e2b",
+            "#a8563a",
+            "#d89c66"],
             categoryList: ['Council Districts', 'Police Districts', 'Neighborhoods', 'Block Groups', 'School Districts'],
             selectedCategory: "Council Districts",
             blockGroupList: [[]],
@@ -95,7 +113,7 @@ export class MapTotal extends Component {
         })
 
         //Load School District
-        axios.get('https://dl.dropboxusercontent.com/s/67xw4zvp2retyah/School%20Districts.geojson?dl=0')
+        axios.get('https://dl.dropboxusercontent.com/s/nrqzfm3t2nlsfcp/school_districts.json?dl=0')
         .then(function(response) {
             self.setState({
                 schoolDistrictList: response.data.features,
@@ -136,6 +154,7 @@ export class MapTotal extends Component {
     };
 
     handleMouseOver(props,polygon,e) {
+        console.log(props.fillColor)
         this.setState({
             tempColor: props.fillColor
         })
@@ -143,6 +162,7 @@ export class MapTotal extends Component {
     };
 
     handleMouseOut(props,polygon,e) {
+        console.log(this.state.tempColor)
         polygon.setOptions({ fillColor: this.state.tempColor, strokeColor: this.state.tempColor});
     };
 
@@ -262,9 +282,9 @@ export class MapTotal extends Component {
         } else if (selectedCategory === "School Districts") {
             colorCount = 0
             returnedData = schoolDistrictList.map(district => {
-                if (district.geometry && (district.properties['district_name'].includes('KANSAS CITY MISSOURI') || district.properties['district_name'].includes('NORTH KANSAS CITY'))) {
-                    var randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-                    var subReturnedData = district.geometry.coordinates[0].map(function(area) {
+                if (district.geometry) {
+                    // console.log(self.state.colorArray[colorCount])
+                    var subReturnedData = district.geometry.coordinates.map(function(area) {
                         var coordArr = []
                         area.forEach(function(coord) {
                             coordArr.push({
@@ -277,10 +297,10 @@ export class MapTotal extends Component {
                                 ref={self.polygonRef}
                                 paths={coordArr}
                                 item = {district.properties['district_name']}
-                                strokeColor={randomColor}
+                                fillColor={self.state.colorArray[colorCount]}
                                 strokeOpacity={1}
                                 strokeWeight={3}
-                                fillColor={randomColor}
+                                strokeColor={self.state.colorArray[colorCount]}
                                 fillOpacity={0.75}
                                 onClick = {self.handleClick.bind(self)}
                                 onMouseover = {self.handleMouseOver.bind(self)}
